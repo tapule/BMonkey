@@ -1,0 +1,62 @@
+# Lines starting with '#' are considered comments.
+# Ignorar objetos y archivos
+*.o
+*.a
+*.la
+*.lo
+# Ignorar copias de respaldo
+*~
+*.bak
+*swp
+# Ignorar makefiles innecesarios
+Makefile
+Makefile.in
+# Archivos en el raíz
+/mkinstalldirs
+/configure
+/config.*
+/aclocal.m4
+/BMonkey Debug
+/Configurator Debug
+/Designer Debug
+/Metadbm Debug
+/Release
+/autom4te.cache
+/depcomp
+/install-sh
+/stamp-h1
+/missing
+/intltool*
+/libtool
+/gnome-doc-utils.make
+/*.cache
+/ltmain.sh
+.cvsignore
+/*.tasks
+/bmonkey-*.tar.gz
+/bmoneky-*.tar.bz2
+# Archivos no necesarios en data
+data/bmoneky.desktop
+data/bmonkey.schemas
+# Archivos no necesarios en help
+/help/gelide-*.omf
+# Archivos no necesarios en m4
+/m4/gnome-doc-utils.m4
+/m4/intltool.m4
+# Archivos no necesarios en po
+*.gmo
+/po/POTFILES
+/po/Makefile.in.in
+/po/.intltool-merge-cache
+/po/bmonkey.pot
+/po/missing
+/po/notexist
+/po/stamp-it
+# Archivos no necesarios en src
+#src/bmonkey
+.deps
+.libs
+# Archivos de proyectos eclipse
+.cproject
+.project
+/.settings

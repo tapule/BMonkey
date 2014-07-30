@@ -1,0 +1,9 @@
+data/bmonkey-configurator.desktop.in
+data/bmonkey-designer.desktop.in
+data/bmonkey.desktop.in
+src/bmonkey/bmonkey-main.cpp
+src/configurator/configurator-main.cpp
+src/core/dbmanager/db_manager.cpp
+src/core/dbmanager/db_manager_genres.cpp
+src/core/dbmanager/db_manager_manufacturers.cpp
+src/designer/designer-main.cpp

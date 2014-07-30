@@ -1,0 +1,90 @@
+	Una vez terminado el trabajo de desarrollo y documentación, llega la hora de
+preparar una nueva realease. Para ello, hay que seguir unos pasos determinados
+para que todo funcione correctamente:
+
+0.- Revisar el fichero src/gelide.hpp
+	Normalmente activamos o desactivamos el modo debug y el modo local con las
+directivas
+#define LOCAL_MODE
+#define DEBUG_MODE
+Por lo que a la hora de preparar el paquete de distribución, deberemos
+desactivarlas comentandolas.
+
+1.- Actualizar los ficheros Makefile.am
+	Dentro de cada directorio del proyecto, suele haber un fichero Makefile.am
+que indicará a las autotools como deben construirse los correspondientes
+makefiles.
+	Si en un directorio, por ejemplo src, hemos añadido o quitado ficheros y
+queremos que esto se refleje en el paquete de distribución, debemos editar el
+fichero Makefile.am y reflejar en él los cambios necesarios.
+	Por último, no debemos olvidar revisar el fichero Makefile.am del directorio
+raíz del proyecto.
+
+2.- Actualizar el fichero configure.ac
+	En el directorio raíz está el fichero configure.ac, que es básicamente el
+que indica como preparar todo para la construcción.
+	En el se especifican muchas cosas, pero entre otras, está la nueva versión
+del programa, y el codename que tiene la release, deberemos modificar estos
+valores para que reflejen los cambios.
+
+3.- Preparar los ficheros de traducción
+	En el directorio po, tenemos los ficheros de traducción. Dentro de este
+directorio existen dos ficheros muy importantes, POTFILES.in donde debemos
+añadir cada uno de los ficheros que contienen cadenas a traducir y POTFILES.skip
+que contiene la lista de fichero que no se deben procesar.
+	Para comprobar si todos los ficheros con cadenas traducibles están en el
+archivo POTFILES.in, debemos entrar en el directorio y ejecutar:
+
+$ intltool-update --maintain
+
+Este comando buscará dentro del proyecto todos aquellos ficheros que parecen
+contener cadenas para traducir y nos indicará aquellos que no están reflejados
+en POTFILES.in o POTFILES.skip. Genera un fichero llamado "missing" que incluirá
+estos ficheros. Este comando se lanza automáticamente desde el "autogen.sh".
+	Después tendremos que volver a este directorio para actualizar las cadenas.
+
+4.- Autoconfigurando.
+	Llegados a este punto ya tenemos prácticamente todo preparado. Ejecutaremos:
+
+$ ./autogen.sh
+
+Este comando se encargará de preparar el proyecto, creando los makefiles
+necesarios a partir del configure.ac y los Makefiles.am. También se encarga de
+actualizar po y generar el arcchivo "gelide.pot" que es necesario para realizar
+nuevas traducciones.
+
+5.- Terminando los ficheros de traducción
+	Como comenté antes, ahora debemos volver al directorio po y actualizar los
+ficheros de traducción para que reflejen los cambios realizados en los fuentes.
+	Antes de actualizar los ficheros de traducción, deberemos modificar el
+fichero LINGUAS, que básicamente indica las lenguas para las que existe una
+traducción e indirectamente los ficheros .po a actualizar.
+	Ahora ya estamos preparados para actualizar los ficheros .po, para ello,
+ejecutaremos el comando:
+
+$ make update-po
+
+Este comando mezclará los ficheros de traducción (*.po), con las nuevas cadenas
+dejandolos preparados para terminar su traducción. También nos muestra unos
+datos estadisticos de las cadenas traducidas en cada fichero.
+	Por último, para terminar con el trabajo en las traducciones, tendremos que
+actualizar el fichero ChangeLog indicando los cambios en las traducciones.
+
+6.- Generando el paquete de distribución
+	Llegados a este punto, ya estamos preparados para generar el paquete de
+distribución. Para ello, ejecutaremos en el directorio raíz:
+
+$ make dist
+
+	Si todo fue correctamente deberemos tener en el raíz del proyecto el nuevo
+archivo de distribución "gelide-x.x.x.tar.gz"
+
+7.- Limpiando.
+	He automatizado el proceso de limpieza global. Ahora ejecutando en la raíz
+del proyecto:
+
+$ make maintainer-clean
+
+todo quedará exactamente igual que en la versión de desarrollo, eliminandose por
+tanto todos aquellos ficheros innecesarios.
+
