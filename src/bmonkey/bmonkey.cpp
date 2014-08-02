@@ -32,12 +32,12 @@
 namespace bmonkey{
 
 BMonkeyApp::BMonkeyApp(const Glib::ustring& working_dir):
+	m_config(NULL),
 #ifdef ENABLE_DEBUG_MODE
 	m_log_enabled(true),
 #else
 	m_log_enabled(false),
 #endif
-	m_config(NULL),
 	m_first_run(true),
 	m_working_dir(working_dir)
 {
@@ -155,6 +155,7 @@ int BMonkeyApp::run(int argc, char** argv)
 	 * Bucle principal de la aplicación
 	*******************************************************/
 	LOG_INFO("BMonkey: Running main_sec...");
+
 
 	/*******************************************************/
 

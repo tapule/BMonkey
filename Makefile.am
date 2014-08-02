@@ -39,7 +39,7 @@ MAINTAINERCLEANFILES = \
 	configure \
 	compile \
 	depcomp \
-	bmoneky*.tar.gz \
+	bmonkey*.tar.gz \
 	install-sh \
 	libtool \
 	ltmain.sh \
@@ -48,7 +48,12 @@ MAINTAINERCLEANFILES = \
 	missing \
 	mkinstalldirs \
 	stamp-h1 \
-	m4/*.m4
+	m4/intltool.m4 \
+	m4/libtool.m4 \
+	m4/lt~obsolete.m4 \
+	m4/ltoptions.m4 \
+	m4/ltsugar.m4 \
+	m4/ltversion.m4
 
 #DISTCHECK_CONFIGURE_FLAGS = --disable-scrollkeeper --enable-gtk-doc
 DISTCHECK_CONFIGURE_FLAGS = --disable-scrollkeeper

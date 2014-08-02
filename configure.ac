@@ -14,6 +14,7 @@ AC_CONFIG_MACRO_DIR([m4])
 # Comprobaciones varias
 AC_ISC_POSIX
 AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX_11
 AM_PROG_CC_STDC
 AC_HEADER_STDC
 
@@ -67,7 +68,7 @@ AC_SUBST(LIBXML_LIBS)
 #AC_SUBST(CURL_LIBS)
 
 # Comprobamos las librerías ffmpeg y exportamos sus flags
-PKG_CHECK_MODULES(FFMPEG, [libavutil >= 50 libavformat >= 52 libavcodec >= 52 libavdevice >= 52 libswscale >= 0.7.0])
+PKG_CHECK_MODULES(FFMPEG, [libavutil >= 50 libavformat >= 52 libavcodec >= 52 libswscale >= 0.7.0 libswresample])
 CXXFLAGS="$CXXFLAGS -D__STDC_CONSTANT_MACROS"
 AC_SUBST(FFMPEG_CFLAGS)
 AC_SUBST(FFMPEG_LIBS)
