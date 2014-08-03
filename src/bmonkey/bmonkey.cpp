@@ -156,6 +156,15 @@ int BMonkeyApp::run(int argc, char** argv)
 	*******************************************************/
 	LOG_INFO("BMonkey: Running main_sec...");
 
+	Glib::ustring t = "loquesea.loquesea aaaa";
+	Glib::ustring::size_type p = t.rfind('.');
+
+	LOG_DEBUG("Pos: " << p);
+	if (p != Glib::ustring::npos)
+		t.erase(t.rfind('.'));
+	LOG_DEBUG("Str: " << t);
+
+
 
 	/*******************************************************/
 

@@ -66,6 +66,22 @@ struct Game
 	{
 	}
 
+	/**
+	 * Constructor parametrizado
+	 */
+	Game(Collection* p_collection):
+		collection(p_collection),
+		enabled(true),
+		state(GAME_STATE_UNKNOWN),
+		type(GAME_TYPE_UNKNOWN),
+		players(0),
+		simultaneous(false),
+		rating(0),
+		times_played(0),
+		favorite(false)
+	{
+	}
+
 	Collection* collection;			/**< Colección padre del juego */
 	Glib::ustring name;				/**< Nombre de set del juego */
 	bool enabled;					/**< Indica si el juego está habilitado o no */
