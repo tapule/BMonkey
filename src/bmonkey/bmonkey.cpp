@@ -51,7 +51,7 @@ BMonkeyApp::~BMonkeyApp(void)
 int BMonkeyApp::run(int argc, char** argv)
 {
 	int ret;
-	Glib::ustring main_dir, tmp_dir;
+	Glib::ustring collection_dir, tmp_dir;
 
 	// Iniciamos el sistema de configuración
 	LOG_DEBUG("BMonkey: Initializing Config system...");
@@ -109,31 +109,31 @@ int BMonkeyApp::run(int argc, char** argv)
 		clean();
 		return EXIT_FAILURE;
 	}
-	main_dir = Glib::build_filename(tmp_dir, USER_MAIN_DIR);
-	if (!utils::checkOrCreateDir(main_dir))
+	collection_dir = Glib::build_filename(tmp_dir, USER_COLLECTION_DIR);
+	if (!utils::checkOrCreateDir(collection_dir))
 	{
 		clean();
 		return EXIT_FAILURE;
 	}
-	tmp_dir = Glib::build_filename(main_dir, COLLECTION_BACKGROUNDS_DIR);
+	tmp_dir = Glib::build_filename(collection_dir, PLATFORM_BACKGROUNDS_DIR);
 	if (!utils::checkOrCreateDir(tmp_dir))
 	{
 		clean();
 		return EXIT_FAILURE;
 	}
-	tmp_dir = Glib::build_filename(main_dir, COLLECTION_SNAPS_DIR);
+	tmp_dir = Glib::build_filename(collection_dir, PLATFORM_SNAPS_DIR);
 	if (!utils::checkOrCreateDir(tmp_dir))
 	{
 		clean();
 		return EXIT_FAILURE;
 	}
-	tmp_dir = Glib::build_filename(main_dir, COLLECTION_WHEELS_DIR);
+	tmp_dir = Glib::build_filename(collection_dir, PLATFORM_WHEELS_DIR);
 	if (!utils::checkOrCreateDir(tmp_dir))
 	{
 		clean();
 		return EXIT_FAILURE;
 	}
-	tmp_dir = Glib::build_filename(main_dir, COLLECTION_VIDEOS_DIR);
+	tmp_dir = Glib::build_filename(collection_dir, PLATFORM_VIDEOS_DIR);
 	if (!utils::checkOrCreateDir(tmp_dir))
 	{
 		clean();

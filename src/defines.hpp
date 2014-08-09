@@ -84,17 +84,17 @@
 // Estructura de directorios para datos del usuario
 // Toda la estructura se montará a partir del directory de trabajo del usuario
 #define USER_LIBRARY_DIR				"library"
-#define USER_MAIN_DIR					"main"			// library/main
+#define USER_COLLECTION_DIR				"collection"		// library/collection
 #define USER_THEMES_DIR					"themes"
 
-// Estructura de directorios para las colecciones
-// Toda la estructura se montará a partir del directorio de la colección
-#define COLLECTION_ROMS_DIR				"roms"
-#define COLLECTION_GAMELISTS_DIR		"gamelists"
-#define COLLECTION_BACKGROUNDS_DIR		"backgrounds"
-#define COLLECTION_SNAPS_DIR			"snaps"
-#define COLLECTION_WHEELS_DIR			"wheels"
-#define COLLECTION_VIDEOS_DIR			"videos"
+// Estructura de directorios para las plataformas
+// Toda la estructura se montará a partir del directorio de la plataforma
+#define PLATFORM_ROMS_DIR				"roms"
+#define PLATFORM_GAMELISTS_DIR			"gamelists"
+#define PLATFORM_BACKGROUNDS_DIR		"backgrounds"
+#define PLATFORM_SNAPS_DIR				"snaps"
+#define PLATFORM_WHEELS_DIR				"wheels"
+#define PLATFORM_VIDEOS_DIR				"videos"
 
 // Directorio de trabajo por defecto
 #define BMONKEY_DEFAULT_DIR				".bmonkey"
@@ -103,7 +103,9 @@
 #define BMONKEY_ICON_FILE				"bmonkey.png"
 #define BMONKEY_CFG_FILE				"bmonkey.xml"
 #define BMONKEY_KEYMAP_FILE				"keymap.xml"
-#define BMONKEY_MAIN_FILE				"main.xml"
+#define BMONKEY_COLLECTION_FILE			"collection.xml"
+#define BMONKEY_PLATFORM_FILE			"config.xml"
+#define BMONKEY_GAMES_FILE				"games.xml"
 #define BMONKEY_LOG_FILE				"bmonkey.log"
 #define BMONKEY_DEFAULT_FONT_FILE		"FreeSans.ttf"
 #define BMONKEY_DEFAULT_THEME			"default"
