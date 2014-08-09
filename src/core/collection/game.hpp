@@ -26,36 +26,35 @@
 
 namespace bmonkey{
 
-// Posibles tipos de juegos
-enum GameType
-{
-	GAME_TYPE_UNKNOWN = 0,		/**< Tipo desconocido */
-	GAME_TYPE_ORIGINAL,			/**< Juego original */
-	GAME_TYPE_CLONE,			/**< Juego clon */
-	GAME_TYPE_BIOS				/**< Bios */
-};
-
-// Posibles estados de un juego
-enum GameState
-{
-	GAME_STATE_UNKNOWN = 0,		/**< Estado desconocido (no comprobado) */
-	GAME_STATE_CORRECT,			/**< Estado correcto (comprobado y localizado) */
-	GAME_STATE_INCORRECT		/**< Estado incorrecto (comprobado y no localizado) */
-};
-
-class Collection;
+class Platform;
 
 /**
  * Mantiene la información de un juego.
  */
 struct Game
 {
+	// Posibles tipos de juegos
+	enum GameType
+	{
+		GAME_TYPE_UNKNOWN = 0,		/**< Tipo desconocido */
+		GAME_TYPE_ORIGINAL,			/**< Juego original */
+		GAME_TYPE_CLONE,			/**< Juego clon */
+		GAME_TYPE_BIOS				/**< Bios */
+	};
+
+	// Posibles estados de un juego
+	enum GameState
+	{
+		GAME_STATE_UNKNOWN = 0,		/**< Estado desconocido (no comprobado) */
+		GAME_STATE_CORRECT,			/**< Estado correcto (comprobado y localizado) */
+		GAME_STATE_INCORRECT		/**< Estado incorrecto (comprobado y no localizado) */
+	};
+
 	/**
 	 * Constructor básico
 	 */
 	Game(void):
-		collection(NULL),
-		enabled(true),
+		platform(NULL),
 		state(GAME_STATE_UNKNOWN),
 		type(GAME_TYPE_UNKNOWN),
 		players(0),
@@ -69,9 +68,8 @@ struct Game
 	/**
 	 * Constructor parametrizado
 	 */
-	Game(Collection* p_collection):
-		collection(p_collection),
-		enabled(true),
+	Game(Platform* p_platform):
+		platform(p_platform),
 		state(GAME_STATE_UNKNOWN),
 		type(GAME_TYPE_UNKNOWN),
 		players(0),
@@ -82,9 +80,8 @@ struct Game
 	{
 	}
 
-	Collection* collection;			/**< Colección padre del juego */
+	Platform* platform;				/**< Plataforma padre del juego */
 	Glib::ustring name;				/**< Nombre de set del juego */
-	bool enabled;					/**< Indica si el juego está habilitado o no */
 
 	GameState state;				/**< Estado del juego (0 desconocido, 1 lcorrecto, 2 incorrecto) */
 
