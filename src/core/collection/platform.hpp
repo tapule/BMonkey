@@ -49,6 +49,8 @@ public:
 	 */
 	virtual ~Collection(void){}
 
+	inline Glib::ustring getDir(void){}
+
 	/**
 	 * Obtiene el directorio de trabajo de la colección
 	 * @return Cadena de texto con el path del directorio de trabajo

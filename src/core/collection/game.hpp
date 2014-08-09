@@ -34,20 +34,20 @@ class Platform;
 struct Game
 {
 	// Posibles tipos de juegos
-	enum GameType
+	enum Type
 	{
-		GAME_TYPE_UNKNOWN = 0,		/**< Tipo desconocido */
-		GAME_TYPE_ORIGINAL,			/**< Juego original */
-		GAME_TYPE_CLONE,			/**< Juego clon */
-		GAME_TYPE_BIOS				/**< Bios */
+		UNKNOWN = 0,				/**< Tipo desconocido */
+		ORIGINAL,					/**< Juego original */
+		CLONE,						/**< Juego clon */
+		BIOS						/**< Bios */
 	};
 
 	// Posibles estados de un juego
-	enum GameState
+	enum State
 	{
-		GAME_STATE_UNKNOWN = 0,		/**< Estado desconocido (no comprobado) */
-		GAME_STATE_CORRECT,			/**< Estado correcto (comprobado y localizado) */
-		GAME_STATE_INCORRECT		/**< Estado incorrecto (comprobado y no localizado) */
+		UNKNOWN = 0,				/**< Estado desconocido (no comprobado) */
+		CORRECT,					/**< Estado correcto (comprobado y localizado) */
+		INCORRECT					/**< Estado incorrecto (comprobado y no localizado) */
 	};
 
 	/**
@@ -55,8 +55,8 @@ struct Game
 	 */
 	Game(void):
 		platform(NULL),
-		state(GAME_STATE_UNKNOWN),
-		type(GAME_TYPE_UNKNOWN),
+		state(UNKNOWN),
+		type(UNKNOWN),
 		players(0),
 		simultaneous(false),
 		rating(0),
@@ -70,8 +70,8 @@ struct Game
 	 */
 	Game(Platform* p_platform):
 		platform(p_platform),
-		state(GAME_STATE_UNKNOWN),
-		type(GAME_TYPE_UNKNOWN),
+		state(UNKNOWN),
+		type(UNKNOWN),
 		players(0),
 		simultaneous(false),
 		rating(0),
@@ -83,9 +83,9 @@ struct Game
 	Platform* platform;				/**< Plataforma padre del juego */
 	Glib::ustring name;				/**< Nombre de set del juego */
 
-	GameState state;				/**< Estado del juego (0 desconocido, 1 lcorrecto, 2 incorrecto) */
+	State state;					/**< Estado del juego (0 desconocido, 1 lcorrecto, 2 incorrecto) */
 
-	GameType type;					/**< Indica el tipo del set (original, clon, bios) */
+	Type type;						/**< Indica el tipo del set (original, clon, bios) */
 	Glib::ustring crc;				/**< CRC asignado al juego (de su rom) */
 
 	Glib::ustring title;			/**< Título del juego */

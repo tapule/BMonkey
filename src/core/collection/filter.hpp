@@ -26,32 +26,32 @@
 
 namespace bmonkey{
 
-// Posibles filtros para las listas de juegos
-enum FilterType{
-	FILTER_NONE = 0,		/**< Filtro ninguno */
-	FILTER_SEARCH,			/**< Filtro para búsquedas */
-	FILTER_FAVORITE,		/**< Filtro por favorito */
-	FILTER_TYPE,			/**< Filtro por tipo de juego (original, clon, bios) */
-	FILTER_MANUFACTURER,	/**< Filtro por fabricante */
-	FILTER_YEAR,			/**< Filtro por año */
-	FILTER_GENRE,			/**< Filtro por género */
-	FILTER_PLAYERS,			/**< Filtro por núemro de juegadores */
-	FILTER_SIMULTANEOUS,	/**< Filtro por juegadores simultaneos*/
-	FILTER_RATING,			/**< Filtro por puntuación */
-	FILTER_LETTER,			/**< Filtro por letra inicial */
-	FILTER_TIMES_PLAYED		/**< Filtro por partidas jugadas */
-};
-
 /**
  * Mantiene la información de un filtro y su valor.
  */
 struct Filter
 {
+	// Posibles filtros para las listas de juegos
+	enum Type{
+		NONE = 0,			/**< Filtro ninguno */
+		SEARCH,				/**< Filtro para búsquedas */
+		FAVORITE,			/**< Filtro por favorito */
+		TYPE,				/**< Filtro por tipo de juego (original, clon, bios) */
+		MANUFACTURER,		/**< Filtro por fabricante */
+		YEAR,				/**< Filtro por año */
+		GENRE,				/**< Filtro por género */
+		PLAYERS,			/**< Filtro por núemro de juegadores */
+		SIMULTANEOUS,		/**< Filtro por juegadores simultaneos*/
+		RATING,				/**< Filtro por puntuación */
+		LETTER,				/**< Filtro por letra inicial */
+		TIMES_PLAYED		/**< Filtro por partidas jugadas */
+	};
+
 	/**
 	 * Constructor básico
 	 */
 	Filter(void):
-		type(FILTER_NONE),
+		type(NONE),
 		value(0)
 	{
 	}
@@ -61,7 +61,7 @@ struct Filter
 	 * @param p_type Nuevo tipo de filtro
 	 * @param p_value Valor para el filtro
 	 */
-	Filter(const FilterType p_type, const long long int p_value):
+	Filter(const Type p_type, const long long int p_value):
 		type(p_type),
 		value(p_value)
 	{
@@ -72,14 +72,14 @@ struct Filter
 	 * @param p_type Nuevo tipo de filtro
 	 * @param p_value Valor para el filtro
 	 */
-	Filter(const FilterType p_type, const Glib::ustring& p_value):
+	Filter(const Type p_type, const Glib::ustring& p_value):
 		type(p_type),
 		value(0),
 		value_txt(p_value)
 	{
 	}
 
-	FilterType type;			/**< Tipo de filtro */
+	Type type;					/**< Tipo de filtro */
 	long long int value;		/**< Valor del filtro para filtros numéricos */
 	Glib::ustring value_txt;	/**< Valor del filtro para filtros de texto*/
 };
