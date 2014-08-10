@@ -23,7 +23,7 @@
 #define _GAME_NODE_HPP_
 
 #include <glibmm/ustring.h>
-#include "item.hpp"
+#include "../item.hpp"
 #include "game.hpp"
 
 namespace bmonkey{

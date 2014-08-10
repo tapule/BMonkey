@@ -31,7 +31,7 @@ namespace bmonkey{
  * implementacionesla de Iterable.
  *
  * Un Item es una abstracción de un elemento que contiene información suficiente
- * para ser dibujado a partir de sus recursos.
+ * para ser dibujado.
  */
 class Item
 {

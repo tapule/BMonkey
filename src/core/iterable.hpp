@@ -28,8 +28,8 @@
 namespace bmonkey{
 
 /**
- * Clase abstracta base que proporciona métodos para el moverse por los Items
- * en clases que actúan como almacenes de items.
+ * Clase abstracta base que proporciona métodos para moverse por los Items en
+ * clases que actúan como almacenes de items.
  */
 class Iterable
 {
@@ -90,14 +90,14 @@ public:
 	virtual Item* itemBackward(Item* item, const int count) = 0;
 
 	/**
-	 * Obtiene el item que comienza con la siguiente inicial a uno dado
+	 * Obtiene el item cuyo título comienza con la siguiente inicial a uno dado
  	 * @param item Elemento inicial
 	 * @return Item buscado o null si no se localizó
 	 */
 	virtual Item* itemLetterForward(Item* item) = 0;
 
 	/**
-	 * Obtiene el item que comienza con la inicial anterior a uno dado
+	 * Obtiene el item cuyo título comienza con la inicial anterior a uno dado
  	 * @param item Elemento inicial
 	 * @return Item buscado o null si no se localizó
 	 */
