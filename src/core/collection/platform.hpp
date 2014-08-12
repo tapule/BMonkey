@@ -35,19 +35,26 @@ namespace bmonkey{
  *
  * Una colecci
  */
-class Collection
+class Platform
 {
 public:
 	/**
 	 * Constructor parametrizado
 	 * @param working_dir Directorio de trabajo
 	 */
-	Collection(const Glib::ustring& working_dir){}
+	Platform(const Glib::ustring& working_dir){}
 
 	/**
 	 * Destructor de la clase
 	 */
-	virtual ~Collection(void){}
+	virtual ~Platform(void){}
+
+	Gamelist* gamelistGet(void) {}
+
+	Gamelist* gamelistGet(const Glib::ustring& name) {}
+
+	std::vector<Glib::ustring>& getGamelists() {}
+
 
 	inline Glib::ustring getDir(void){}
 

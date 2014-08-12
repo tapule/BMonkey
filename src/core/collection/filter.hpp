@@ -33,8 +33,7 @@ struct Filter
 {
 	// Posibles filtros para las listas de juegos
 	enum Type{
-		NONE = 0,			/**< Filtro ninguno */
-		SEARCH,				/**< Filtro para búsquedas */
+		SEARCH = 0,			/**< Filtro para búsquedas */
 		FAVORITE,			/**< Filtro por favorito */
 		TYPE,				/**< Filtro por tipo de juego (original, clon, bios) */
 		MANUFACTURER,		/**< Filtro por fabricante */
@@ -44,14 +43,15 @@ struct Filter
 		SIMULTANEOUS,		/**< Filtro por juegadores simultaneos*/
 		RATING,				/**< Filtro por puntuación */
 		LETTER,				/**< Filtro por letra inicial */
-		TIMES_PLAYED		/**< Filtro por partidas jugadas */
+		TIMES_PLAYED,		/**< Filtro por partidas jugadas */
+		COUNT				/**< Contador de filtros */
 	};
 
 	/**
 	 * Constructor básico
 	 */
 	Filter(void):
-		type(NONE),
+		type(SEARCH),
 		value(0)
 	{
 	}
