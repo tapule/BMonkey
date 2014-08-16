@@ -35,7 +35,7 @@ struct Filter
 	enum Type{
 		SEARCH = 0,			/**< Filtro para búsquedas */
 		FAVORITE,			/**< Filtro por favorito */
-		TYPE,				/**< Filtro por tipo de juego (original, clon, bios) */
+		TYPE,				/**< Filtro por tipo de juego (original, clon) */
 		MANUFACTURER,		/**< Filtro por fabricante */
 		YEAR,				/**< Filtro por año */
 		GENRE,				/**< Filtro por género */

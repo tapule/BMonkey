@@ -26,52 +26,25 @@
 
 namespace bmonkey{
 
-class Platform;
-
 /**
  * Mantiene la información de un juego.
  */
 struct Game
 {
-	// Posibles tipos de juegos
-	enum Type
-	{
-		UNKNOWN = 0,				/**< Tipo desconocido */
-		ORIGINAL,					/**< Juego original */
-		CLONE,						/**< Juego clon */
-		BIOS						/**< Bios */
-	};
-
 	// Posibles estados de un juego
 	enum State
 	{
-		UNKNOWN = 0,				/**< Estado desconocido (no comprobado) */
-		CORRECT,					/**< Estado correcto (comprobado y localizado) */
-		INCORRECT					/**< Estado incorrecto (comprobado y no localizado) */
+		STATE_UNKNOWN = 0,			/**< Estado desconocido (no comprobado) */
+		STATE_CORRECT,				/**< Estado correcto (comprobado y localizado) */
+		STATE_INCORRECT				/**< Estado incorrecto (comprobado y no localizado) */
 	};
-
-	/**
-	 * Constructor básico
-	 */
-	Game(void):
-		platform(NULL),
-		state(UNKNOWN),
-		type(UNKNOWN),
-		players(0),
-		simultaneous(false),
-		rating(0),
-		times_played(0),
-		favorite(false)
-	{
-	}
 
 	/**
 	 * Constructor parametrizado
 	 */
-	Game(Platform* p_platform):
-		platform(p_platform),
-		state(UNKNOWN),
-		type(UNKNOWN),
+	Game(Glib::ustring& p_resources_dir):
+		resources_dir(p_resources_dir),
+		state(STATE_UNKNOWN),
 		players(0),
 		simultaneous(false),
 		rating(0),
@@ -80,15 +53,14 @@ struct Game
 	{
 	}
 
-	Platform* platform;				/**< Plataforma padre del juego */
+	Glib::ustring& resources_dir;	/**< Referencia al directorio de recursos */
 	Glib::ustring name;				/**< Nombre de set del juego */
 
 	State state;					/**< Estado del juego (0 desconocido, 1 lcorrecto, 2 incorrecto) */
 
-	Type type;						/**< Indica el tipo del set (original, clon, bios) */
-	Glib::ustring crc;				/**< CRC asignado al juego (de su rom) */
-
 	Glib::ustring title;			/**< Título del juego */
+	Glib::ustring cloneof;			/**< Nombre de set del juego original */
+	Glib::ustring crc;				/**< CRC asignado al juego (de su rom) */
 	Glib::ustring manufacturer;		/**< Fabricante del juego */
 	Glib::ustring year;				/**< Año de lanzamiento */
 	Glib::ustring genre;			/**< Género del juego */

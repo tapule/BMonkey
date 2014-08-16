@@ -19,300 +19,417 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _COLLECTION_HPP_
-#define _COLLECTION_HPP_
+#ifndef _PLATFORM_HPP_
+#define _PLATFORM_HPP_
 
 #include <glibmm/ustring.h>
 #include <unordered_map>
 #include <vector>
-#include "gamelist.hpp"
+#include "../item.hpp"
 #include "../../defines.hpp"
+#include "gamelist.hpp"
 
 namespace bmonkey{
 
 /**
- * Mantiene la información de una colección.
+ * Mantiene la información de una plataforma.
  *
- * Una colecci
+ * Una plataforma, además de ser la abstracción de una Consola/Arcade/Simulador
+ * etc., actua como contenedor de sus listas de juegos.
+ * Posee una lista de juegos master donde se almacenan todos los juegos de la
+ * plataforma y cero o más listas de juegos genéricas con selecciones de juegos
+ * del usuario.
  */
-class Platform
+class Platform: public Item
 {
 public:
 	/**
 	 * Constructor parametrizado
-	 * @param working_dir Directorio de trabajo
+	 * @param name Nombre de la plataforma
+	 * @param library_dir Directorio base de la librería de plataformas del sistema
 	 */
-	Platform(const Glib::ustring& working_dir){}
+	Platform(const Glib::ustring& name, const Glib::ustring& library_dir);
 
 	/**
 	 * Destructor de la clase
 	 */
-	virtual ~Platform(void){}
-
-	Gamelist* gamelistGet(void) {}
-
-	Gamelist* gamelistGet(const Glib::ustring& name) {}
-
-	std::vector<Glib::ustring>& getGamelists() {}
-
-
-	inline Glib::ustring getDir(void){}
+	virtual ~Platform(void);
 
 	/**
-	 * Obtiene el directorio de trabajo de la colección
-	 * @return Cadena de texto con el path del directorio de trabajo
+	 * Obtiene el directorio de trabajo o directorio base de la Plataforma
+	 * @return Referencia al directorio de trabajo de la plataforma
 	 */
-	inline Glib::ustring getWorkingDir(void){}
+	Glib::ustring& getDir(void)
+	{
+		return m_dir;
+	}
 
 	/**
-	 * Estable el path del directorio de trabajo de la colección
-	 * @param working_dir Nuevo path para el directorio de trabajo
+	 * Obtiene la siguiente plataforma enlazado
+	 * @return Siguiente plataforma enlazada
 	 */
-	inline void setWorkingDir(const Glib::ustring& working_dir){}
+	Platform* getNext(void)
+	{
+		return m_next;
+	}
 
 	/**
-	 * Obtiene el nombre de la colección
-	 * @return Cadena de texto con el nombre de la colección
+	 * Establece la siguiente plataforma enlazado
+	 * @param next Siguiente plataforma a enlazar
 	 */
-	inline Glib::ustring getName(void){}
+	void setNext(Platform* next)
+	{
+		m_next = next;
+	}
 
 	/**
-	 * Estable el nombre de la colección
-	 * @param name Nuevo nombre para la colección
+	 * Obtiene la plataforma previa enlazada
+	 * @return Plataforma previa
 	 */
-	inline void setName(const Glib::ustring& name){}
+	Platform* getPrev(void)
+	{
+		return m_prev;
+	}
 
 	/**
-	 * Obtiene el fabricante de la plataforma vinculada a la colección
+	 * Establece la plataforma previa enlazada
+	 * @param prev Plataforma previa a enlazar
+	 */
+	void setPrev(Platform* prev)
+	{
+		m_prev = prev;
+	}
+
+	/**
+	 * Obtiene el título de la plataforma
+	 * @return Título de la plataforma
+	 */
+	Glib::ustring getTitle(void)
+	{
+		return m_title;
+	}
+
+	/**
+	 * Estable el título de la plataforma
+	 * @param title Título nombre para la plataforma
+	 */
+	void setTitle(const Glib::ustring& title)
+	{
+		m_title = title;
+	}
+
+	/**
+	 * Obtiene el fabricante de la plataforma
 	 * @return Fabricante de la plataforma
 	 */
-	inline Glib::ustring getManufacturer(void){}
+	Glib::ustring getManufacturer(void)
+	{
+		return m_manufacturer;
+	}
 
 	/**
-	 * Estable fabricante de la plataforma vinculada a la colección
+	 * Estable fabricante de la plataforma
 	 * @param manufacturer Nuevo fabricante de la plataforma
 	 */
-	inline void setManufacturer(const Glib::ustring& manufacturer){}
+	void setManufacturer(const Glib::ustring& manufacturer)
+	{
+		m_manufacturer = manufacturer;
+	}
 
 	/**
-	 * Obtiene el año de lanzamiento de la plataforma vinculada a la colección
+	 * Obtiene el año de lanzamiento de la plataforma
 	 * @return Año de lanzamiento de la plataforma
 	 */
-	inline Glib::ustring getYear(void){}
+	Glib::ustring getYear(void)
+	{
+		return m_year;
+	}
 
 	/**
-	 * Estable año de lanzamiento de la plataforma vinculada a la colección
+	 * Estable año de lanzamiento de la plataforma
 	 * @param year Nuevo año de lanzamiento de la plataforma
 	 */
-	inline void setYear(const Glib::ustring& year){}
+	void setYear(const Glib::ustring& year)
+	{
+		m_year = year;
+	}
 
 	/**
-	 * Obtiene el directorio de roms de la colección
-	 * @return Directorio de roms de la colección
+	 * Obtiene el directorio de roms de la plataforma
+	 * @return Directorio de roms de la plataforma
 	 */
-	inline Glib::ustring getRomsDir(void){}
+	Glib::ustring getRomsDir(void)
+	{
+		return m_roms_dir;
+	}
 
 	/**
-	 * Establece el directorio de roms de la colección
-	 * @param dir Nuevo directorio de roms para la colección
+	 * Establece el directorio de roms de la plataforma
+	 * @param dir Nuevo directorio de roms para la plataforma
 	 */
-	inline void setRomsDir(const Glib::ustring& dir){}
+	void setRomsDir(const Glib::ustring& dir);
 
 	/**
-	 * Obtiene la extensión reconocible para las roms de la colección
-	 * @return Extensión de las roms de la colección
+	 * Obtiene la extensión reconocible para las roms de la plataforma
+	 * @return Extensión de las roms de la plataforma
 	 */
-	inline Glib::ustring getRomsExtension(void){}
+	Glib::ustring getRomsExtension(void)
+	{
+		return m_roms_extension;
+	}
 
 	/**
-	 * Estable la extensión reconocible para las roms de la colección
-	 * @param extension Nueva extensión para las roms de la colección
+	 * Estable la extensión reconocible para las roms de la plataforma
+	 * @param extension Nueva extensión para las roms de la plataforma
 	 */
-	inline void setRomExtension(const Glib::ustring& extension){}
+	void setRomExtension(const Glib::ustring& extension)
+	{
+		m_roms_extension = extension;
+	}
 
 	/**
-	 * Obtiene el path del binario del emulador para la colección
-	 * @return Path del binario de la colección
+	 * Obtiene el path del binario del emulador para la plataforma
+	 * @return Path del binario de la plataforma
 	 */
-	inline Glib::ustring getEmulatorBinary(void){}
+	Glib::ustring getEmulatorBinary(void)
+	{
+		return m_emu_binary;
+	}
 
 	/**
-	 * Estable el path del binario del emulador de la colección
+	 * Estable el path del binario del emulador de la plataforma
 	 * @param binary Path del binario del emulador
 	 */
-	inline void setEmulatorBinary(const Glib::ustring& binary){}
+	void setEmulatorBinary(const Glib::ustring& binary)
+	{
+		m_emu_binary = binary;
+	}
 
 	/**
 	 * Obtiene los parámetros que se pasarán al emulador
 	 * @return Parámetros para el emulador
 	 */
-	inline Glib::ustring getEmulatorParams(void){}
+	Glib::ustring getEmulatorParams(void)
+	{
+		return m_emu_params;
+	}
 
 	/**
 	 * Estable los parámetros que se pasarán al emulador
 	 * @param params Parámetros para la emulación
 	 */
-	inline void setEmulatorParams(const Glib::ustring& params){}
+	void setEmulatorParams(const Glib::ustring& params)
+	{
+		m_emu_params = params;
+	}
 
 	/**
 	 * Obtiene el comando a ejecutar antes que la emulación
 	 * @return Comando a ejecutar antes de la emulación
 	 */
-	inline Glib::ustring getPreCommand(void){}
+	Glib::ustring getPreCommand(void)
+	{
+		return m_pre_command;
+	}
 
 	/**
 	 * Estable el comando a ejecutar antes que la emulación
 	 * @param command Comando a ejecutar antes de la emulación
 	 */
-	inline void setPreCommand(const Glib::ustring& command){}
+	void setPreCommand(const Glib::ustring& command)
+	{
+		m_pre_command = command;
+	}
 
 	/**
 	 * Obtiene el comando a ejecutar despues de la emulación
 	 * @return Comando a ejecutar despues de la emulación
 	 */
-	inline Glib::ustring getPostCommand(void){}
+	Glib::ustring getPostCommand(void)
+	{
+		return m_post_command;
+	}
 
 	/**
 	 * Estable el comando a ejecutar despues de la emulación
 	 * @param command Comando a ejecutar despues de la emulación
 	 */
-	inline void setPostCommand(const Glib::ustring& command){}
+	void setPostCommand(const Glib::ustring& command)
+	{
+		m_post_command = command;
+	}
 
 	/**
 	 * Obtiene el directorio desde el que se lanzará la emulación
 	 * @return Path del directorio desde el que lanzar la emulación
 	 */
-	inline Glib::ustring getRunDir(void){}
+	Glib::ustring getRunDir(void)
+	{
+		return m_run_dir;
+	}
 
 	/**
 	 * Estable el directorio desde el que lanzar la emulación
 	 * @param dir Path del directorio desde el que lanzar la emulación
 	 */
-	inline void setRunDir(const Glib::ustring& dir){}
+	void setRunDir(const Glib::ustring& dir)
+	{
+		m_run_dir = dir;
+	}
 
 	/**
-	 * Carga el fichero de configuración de la colección
+	 * Carga el fichero de configuración de la plataforma
 	 * @return true si se pudo realizar la operación, falso en otro caso
 	 */
-	bool loadConfig(void){}
+	bool loadConfig(void);
 
 	/**
-	 * Carga el listado de juegos de la colección
+	 * Carga el listado de juegos de la plataforma
 	 * @return true si se pudo realizar la operación, falso en otro caso
 	 * @note No se permiten juegos duplicados por set name. Los duplicados se
 	 * descartan en la carga
 	 */
-	bool loadGames(void){}
+	bool loadGames(void);
 
 	/**
-	 * Carga las listas de juegos de la colección
+	 * Carga las listas de juegos de la plataforma
 	 * @return true si se pudo realizar la operación, falso en otro caso
 	 * @note Los juegos duplicados o inexistentes en la lista master, son
 	 * descartados
 	 */
-	bool loadGamelists(void){}
+	bool loadGamelists(void);
 
 	/**
-	 * Guarda la configuración de la colección en su fichero correspondiente
+	 * Guarda la configuración de la plataforma en su fichero correspondiente
 	 * @return true si se pudo realizar la operación, falso en otro caso
 	 */
-	bool saveConfig(void){}
+	bool saveConfig(void);
 
 	/**
-	 * Guarda los juegos de la colección en su fichero
+	 * Guarda los juegos de la plataforma en su fichero
 	 * @return true si se pudo realizar la operación, falso en otro caso
 	 */
-	bool saveGames(void){}
+	bool saveGames(void);
 
 	/**
-	 * Guarda las listas de juegos de la colección
+	 * Guarda las listas de juegos de la plataforma
 	 * @return true si se pudo realizar la operación, falso en otro caso
 	 */
-	bool saveGamelists(void){}
+	bool saveGamelists(void);
 
 	/**
-	 * Obtiene una lista de juegos a partir de su identificador
-	 * @param id Identificador de la lista de juegos requerida
-	 * @return Lista buscada o Null si no se puede localizar
-	 * @note La lista master no se puede obtener con este método
-	 */
-	Gamelist* gamelistGet(int id){}
-
-	/**
-	 * Obtiene la lista master de la colección
-	 * @return Lista master de la colección o Null si no se puede localizar
-	 */
-	Gamelist* gamelistGetMaster(void){}
-
-	/**
-	 * Busca una lista de juegos mediiante su nombre
-	 * @param name Nombre de la lista de juegos buscada
-	 * @return Lista buscada o Null si no se pudo localizar
-	 */
-	Gamelist* gamelistFind(const Glib::ustring& name){}
-
-	/**
-	 * Crea una nueva lista en la colección con un nombre dado
-	 * @return Identificador de la nueva lista o -1 si no se pudo crear
-	 */
-	int gamelistCreate(const Glib::ustring& name){}
-
-	/**
-	 * Elimina la lista de juegos indicada por su id
-	 * @param id Identificador de la lista de juegos a eliminar
+	 * Elimina el juego indicado de la lista de juegos indicada
+	 * @param name Nombre del juego a eliminar
+	 * @param list Lista de juegos de la que eliminar
 	 * @return true si se pudo realizar la operación, false en otro caso
-	 * @note La lista master no se puede eliminar con este método
+	 * @note Si la lista es la master, se eliminará de todas las listas
 	 */
-	bool gamelistDelete(int id){}
+	bool gameDelete(const Glib::ustring& name, Gamelist* list);
 
 	/**
-	 * Obtiene el id de la primera lista de juegos de la colección
-	 * @return Identificador de la lista o -1 si no se pudo localizar
+	 * Obtiene el vector con los nombres de las listas de juegos de la plataforma
+	 * @return Vector de nombres de las listas de juegos
+	 * @note Este vector no incluye información sobre la lista master
 	 */
-	int gamelistFirst(void){}
+	std::vector<Glib::ustring>& getGamelists(void)
+	{
+		return m_lists_names;
+	}
 
 	/**
-	 * Obtiene el id de la siguiente lista a una dada por su id
-	 * @param id Identificado de la lista de la que obtener su siguiente
-	 * @return id de la siguiente lista o -1 si no se pudo localizar
+	 * Obtiene la lista master de la plataforma.
+	 * @return Lista master de la plataforma
 	 */
-	int gamelistNext(int id){}
+	Gamelist* gamelistGet(void)
+	{
+		return m_master;
+	}
 
 	/**
-	 * Obtiene el id de la lista anterior a una dada por su id
-	 * @param id Identificado de la lista de la que obtener la anterior
-	 * @return id de la lista anterior o -1 si no se pudo localizar
+	 * Obtiene una lista de juegos mediante su nombre
+	 * @param name Nombre de la lista de juegos buscada
+	 * @return Lista de juegos buscada o null si no existe
 	 */
-	int gamelistPrevious(int id){}
+	Gamelist* gamelistGet(const Glib::ustring& name);
 
 	/**
-	 * Obtiene el id de la última lista de la colección
-	 * @return Identificador de la última lista o -1 si no se pudo localizar
+	 * Crea una nueva lista de juegos del usuario en la plataforma
+	 * @param name Nombre de la nueva lista de juegos
+	 * @return Nueva lista creada o null si no se pudo crear
+	 * @note No se permiten nombres de listas duplicados
 	 */
-	int gamelistLast(void){}
+	Gamelist* gamelistCreate(const Glib::ustring& name);
 
 	/**
-	 * Obtiene el número de listas de juegos disponibles en la colección
-	 * @return Número de listas de juegos de la colección
+	 * Obtiene el número de listas de juegos disponibles en la plataforma
+	 * @return Número de listas de juegos de la plataforma
+	 * @note No se cuenta la lista master, sino las listas del usuario
 	 */
-	inline int gamelistCount(void){}
+	int gamelistCount(void)
+	{
+		return m_lists_names.size();
+	}
+
+	// Implementación de Item
+	/**
+	 * Obtiene el nombre de la plataforma
+	 * @return Cadena de texto con el nombre de la plataforma
+	 */
+	Glib::ustring itemName(void)
+	{
+		return m_name;
+	}
+
+	/**
+	 * Obtiene el titulo de la plataforma
+	 * @return Cadena de texto con el titulo de la plataforma
+	 */
+	Glib::ustring itemTitle(void)
+	{
+		return m_title;
+	}
+
+	/**
+	 * Obtiene el directorio donde se almacenan los recursos de la plataforma
+	 * @return Directorio de recursos de la plataforma
+	 */
+	Glib::ustring itemResourcesDir(void)
+	{
+		return m_resources_dir;
+	}
 
 private:
-	Glib::ustring m_working_dir;	/**< Directorio de trabajo de la colección */
-	Glib::ustring m_name;			/**< Nombre de la colección */
-	Glib::ustring m_manufacturer;	/**< Fabricante de la colección */
+	/**
+	 * Se encarga de limpiar los almacenes internos de los datos
+	 */
+	void clean(void);
+
+	Glib::ustring m_library_dir;	/**< Directorio base de la librería del sistema */
+	Glib::ustring m_dir;			/**< Directorio de trabajo de la plataforma */
+	Glib::ustring m_resources_dir;	/**< Directorio donde residen los recursos de la plataforma */
+
+	Platform* m_next;				/**< Siguiente plataforma en la colección */
+	Platform* m_prev;				/**< Plataforma anterior en la colección */
+
+	Glib::ustring m_name;			/**< Nombre de la plataforma */
+	Glib::ustring m_title;			/**< Título de la plataforma */
+	Glib::ustring m_manufacturer;	/**< Fabricante de la plataforma */
 	Glib::ustring m_year;			/**< Año de lanzamiento */
 
-	Glib::ustring m_roms_dir;		/**< Directorio de roms de la colección */
-	Glib::ustring m_roms_extension;	/**< Extensión de las roms de la colección */
+	Glib::ustring m_roms_dir;		/**< Directorio de roms de la plataforma */
+	Glib::ustring m_roms_extension;	/**< Extensión de las roms de la plataforma */
 
 	Glib::ustring m_emu_binary;		/**< Path del binario del emulador */
 	Glib::ustring m_emu_params;		/**< Parámetros a pasar al emulador */
 	Glib::ustring m_pre_command;	/**< Comando a ejecutar como paso previo */
 	Glib::ustring m_post_command;	/**< Comando a ejecutar como paso posterior */
 	Glib::ustring m_run_dir;		/**< Directorio lanzamiento de la emulación */
+
+	Gamelist* m_master;
+	std::unordered_map<std::string, Gamelist* > m_lists_map;	/**< Mapa de listas para acceso rápido por nombre */
+	std::vector<Glib::ustring> m_lists_names;	/**< Vector con los nombres de las listas */
 };
 
 } // namespace bmonkey
 
-#endif // _COLLECTION_HPP_
+#endif // _PLATFORM_HPP_

@@ -38,7 +38,7 @@ public:
 	/**
 	 * Destructor virtual de la clase
 	 */
-	virtual ~Iterable(void){}
+	virtual ~Iterable(void) {}
 
 	/**
 	 * Obtiene un item a partir de su nombre

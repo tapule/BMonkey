@@ -19,7 +19,7 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "db_manager.hpp"
+#include "collection.hpp"
 #include <glibmm.h>
 #include <cassert>
 #include "../../utils/xml_reader.hpp"

@@ -19,32 +19,31 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _DB_MANAGER_HPP_
-#define _DB_MANAGER_HPP_
+#ifndef _DB_COLLECTION_HPP_
+#define _DB_COLLECTION_HPP_
 
 #include <glibmm/ustring.h>
 #include <unordered_map>
 #include <vector>
-#include "collection.hpp"
 #include "../../defines.hpp"
 
 namespace bmonkey{
 
 /**
  */
-class DbManager
+class Collection
 {
 public:
 	/**
 	 * Constructor parametrizado
 	 * @param working_dir Directorio de trabajo
 	 */
-	DbManager(const Glib::ustring& working_dir){}
+	Collection(const Glib::ustring& working_dir){}
 
 	/**
 	 * Destructor de la clase
 	 */
-	virtual ~DbManager(void){}
+	virtual ~Collection(void){}
 
 	/**
 	 * Carga el fichero principal con el listado de colecciones del sistema
@@ -139,4 +138,4 @@ private:
 
 } // namespace bmonkey
 
-#endif // _DB_MANAGER_HPP_
+#endif // _DB_COLLECTION_HPP_

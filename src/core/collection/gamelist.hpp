@@ -26,14 +26,11 @@
 #include <glibmm/regex.h>
 #include <unordered_map>
 #include "../iterable.hpp"
-#include "game_node.hpp"
-#include "game.hpp"
 #include "filter.hpp"
 #include "../../defines.hpp"
+#include "game_node.hpp"
 
 namespace bmonkey{
-
-class Platform;
 
 /**
  * Mantiene la información de una lista de juegos.
@@ -51,9 +48,10 @@ public:
 	/**
 	 * Constructor parametrizado
 	 * @param name Nombre de la lista de juegos
-	 * @param platform Plataforma padre a la que pertenece la lista
+	 * @param resources_dir Directorio de recursos de la plataforma padre
+	 * @param master Lista master para los juegos de esta lista
 	 */
-	Gamelist(const Glib::ustring& name, Platform* platform);
+	Gamelist(const Glib::ustring& name, Glib::ustring& resources_dir, Gamelist* master);
 
 	/**
 	 * Destructor de la clase
@@ -64,19 +62,28 @@ public:
 	 * Obtiene el nombre de la lista
 	 * @return Cadena de texto con el nombre de la lista
 	 */
-	inline Glib::ustring getName(void);
+	Glib::ustring getName(void)
+	{
+		return m_name;
+	}
 
 	/**
 	 * Indica si la lista es una lista Master
 	 * @return true si es una lista master, false en otro caso
 	 */
-	inline bool isMaster(void);
+	bool isMaster(void)
+	{
+		return m_is_master;
+	}
 
 	/**
 	 * Establece si la lista es una lista Master o no
 	 * @param is_master Nuevo valor para indicar el tipo de lista
 	 */
-	inline void setMaster(const bool is_master);
+	void setMaster(const bool is_master)
+	{
+		m_is_master = is_master;
+	}
 
 	/**
 	 * Carga los juegos de la lista desde su fichero
@@ -89,6 +96,28 @@ public:
 	 * @return true si se pudo realizar la operación, falso en otro caso
 	 */
 	bool saveGames(void);
+
+	/**
+	 * Aplica a la lista de juegos una pila de filtros
+	 * @param filters Pila de filtros a aplicar
+	 * @note La pila de filtros es un vector de tamaño Filter::COUNT donde cada
+	 * ínidice identifica al tipo de filtro a aplicar
+	 */
+	void filter(std::vector<Filter* >& filters);
+
+	/**
+	 * Indica si la lista está filtrada
+	 * @return true si la lista está filtrada, false en otro caso
+	 */
+	bool isFiltered(void)
+	{
+		return m_is_filtered;
+	}
+
+	/**
+	 * Establece todos los juegos como visibles
+	 */
+	void unfilter(void);
 
 	/**
 	 * Añade un nuevo juego a la lista si no existe ya
@@ -112,13 +141,6 @@ public:
 	Game* gameGet(const Glib::ustring& name);
 
 	/**
-	 * Elimina el juego indicado por su nodo
-	 * @param node Nodo del juego a eliminar
-	 * @return true si se pudo realizar la operación, false en otro caso
-	 */
-	bool gameDelete(GameNode* node);
-
-	/**
 	 * Elimina el juego indicado por su nombre de set
 	 * @param name Nombre del juego a eliminar
 	 * @return true si se pudo realizar la operación, false en otro caso
@@ -129,32 +151,19 @@ public:
 	 * Obtiene el número de juegos disponibles en la lista
 	 * @return Número de juegos de la lista
 	 */
-	inline int gameCount(void);
+	int gameCount(void)
+	{
+		return m_size;
+	}
 
 	/**
 	 * Obtiene el número de juegos disponibles en la lista filtrada
 	 * @return Número de juegos de la lista filtrada
 	 */
-	inline int gameCountFiltered(void);
-
-	/**
-	 * Aplica a la lista de juegos una pila de filtros
-	 * @param filters Pila de filtros a aplicar
-	 * @note La pila de filtros es un vector de tamaño Filter::COUNT donde cada
-	 * ínidice identifica al tipo de filtro a aplicar
-	 */
-	void filter(std::vector<Filter* >& filters);
-
-	/**
-	 * Indica si la lista está filtrada
-	 * @return true si la lista está filtrada, false en otro caso
-	 */
-	inline bool isFiltered(void);
-
-	/**
-	 * Establece todos los juegos como visibles
-	 */
-	void unfilter(void);
+	int gameCountFiltered(void)
+	{
+		return m_size_filtered;
+	}
 
 	// Implementación de Iterable
 	/**
@@ -242,10 +251,12 @@ private:
 	 */
 	void clean(void);
 
-	Platform* m_platform;				/**< Plataforma padre de la lista */
+	Glib::ustring& m_resources_dir;		/**< Referencia al directorio de recursos */
+	Gamelist* m_master;
 	Glib::ustring m_name;				/**< Nombre de la lista */
 	Glib::ustring m_file;				/**< Fichero donde guardar y cargar los juegos */
 	bool m_is_master;					/**< Indica si la lista es una lista master */
+	bool m_is_filtered;					/**< Indica si la lista estafiltrada */
 	int m_size;							/**< Número de elementos de la lista */
 	int m_size_filtered;				/**< Número de elementos de la lista filtrada */
 

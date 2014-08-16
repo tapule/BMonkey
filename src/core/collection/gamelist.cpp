@@ -24,13 +24,16 @@
 #include <cassert>
 #include <vector>
 #include "../../utils/xml_reader.hpp"
+#include "../../utils/xml_writer.hpp"
 
 namespace bmonkey{
 
-Gamelist::Gamelist(const Glib::ustring& name, Platform* platform):
-	m_platform(platform),
+Gamelist::Gamelist(const Glib::ustring& name, Glib::ustring& resources_dir, Gamelist* master):
+	m_resources_dir(resources_dir),
+	m_master(master),
 	m_name(name),
-	m_is_master(false),
+	m_is_master(master == NULL),
+	m_is_filtered(false),
 	m_size(0),
 	m_size_filtered(0),
 	m_first(NULL),
@@ -38,20 +41,17 @@ Gamelist::Gamelist(const Glib::ustring& name, Platform* platform):
 	m_first_filtered(NULL),
 	m_last_filtered(NULL)
 {
-	Glib::ustring::size_type i;
+	assert(!m_resources_dir.empty());
 
-	assert(platform);
-
-	if (m_name.empty())
+	if (m_is_master)
 	{
-		m_is_master = true;
 		// Construimos el fichero de la lista master
-		m_file = Glib::build_filename(m_platform->getDir(), BMONKEY_GAMES_FILE);
+		m_file = Glib::build_filename(m_resources_dir, BMONKEY_GAMES_FILE);
 	}
 	else
 	{
 		// Construimos el fichero de la lista
-		m_file = Glib::build_filename(m_platform->getDir(), PLATFORM_GAMELISTS_DIR);
+		m_file = Glib::build_filename(m_resources_dir, PLATFORM_GAMELISTS_DIR);
 		m_file = Glib::build_filename(m_file, m_name + ".xml");
 	}
 }
@@ -61,27 +61,13 @@ Gamelist::~Gamelist()
 	clean();
 }
 
-inline Glib::ustring Gamelist::getName(void)
-{
-	return m_name;
-}
-
-inline bool Gamelist::isMaster(void)
-{
-	return m_is_master;
-}
-
-inline void Gamelist::setMaster(const bool is_master)
-{
-	m_is_master = is_master;
-}
-
 bool Gamelist::loadGames(void)
 {
 	XmlReader xml;
 	XmlNode root;
 	XmlNode::iterator game_iter, field_iter;
 	Game* game = NULL;
+	Game game_tmp(m_resources_dir);
 	Glib::ustring name;
 
 	LOG_INFO("Gamelist: Loading games from file \"" << m_file << "\"...");
@@ -99,24 +85,26 @@ bool Gamelist::loadGames(void)
 				{
 					continue;
 				}
-				game = new game();
-				game_iter->getAttribute("name", game->name);
 				if (isMaster())
 				{
-					game_iter->getAttribute("type", game->type);
+					game = new Game(m_resources_dir);
 					game_iter->getAttribute("rating", game->rating);
 					game_iter->getAttribute("timesplayed", game->times_played);
 					game_iter->getAttribute("favorite", game->favorite);
 					for (field_iter = game_iter->begin(); field_iter != game_iter->end(); ++field_iter)
 					{
 						name = field_iter->getName();
-						if (name == "crc")
-						{
-							field_iter->getContent(game->crc);
-						}
-						else if (name == "title")
+						if (name == "title")
 						{
 							field_iter->getContent(game->title);
+						}
+						else if (name == "cloneof")
+						{
+							field_iter->getContent(game->cloneof);
+						}
+						else if (name == "crc")
+						{
+							field_iter->getContent(game->crc);
 						}
 						else if (name == "manufacturer")
 						{
@@ -126,21 +114,23 @@ bool Gamelist::loadGames(void)
 						{
 							field_iter->getContent(game->year);
 						}
+						else if (name == "genre")
+						{
+							field_iter->getContent(game->genre);
+						}
 						else if (name == "players")
 						{
+							field_iter->getAttribute("simultaneous", game->simultaneous);
 							field_iter->getContent(game->players);
-						}
-						else if (name == "simultaneous")
-						{
-							field_iter->getContent(game->simultaneous);
 						}
 					}
 				}
-				gameAdd(game);
-				if (!isMaster())
+				else
 				{
-					delete game;
+					game = &game_tmp;
 				}
+				game_iter->getAttribute("name", game->name);
+				gameAdd(game);
 			}
 			xml.close();
 			return true;
@@ -172,225 +162,48 @@ bool Gamelist::saveGames(void)
 	if (m_size)
 	{
 		// Ponemos un nodo temporal como último
-		m_last->m_next = &node_tmp;
+		m_last->setNext(&node_tmp);
 		node = m_first;
 		while (node != &node_tmp)
 		{
-			game = node->gameGet();
+			game = node->getGame();
 			xml.startElement("game");
 			xml.writeAttribute("name", game->name);
 			if (isMaster())
 			{
-				xml.writeAttribute("type", game->type);
 				xml.writeAttribute("rating", game->rating);
 				xml.writeAttribute("timesplayed", game->times_played);
 				xml.writeAttribute("favorite", game->favorite);
-				xml.startElement("crc");
-				xml.writeContent(game->crc);
-				xml.endElement();
 				xml.startElement("title");
-				xml.writeContent(game->title);
+					xml.writeContent(game->title);
+				xml.endElement();
+				xml.startElement("cloneof");
+					xml.writeContent(game->cloneof);
+				xml.endElement();
+				xml.startElement("crc");
+					xml.writeContent(game->crc);
 				xml.endElement();
 				xml.startElement("manufacturer");
-				xml.writeContent(game->manufacturer);
+					xml.writeContent(game->manufacturer);
 				xml.endElement();
 				xml.startElement("year");
-				xml.writeContent(game->year);
+					xml.writeContent(game->year);
+				xml.endElement();
+				xml.startElement("genre");
+					xml.writeContent(game->genre);
 				xml.endElement();
 				xml.startElement("players");
-				xml.writeContent(game->players);
-				xml.endElement();
-				xml.startElement("simultaneous");
-				xml.writeContent(game->simultaneous);
+					xml.writeAttribute("simultaneous", game->simultaneous);
+					xml.writeContent(game->players);
 				xml.endElement();
 			}
 			xml.endElement();
-			node = node->m_next;
+			node = node->getNext();
 		}
 	}
 	xml.endElement();
 	xml.close();
 	return true;
-}
-
-bool Gamelist::gameAdd(Game* game)
-{
-	Game* master_game = game;
-	GameNode* node = NULL;
-
-	assert(game);
-	assert(!game->name.empty());
-
-	// Forzamos el name en lowercase
-	game->name = game->name.lowercase();
-
-	// Comprobamos si el juego existe antes de insertar
-	if (gameGet(game->name))
-	{
-		return false;
-	}
-	// Buscamos el juego original en la master para enlazarlo
-	if (!isMaster())
-	{
-		master_game = m_platform->gamelistGet()->gameGet(game->name);
-		if (!master_game)
-		{
-			return false;
-		}
-	}
-
-	// Agregamos a la lista de nodos
-	node = new GameNode();
-	node->gameSet(master_game);
-	if (m_size == 0)
-	{
-		node->m_prev = node;
-		node->m_next = node;
-		m_first = node;
-		m_last = node;
-	}
-	else
-	{
-		node->m_prev = m_last;
-		node->m_next = m_last->m_next;
-		m_last->m_next = node;
-		m_first->m_prev = node;
-		m_last = node;
-	}
-
-	// Agregamos al mapa
-	m_games_map[master_game->name.raw()] = node;
-	++m_size;
-
-	return true;
-}
-
-Game* Gamelist::gameGet(Item* item)
-{
-	GameNode* node = NULL;
-
-	assert(item);
-
-	node = static_cast<GameNode* >(item);
-
-	return node->gameGet();
-}
-
-Game* Gamelist::gameGet(const Glib::ustring& name)
-{
-	GameNode* node;
-
-	assert(!name.empty());
-
-	// Buscamos el nodo
-	node = nodeGet(name);
-	if (node)
-	{
-		return node->gameGet();
-	}
-	return NULL;
-}
-
-bool Gamelist::gameDelete(GameNode* node)
-{
-	std::unordered_map<std::string, GameNode*>::iterator iter;
-	std::vector<Glib::ustring> gamelists;
-	std::vector<Glib::ustring>::iterator list_iter;
-
-	assert(node);
-	assert(m_size);
-
-	// Lo quitamos de la lista
-	if (m_size == 1)
-	{
-		m_first = NULL;
-		m_last = NULL;
-		m_first_filtered = NULL;
-		m_last_filtered = NULL;
-		m_size = 0;
-		m_size_filtered = 0;
-	}
-	else
-	{
-		node->m_next->m_prev = node->m_prev;
-		node->m_prev->m_next = node->m_next;
-		if (m_last == node)
-		{
-			m_last = node->m_prev;
-		}
-		if (m_first == node)
-		{
-			m_first = node->m_next;
-		}
-		--m_size;
-
-		// En teoría si la lista está filtrada, solamente recibiremos para
-		// eliminar elementos filtrados, por lo que no es necesario comprobar
-		// cada puntero al eliminar.
-		if (isFiltered())
-		{
-			node->m_next_filtered->m_prev_filtered = node->m_prev_filtered;
-			node->m_prev_filtered->m_next_filtered = node->m_next_filtered;
-			if (m_last_filtered == node)
-			{
-				m_last_filtered = node->m_prev_filtered;
-			}
-			if (m_first_filtered == node)
-			{
-				m_first_filtered = node->m_next_filtered;
-			}
-			--m_size_filtered;
-		}
-	}
-
-	// Lo quitamos del mapa
-	iter = m_games_map.find(node->getName());
-	if (iter != m_games_map.end())
-	{
-		m_games_map.erase(iter);
-	}
-
-	// Si la lista es master, forzamos la eliminación en el resto de listas y borramos el juego real
-	if (isMaster())
-	{
-		gamelists = m_platform->getGamelists();
-		for (list_iter = gamelists.begin(); list_iter != gamelists.end(); ++list_iter)
-		{
-			m_platform->gamelistGet(*list_iter)->gameDelete(node->getName());
-		}
-		delete node->gameGet();
-	}
-
-	delete node;
-
-	return true;
-}
-
-bool Gamelist::gameDelete(const Glib::ustring& name)
-{
-	GameNode* node = NULL;
-
-	assert(!name.empty());
-
-	node = nodeGet(name);
-	if (node)
-	{
-		return gameDelete(node);
-	}
-	else
-	{
-		return false;
-	}
-}
-
-inline int Gamelist::gameCount(void)
-{
-	return m_size;
-}
-
-inline int Gamelist::gameCountFiltered(void)
-{
-	return m_size_filtered;
 }
 
 void Gamelist::filter(std::vector<Filter* >& filters)
@@ -399,6 +212,8 @@ void Gamelist::filter(std::vector<Filter* >& filters)
 	Glib::ustring search;
 	GameNode node_tmp;
 	GameNode* node = &node_tmp;
+
+	m_is_filtered = true;
 
 	// Si no hay elementos no se filtra
 	if (m_size == 0)
@@ -431,25 +246,25 @@ void Gamelist::filter(std::vector<Filter* >& filters)
 	}
 
 	// Creamos un nodo anterior al primero para poder hacer bucles más simples
-	node->m_next = m_first;
+	node->setNext(m_first);
 	do
 	{
-		node = node->m_next;
+		node = node->getNext();
 		if (applyFilters(node, filters))
 		{
 			if (m_size_filtered == 0)
 			{
-				node->m_prev_filtered = node;
-				node->m_next_filtered = node;
+				node->setPrevFiltered(node);
+				node->setNextFiltered(node);
 				m_first_filtered = node;
 				m_last_filtered = node;
 			}
 			else
 			{
-				node->m_prev_filtered = m_last_filtered;
-				node->m_next_filtered = m_last_filtered->m_next_filtered;
-				m_last_filtered->m_next_filtered = node;
-				m_first_filtered->m_prev_filtered = node;
+				node->setPrevFiltered(m_last_filtered);
+				node->setNextFiltered(m_last_filtered->getNextFiltered());
+				m_last_filtered->setNextFiltered(node);
+				m_first_filtered->setPrevFiltered(node);
 				m_last_filtered = node;
 			}
 			++m_size_filtered;
@@ -457,15 +272,354 @@ void Gamelist::filter(std::vector<Filter* >& filters)
 	} while (node != m_last);
 }
 
+void Gamelist::unfilter(void)
+{
+	m_is_filtered = false;
+	m_size_filtered = 0;
+	m_first_filtered = NULL;
+	m_last_filtered = NULL;
+}
+
+bool Gamelist::gameAdd(Game* game)
+{
+	Game* master_game = game;
+	GameNode* node = NULL;
+
+	assert(game);
+	assert(!game->name.empty());
+
+	// Forzamos el name en lowercase
+	game->name = game->name.lowercase();
+
+	// Comprobamos si el juego existe antes de insertar
+	if (gameGet(game->name))
+	{
+		return false;
+	}
+	// Buscamos el juego original en la master para enlazarlo, si no existe, descartamos
+	if (!isMaster())
+	{
+		master_game = m_master->gameGet(game->name);
+		if (!master_game)
+		{
+			return false;
+		}
+	}
+
+	// Agregamos a la lista de nodos
+	node = new GameNode();
+	node->setGame(master_game);
+	if (m_size == 0)
+	{
+		node->setPrev(node);
+		node->setNext(node);
+		m_first = node;
+		m_last = node;
+	}
+	else
+	{
+		node->setPrev(m_last);
+		node->setNext(m_last->getNext());
+		m_last->setNext(node);
+		m_first->setPrev(node);
+		m_last = node;
+	}
+
+	// Agregamos al mapa
+	m_games_map[master_game->name] = node;
+	++m_size;
+
+	return true;
+}
+
+Game* Gamelist::gameGet(Item* item)
+{
+	GameNode* node = NULL;
+
+	assert(item);
+
+	node = static_cast<GameNode* >(item);
+
+	return node->getGame();
+}
+
+Game* Gamelist::gameGet(const Glib::ustring& name)
+{
+	GameNode* node;
+
+	assert(!name.empty());
+
+	// Buscamos el nodo
+	node = nodeGet(name);
+	if (node)
+	{
+		return node->getGame();
+	}
+	return NULL;
+}
+
+bool Gamelist::gameDelete(const Glib::ustring& name)
+{
+	GameNode* node = NULL;
+	std::unordered_map<std::string, GameNode*>::iterator iter;
+	std::vector<Glib::ustring> gamelists;
+	std::vector<Glib::ustring>::iterator list_iter;
+
+	assert(!name.empty());
+
+	// Lo buscamos en el mapa
+	iter = m_games_map.find(name.lowercase());
+	if (iter != m_games_map.end())
+	{
+		node = iter->second;
+	}
+	if (node)
+	{
+		// Lo quitamos de la lista
+		if (m_size == 1)
+		{
+			m_first = NULL;
+			m_last = NULL;
+			m_first_filtered = NULL;
+			m_last_filtered = NULL;
+			m_size = 0;
+			m_size_filtered = 0;
+		}
+		else
+		{
+			node->getNext()->setPrev(node->getPrev());
+			node->getPrev()->setNext(node->getNext());
+			if (m_last == node)
+			{
+				m_last = node->getPrev();
+			}
+			if (m_first == node)
+			{
+				m_first = node->getNext();
+			}
+			--m_size;
+
+			// En teoría si la lista está filtrada, solamente recibiremos para
+			// eliminar elementos filtrados, por lo que no es necesario comprobar
+			// cada puntero al eliminar.
+			if (isFiltered())
+			{
+				node->getNextFiltered()->setPrevFiltered(node->getPrevFiltered());
+				node->getPrevFiltered()->setNextFiltered(node->getNextFiltered());
+				if (m_last_filtered == node)
+				{
+					m_last_filtered = node->getPrevFiltered();
+				}
+				if (m_first_filtered == node)
+				{
+					m_first_filtered = node->getNextFiltered();
+				}
+				--m_size_filtered;
+			}
+		}
+
+		// El iterado ya lo tenemos, lo quitamos del mapa
+		m_games_map.erase(iter);
+
+		// Si la lista es master, borramos el juego real
+		if (isMaster())
+		{
+			delete node->getGame();
+		}
+		delete node;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+Item* Gamelist::itemGet(const Glib::ustring& name)
+{
+	return nodeGet(name);
+}
+
+Item* Gamelist::itemFirst(void)
+{
+	if (isFiltered())
+	{
+		return m_first_filtered;
+	}
+	else
+	{
+		return m_first;
+	}
+}
+
+Item* Gamelist::itemLast(void)
+{
+	if (isFiltered())
+	{
+		return m_last_filtered;
+	}
+	else
+	{
+		return m_last;
+	}
+}
+
+Item* Gamelist::itemNext(Item* item)
+{
+	GameNode* node = NULL;
+
+	assert(item);
+
+	node = static_cast<GameNode* >(item);
+	if (isFiltered())
+	{
+		return node->getNextFiltered();
+	}
+	else
+	{
+		return node->getNext();
+	}
+}
+
+Item* Gamelist::itemPrev(Item* item)
+{
+	GameNode* node = NULL;
+
+	assert(item);
+
+	node = static_cast<GameNode* >(item);
+	if (isFiltered())
+	{
+		return node->getPrevFiltered();
+	}
+	else
+	{
+		return node->getPrev();
+	}
+}
+
+Item* Gamelist::itemForward(Item* item, const int count)
+{
+	GameNode* node = NULL;
+	int i;
+
+	assert(item);
+
+	node = static_cast<GameNode* >(item);
+	if (isFiltered())
+	{
+		for (i = 0; i< count; ++i)
+		{
+			node = node->getNextFiltered();
+		}
+	}
+	else
+	{
+		for (i = 0; i< count; ++i)
+		{
+			node = node->getNext();
+		}
+	}
+	// CHECKME: Devolver nulo si se llega al mismo nodo???, así se podría evitar saltos del selector que llevan al mismo nodo
+	return node;
+}
+
+Item* Gamelist::itemBackward(Item* item, const int count)
+{
+	GameNode* node = NULL;
+	int i;
+
+	assert(item);
+
+	node = static_cast<GameNode* >(item);
+	if (isFiltered())
+	{
+		for (i = 0; i< count; ++i)
+		{
+			node = node->getPrevFiltered();
+		}
+	}
+	else
+	{
+		for (i = 0; i< count; ++i)
+		{
+			node = node->getPrev();
+		}
+	}
+	// CHECKME: Devolver nulo si se llega al mismo nodo???, así se podría evitar saltos del selector que llevan al mismo nodo
+	return node;
+}
+
+Item* Gamelist::itemLetterForward(Item* item)
+{
+	GameNode* node = NULL;
+	GameNode* node_pos = NULL;
+	Glib::ustring title;
+
+	assert(item);
+
+	node = static_cast<GameNode* >(item);
+	title = node->itemTitle().substr(0,1).lowercase();
+	LOG_DEBUG("T: " << title);
+	if (isFiltered())
+	{
+		node_pos = node->getNextFiltered();
+		while ((node_pos != node) && (title.compare(node_pos->itemTitle().substr(0,1).lowercase()) == 0))
+		{
+			node_pos = node_pos->getNextFiltered();
+		}
+	}
+	else
+	{
+		node_pos = node->getNext();
+		LOG_DEBUG("T2: " << node_pos->itemTitle().substr(0,1).lowercase());
+		while ((node_pos != node) && (title.compare(node_pos->itemTitle().substr(0,1).lowercase()) == 0))
+		{
+			node_pos = node_pos->getNext();
+		}
+	}
+	// CHECKME: Devolver nulo si node = node_pos???, así se podría evitar saltos del selector que llevan al mismo nodo
+	return node_pos;
+}
+
+Item* Gamelist::itemLetterBackward(Item* item)
+{
+	GameNode* node = NULL;
+	GameNode* node_pos = NULL;
+	Glib::ustring title;
+
+	assert(item);
+
+	node = static_cast<GameNode* >(item);
+	title = node->itemTitle().substr(0,1).lowercase();
+	if (isFiltered())
+	{
+		node_pos = node->getPrevFiltered();
+		while ((node_pos != node) && (title.compare(node_pos->itemTitle().substr(0,1).lowercase()) == 0))
+		{
+			node_pos = node_pos->getPrevFiltered();
+		}
+	}
+	else
+	{
+		node_pos = node->getPrev();
+		while ((node_pos != node) && (title.compare(node_pos->itemTitle().substr(0,1).lowercase()) == 0))
+		{
+			node_pos = node_pos->getPrev();
+		}
+	}
+	// CHECKME: Devolver nulo si node = node_pos???, así se podría evitar saltos del selector que llevan al mismo nodo
+	return node_pos;
+}
+
 bool Gamelist::applyFilters(GameNode* node, std::vector<Filter* >& filters)
 {
-	int i;
+	int i, type;
 	Game* game;
-	bool visible = true;
 
 	assert(node);
 
-	game = node->gameGet();
+	game = node->getGame();
 
 	for (i = 0; i < Filter::COUNT; ++i)
 	{
@@ -486,7 +640,9 @@ bool Gamelist::applyFilters(GameNode* node, std::vector<Filter* >& filters)
 				}
 				break;
 			case Filter::TYPE:
-				if (game->type != filters[i]->value)
+				// 0 = Original, 1 = clon
+				type = game->cloneof.empty() ? 0 : 1;
+				if (type != filters[i]->value)
 				{
 					return false;
 				}
@@ -528,13 +684,14 @@ bool Gamelist::applyFilters(GameNode* node, std::vector<Filter* >& filters)
 				}
 				break;
 			case Filter::LETTER:
-				if (game->title.compare(0, 1, filters[i]->value_txt) != 0)
+				if (game->title.substr(0,1).lowercase().compare(filters[i]->value_txt.substr(0,1).lowercase()) != 0)
 				{
 					return false;
 				}
 				break;
 			case Filter::TIMES_PLAYED:
-				if ((game->times_played < 2 && game->times_played != filters[i]->value) || (filters[i]->value == 2 && game->times_played < 2))
+				// 0 = 0 partidas, 1 = 1 partida, 2 = más de 1
+				if ((filters[i]->value == 0 and game->times_played != 0) ||	(filters[i]->value == 1 and game->times_played != 1) ||	(filters[i]->value == 2 and game->times_played < 2))
 				{
 					return false;
 				}
@@ -543,193 +700,6 @@ bool Gamelist::applyFilters(GameNode* node, std::vector<Filter* >& filters)
 		}
 	}
 	return true;
-}
-
-inline bool Gamelist::isFiltered(void)
-{
-	return (m_size_filtered > 0);
-}
-
-void Gamelist::unfilter(void)
-{
-	m_size_filtered = 0;
-	m_first_filtered = NULL;
-	m_last_filtered = NULL;
-}
-
-Item* Gamelist::itemGet(const Glib::ustring& name)
-{
-	return nodeGet(name);
-}
-
-Item* Gamelist::itemFirst(void)
-{
-	if (isFiltered())
-	{
-		return m_first_filtered;
-	}
-	else
-	{
-		return m_first;
-	}
-}
-
-Item* Gamelist::itemLast(void)
-{
-	if (isFiltered())
-	{
-		return m_last_filtered;
-	}
-	else
-	{
-		return m_last;
-	}
-}
-
-Item* Gamelist::itemNext(Item* item)
-{
-	GameNode* node = NULL;
-
-	assert(item);
-
-	node = static_cast<GameNode* >(item);
-	if (isFiltered())
-	{
-		return node->m_next_filtered;
-	}
-	else
-	{
-		return node->m_next;
-	}
-}
-
-Item* Gamelist::itemPrev(Item* item)
-{
-	GameNode* node = NULL;
-
-	assert(item);
-
-	node = static_cast<GameNode* >(item);
-	if (isFiltered())
-	{
-		return node->m_prev_filtered;
-	}
-	else
-	{
-		return node->m_prev;
-	}
-}
-
-Item* Gamelist::itemForward(Item* item, const int count)
-{
-	GameNode* node = NULL;
-	int i;
-
-	assert(item);
-
-	node = static_cast<GameNode* >(item);
-	if (isFiltered())
-	{
-		for (i = 0; i< count; ++i)
-		{
-			node = node->m_next_filtered;
-		}
-	}
-	else
-	{
-		for (i = 0; i< count; ++i)
-		{
-			node = node->m_next;
-		}
-	}
-	// CHECKME: Devolver nulo si se llega al mismo nodo???, así se podría evitar saltos del selector que llevan al mismo nodo
-	return node;
-}
-
-Item* Gamelist::itemBackward(Item* item, const int count)
-{
-	GameNode* node = NULL;
-	int i;
-
-	assert(item);
-
-	node = static_cast<GameNode* >(item);
-	if (isFiltered())
-	{
-		for (i = 0; i< count; ++i)
-		{
-			node = node->m_prev_filtered;
-		}
-	}
-	else
-	{
-		for (i = 0; i< count; ++i)
-		{
-			node = node->m_prev;
-		}
-	}
-	// CHECKME: Devolver nulo si se llega al mismo nodo???, así se podría evitar saltos del selector que llevan al mismo nodo
-	return node;
-}
-
-Item* Gamelist::itemLetterForward(Item* item)
-{
-	GameNode* node = NULL;
-	GameNode* node_pos = NULL;
-	Glib::ustring title;
-
-	assert(item);
-
-	node = static_cast<GameNode* >(item);
-	title = node->getTitle().substr(0,1).lowercase();
-	if (isFiltered())
-	{
-		node_pos = node->m_next_filtered;
-		while ((node_pos != node) && (title.compare(node_pos->getTitle().substr(0,1).lowercase()) == 0))
-		{
-			node_pos = node_pos->m_next_filtered;
-		}
-	}
-	else
-	{
-		node_pos = node->m_next;
-		while ((node_pos != node) && (title.compare(node_pos->getTitle().substr(0,1).lowercase()) == 0))
-		{
-			node_pos = node_pos->m_next;
-		}
-	}
-	// CHECKME: Devolver nulo si node = node_pos???, así se podría evitar saltos del selector que llevan al mismo nodo
-	return node_pos;
-}
-
-Item* Gamelist::itemLetterBackward(Item* item)
-{
-	GameNode* node = NULL;
-	GameNode* node_pos = NULL;
-	Glib::ustring title;
-
-	assert(item);
-
-	node = static_cast<GameNode* >(item);
-	title = node->getTitle().substr(0,1).lowercase();
-	if (isFiltered())
-	{
-		node_pos = node->m_prev_filtered;
-		while ((node_pos != node) && (title.compare(node_pos->getTitle().substr(0,1).lowercase()) == 0))
-		{
-			node_pos = node_pos->m_prev_filtered;
-		}
-	}
-	else
-	{
-		node_pos = node->m_prev;
-		while ((node_pos != node) && (title.compare(node_pos->getTitle().substr(0,1).lowercase()) == 0))
-		{
-			node_pos = node_pos->m_prev;
-		}
-	}
-	// CHECKME: Devolver nulo si node = node_pos???, así se podría evitar saltos del selector que llevan al mismo nodo
-	return node_pos;
 }
 
 GameNode* Gamelist::nodeGet(const Glib::ustring& name)
@@ -756,19 +726,20 @@ void Gamelist::clean(void)
 	if (m_size)
 	{
 		// Ponemos un nodo temporal como último
-		m_last->m_next = &node_tmp;
+		m_last->setNext(&node_tmp);
 		node = m_first;
 		while (node != &node_tmp)
 		{
 			node_pos = node;
-			node = node->m_next;
+			node = node->getNext();
 			if (isMaster())
 			{
-				delete (node_pos->gameGet());
+				delete (node_pos->getGame());
 			}
 			delete node_pos;
 		}
 		m_games_map.clear();
+		m_is_filtered = false;
 		m_size = 0;
 		m_size_filtered = 0;
 		m_first = NULL;

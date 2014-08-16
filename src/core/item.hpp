@@ -40,25 +40,25 @@ public:
 	/**
 	 * Destructor virtual de la clase
 	 */
-	virtual ~Item(void){}
+	virtual ~Item(void) {}
 
 	/**
 	 * Obtiene el nombre del item
 	 * @return Cadena de texto con el nombre del item
 	 */
-	virtual Glib::ustring getName(void) = 0;
+	virtual Glib::ustring itemName(void) = 0;
 
 	/**
 	 * Obtiene el titulo del item
 	 * @return Cadena de texto con el titulo del item
 	 */
-	virtual Glib::ustring getTitle(void) = 0;
+	virtual Glib::ustring itemTitle(void) = 0;
 
 	/**
 	 * Obtiene el directorio donde se almacenan los recursos del item
 	 * @return Directorio de recursos del item
 	 */
-	virtual Glib::ustring getResourcesDir(void) = 0;
+	virtual Glib::ustring itemResourcesDir(void) = 0;
 };
 
 } // namespace bmonkey
