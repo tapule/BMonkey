@@ -101,6 +101,15 @@ public:
 	}
 
 	/**
+	 * Obtiene el nombre de la plataforma
+	 * @return Nombre de la plataforma
+	 */
+	Glib::ustring getName(void)
+	{
+		return m_name;
+	}
+
+	/**
 	 * Obtiene el título de la plataforma
 	 * @return Título de la plataforma
 	 */

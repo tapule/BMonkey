@@ -19,123 +19,204 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _DB_COLLECTION_HPP_
-#define _DB_COLLECTION_HPP_
+#ifndef _COLLECTION_HPP_
+#define _COLLECTION_HPP_
 
 #include <glibmm/ustring.h>
 #include <unordered_map>
 #include <vector>
+#include "../iterable.hpp"
 #include "../../defines.hpp"
+#include "platform.hpp"
 
 namespace bmonkey{
 
 /**
+ * Mantiene la información completa de la colección de juegos del usuario.
+ *
+ * La Colección actua como contenedor para las Plataformas que el usuario tiene
+ * configuradas.
  */
-class Collection
+class Collection: public Iterable
 {
 public:
 	/**
 	 * Constructor parametrizado
 	 * @param working_dir Directorio de trabajo
 	 */
-	Collection(const Glib::ustring& working_dir){}
+	Collection(const Glib::ustring& working_dir);
 
 	/**
 	 * Destructor de la clase
 	 */
-	virtual ~Collection(void){}
+	virtual ~Collection(void);
 
 	/**
-	 * Carga el fichero principal con el listado de colecciones del sistema
+	 * Carga el fichero principal con el listado de plataformas del usuario
 	 * @return true si se pudo realizar la operación, falso en otro caso
-	 * @note No se permiten coleciones duplicadas. Si se localizan se descartan
+	 * @note No se permiten plataformas duplicadas. Si se localizan se descartan
 	 */
-	bool loadConfig(void){}
+	bool loadConfig(void);
 
 	/**
-	 * Carga las colecciones del sistema
-	 * @return true si se pudo realizar la operación, falso en otro caso
-	 */
-	bool loadCollections(void){}
-
-	/**
-	 * Guarda el fichero principal con el listado de colecciones del sistema
+	 * Carga las plataformas del usuario
 	 * @return true si se pudo realizar la operación, falso en otro caso
 	 */
-	bool saveConfig(void){}
+	bool loadPlatforms(void);
 
 	/**
-	 * Guarda los colecciones presentes en el sistema
+	 * Guarda el fichero principal con el listado de plataformas del usuario
 	 * @return true si se pudo realizar la operación, falso en otro caso
 	 */
-	bool saveCollections(void){}
+	bool saveConfig(void);
 
 	/**
-	 * Obtiene una colección a partir de su identificador
-	 * @param id Identificador de la colección requerida
-	 * @return Colección buscada o Null si no se puede localizar
+	 * Guarda las plataformas del usuario
+	 * @return true si se pudo realizar la operación, falso en otro caso
 	 */
-	Collection* collectiontGet(int id){}
+	bool savePlatforms(void);
 
 	/**
-	 * Busca una colección mediiante su nombre
-	 * @param name Nombre de la colección buscada
-	 * @return Colección buscada o Null si no se pudo localizar
+	 * Obtiene la lista de fabricantes de los juegos
+	 * @return Vector de fabricantes de los juegos
 	 */
-	Collection* collectionFind(const Glib::ustring& name){}
+	std::vector<Glib::ustring>& getManufacturers(void)
+	{
+		return m_manufactureres;
+	}
 
 	/**
-	 * Crea una nueva colección
-	 * @return Identificador de la nueva colección o -1 si no se pudo crear
-	 * @note Permite crear colecciones que aun no han sido cargadas
+	 * Obtiene la lista de géneros de los juegos
+	 * @return Vector de géneros de los juegos
 	 */
-	int collectionCreate(const Glib::ustring& name){}
+	std::vector<Glib::ustring>& getGenres(void)
+	{
+		return m_genres;
+	}
 
 	/**
-	 * Elimina la colección indicada por su id
-	 * @param id Identificador de la colección a eliminar
-	 * @return true si se pudo realizar la operación, false en otro caso
+	 * Obtiene una plataforma a partir de un item
+	 * @param item Item a partir del cual obtener la plataforma
+	 * @return Plataforma buscada o Null si no se puede localizar
 	 */
-	bool collectionDelete(int id){}
+	Platform* platformGet(Item* item);
 
 	/**
-	 * Obtiene el id de la primera colección
-	 * @return Identificador de la colección o -1 si no se pudo localizar
+	 * Obtiene una plataforma a partir de su nombre
+	 * @param name Nombre de la plataforma buscada
+	 * @return Plataforma buscada o Null si no se puede localizar
 	 */
-	int collectionFirst(void){}
+	Platform* platformGet(const Glib::ustring& name);
 
 	/**
-	 * Obtiene el id de la siguiente colección a una dada por su id
-	 * @param id Identificado de la colección de la que obtener su siguiente
-	 * @return id de la siguiente colección o -1 si no se pudo localizar
-	 * @note El recorrido de las colecciones se hace de manera circular
+	 * Crea una nueva plataforma en la colección o la devuelve si existe
+	 * @param name Nombre de la nueva plataforma
+	 * @return Nueva plataforma creada o encontrada si existe, null si no se pudo crear
 	 */
-	int collectionNext(int id){}
+	Platform* platformCreate(const Glib::ustring& name);
 
 	/**
-	 * Obtiene el id de la colección anterior a una dada por su id
-	 * @param id Identificado de la colección de la que obtener la anterior
-	 * @return id de la colección anterior o -1 si no se pudo localizar
-	 * @note El recorrido de las colecciones se hace de manera circular
+	 * Obtiene el número de plataformas disponibles en la colección
+	 * @return Número de plataformas en la colección
 	 */
-	int collectionPrevious(int id){}
+	int platformCount(void)
+	{
+		return m_size;
+	}
+
+	// Implementación de Iterable
+	/**
+	 * Obtiene un item a partir de su nombre
+	 * @param name Nombre del item a buscar
+	 * @return Item buscado o null si no se localizó
+	 */
+	Item* itemGet(const Glib::ustring& name);
 
 	/**
-	 * Obtiene el id de la última colección
-	 * @return Identificador de la última colección o -1 si no se pudo localizar
+	 * Obtiene el primer item del almacen
+	 * @return Item buscado o null si no se localizó
 	 */
-	int collectionLast(void){}
+	Item* itemFirst(void);
 
 	/**
-	 * Obtiene el número de listas de colecciones en el sistema
-	 * @return Número de colecciones del sistema
+	 * Obtiene el último item del almacen
+	 * @return Item buscado o null si no se localizó
 	 */
-	inline int collectionCount(void){}
+	Item* itemLast(void);
+
+	/**
+	 * Obtiene el siguiente item de uno dado
+	 * @param item Elemento inicial del que buscar su siguiente
+	 * @return Item buscado o null si no se localizó
+	 */
+	Item* itemNext(Item* item);
+
+	/**
+	 * Obtiene el item anterior de uno dado
+	 * @param item Elemento inicial del que buscar su anterior
+	 * @return Item buscado o null si no se localizó
+	 */
+	Item* itemPrev(Item* item);
+
+	/**
+	 * Obtiene el item a una distancia por delante, de otro item
+	 * @param item Elemento inicial
+	 * @param count Distancia adelante a la que moverse
+	 * @return Item buscado o null si no se localizó
+	 */
+	Item* itemForward(Item* item, const int count);
+
+	/**
+	 * Obtiene el item a una distancia por detrás, de otro item
+ 	 * @param item Elemento inicial
+	 * @param count Distancia atrás a la que moverse
+ 	 * @return Item buscado o null si no se localizó
+	 */
+	Item* itemBackward(Item* item, const int count);
+
+	/**
+	 * Obtiene el item cuyo título comienza con la siguiente inicial a uno dado
+ 	 * @param item Elemento inicial
+	 * @return Item buscado o null si no se localizó
+	 */
+	Item* itemLetterForward(Item* item);
+
+	/**
+	 * Obtiene el item cuyo título comienza con la inicial anterior a uno dado
+ 	 * @param item Elemento inicial
+	 * @return Item buscado o null si no se localizó
+	 */
+	Item* itemLetterBackward(Item* item);
 
 private:
-	Glib::ustring m_working_dir;	/**< Directorio de trabajo del gestor */
+	/**
+	 * Añade una nueva plataforma a la lista si no existe ya
+	 * @param platform Plataforma a añadir a la lista
+	 * @return true si se pudo realizar la operación, false en otro caso
+	 */
+	bool platformAdd(Platform* platform);
+
+
+	/**
+	 * Genera las tablas de Fabricantes y Géneros a partir de los juegos
+	 */
+	void generateDinamicTables(void);
+
+	/**
+	 * Se encarga de limpiar los almacenes internos de los datos
+	 */
+	void clean(void);
+
+	Glib::ustring m_working_dir;	/**< Directorio de trabajo principal */
+	int m_size;						/**< Número de plataformas en la colección */
+	Platform* m_first;				/**< Primera plataforma de la lista */
+	Platform* m_last;				/**< Último plataforma de la lista */
+
+	std::vector<Glib::ustring> m_manufactureres;	/**< Tabla de fabricantes */
+	std::vector<Glib::ustring> m_genres;			/**< Tabla de géneros */
+	std::unordered_map<std::string, Platform* > m_platforms_map;	/**< Mapa de plataformas para acceso rápido por nombre */
 };
 
 } // namespace bmonkey
 
-#endif // _DB_COLLECTION_HPP_
+#endif // _COLLECTION_HPP_

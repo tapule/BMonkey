@@ -27,7 +27,7 @@
 #include <glibmm/miscutils.h>
 #include <glibmm/fileutils.h>
 #include "../utils/utils.hpp"
-#include "../core/collection/platform.hpp"
+#include "../core/collection/collection.hpp"
 
 
 namespace bmonkey{
@@ -157,116 +157,79 @@ int BMonkeyApp::run(int argc, char** argv)
 	*******************************************************/
 	LOG_INFO("BMonkey: Running main_sec...");
 
-	Platform p("Plataforma01", Glib::build_filename(m_working_dir, USER_LIBRARY_DIR));
-	int i, j;
+	// Platform p("Plataforma01", Glib::build_filename(m_working_dir, USER_LIBRARY_DIR));
+	int i, j, k;
+	Collection* c;
+	Platform* p;
 	Game* g;
 	Gamelist* l;
 	Item* it;
 	std::vector<Filter* > f(Filter::COUNT, NULL);
 
-		p.loadConfig();
-		p.loadGames();
-		p.loadGamelists();
-		f[Filter::SEARCH] = new Filter(Filter::SEARCH, "*juego");
-		f[Filter::FAVORITE] = new Filter(Filter::FAVORITE, 1);
-		f[Filter::TYPE] = new Filter(Filter::TYPE, 1);
-		f[Filter::YEAR] = new Filter(Filter::YEAR, "1900");
-		f[Filter::GENRE] = new Filter(Filter::GENRE, "b");
-		f[Filter::LETTER] = new Filter(Filter::LETTER, "c");
-		f[Filter::TIMES_PLAYED] = new Filter(Filter::TIMES_PLAYED, 2);
 
 		while(1)
 		{
-			l = p.gamelistGet();
-			LOG_DEBUG("Filtering... ");
-			l->filter(f);
-			LOG_DEBUG("Done");
-			LOG_DEBUG("c: " << l->gameCount() << " f: " << l->gameCountFiltered());
-			it = l->itemFirst();
-			for (i=0; i < 2; ++i)
-			{
-				LOG_DEBUG("Item: " << it->itemName() << " : " << it->itemTitle());
-				it = l->itemNext(it);
-			}
-			LOG_DEBUG("UNFiltering... ");
-			l->unfilter();
-			LOG_DEBUG("Done");
-			LOG_DEBUG("c: " << l->gameCount() << " f: " << l->gameCountFiltered());
+			c = new Collection(m_working_dir);
+			c->loadConfig();
+			c->loadPlatforms();
+			LOG_DEBUG("Plataformas: " << c->platformCount());
 
-			/*
-			l = p.gamelistGet();
-			it = l->itemFirst();
-			for (i=0; i < 3; ++i)
-			{
-				LOG_DEBUG("Item: " << it->itemName() << " : " << it->itemTitle());
-				it = l->itemForward(it, 5);
-			}
-			for (i=0; i < 3; ++i)
-			{
-				LOG_DEBUG("Item: " << it->itemName() << " : " << it->itemTitle());
-				it = l->itemBackward(it, 5);
-			}
-
-			it = l->itemFirst();
-			for (i=0; i < 30; ++i)
-			{
-				LOG_DEBUG("Item: " << it->itemName() << " : " << it->itemTitle());
-				it = l->itemLetterForward(it);
-			}
-			 */
-
-			/*
-			for (i = 0; i < 5; ++i)
-			{
-				p.gamelistCreate("Lista " + utils::toStr(i));
-			}
-
-			LOG_DEBUG("Listas: " << p.getGamelists().size());
-			LOG_DEBUG("Count: " << p.gamelistCount());
-
-			for (i = 0; i < 30; ++i)
-			{
-				g = new Game(p.getDir());
-				g->name = utils::toStr(i) +" Juego " + utils::toStr(i);
-				g->title = utils::toStr(i) + " Título del juego " + utils::toStr(i);
-				if (!p.gamelistGet()->gameAdd(g))
-				{
-					delete g;
-				}
-			}
-
-			LOG_DEBUG("Games1: " << p.gamelistGet()->gameCount());
-			LOG_DEBUG("Añadiendo en listas");
-			for (i = 0; i < 5; ++i)
-			{
-				l = p.gamelistGet("Lista " + utils::toStr(i));
-				for (j=0; j<20; j=j+2)
-				{
-					g = p.gamelistGet()->gameGet(utils::toStr(j) + " Juego " + utils::toStr(j));
-					l->gameAdd(g);
-				}
-			}
 /*
-			LOG_DEBUG("Eliminando de master");
-			for (i=0; i<500; i=i+2)
+			for (i = 0; i < 20; ++i)
 			{
-				p.gameDelete("Juego " + utils::toStr(i), p.gamelistGet());
-			}
-			LOG_DEBUG("Games2: " << p.gamelistGet()->gameCount());
-			LOG_DEBUG("Eliminando de listas");
-			for (i = 0; i < 50; i=i+2)
-			{
-				l = p.gamelistGet("Lista " + utils::toStr(i));
-				for (j=600; j<1000; j=j+2)
-				{
-					p.gameDelete("Juego " + utils::toStr(j),l);
-				}
-			}*/
-		}
+				p = c->platformCreate("Plataforma " + utils::toStr(i));
+				LOG_DEBUG("Plataforma: " << p->getName() << " GL: " << p->gamelistCount());
 
-		p.saveGamelists();
-		p.saveGames();
-		p.saveConfig();
+				for (j = 0; j < 15; ++j)
+				{
+					p->gamelistCreate("Lista " + utils::toStr(j));
+				}
+
+				for (k = 0; k < 5000; ++k)
+				{
+					g = new Game(p->getDir());
+					g->name = utils::toStr(k) +" Juego " + utils::toStr(k);
+					g->title = utils::toStr(k) + " Título del juego " + utils::toStr(k);
+					g->manufacturer = "Manufacturer " + utils::toStr(rand() % 200);
+					g->genre = "Genre " + utils::toStr(rand() % 100);
+					if (!p->gamelistGet()->gameAdd(g))
+					{
+						delete g;
+					}
+				}
+
+				LOG_DEBUG("Plataformas: " << c->platformCount());
+				LOG_DEBUG("Listas: " << p->gamelistCount());
+				LOG_DEBUG("Games: " << p->gamelistGet()->gameCount());
+				LOG_DEBUG("Añadiendo en listas");
+				for (j = 0; j < 15; ++j)
+				{
+					l = p->gamelistGet("Lista " + utils::toStr(j));
+					for (k=0; k<1000; k=k+2)
+					{
+						g = p->gamelistGet()->gameGet(utils::toStr(k) + " Juego " + utils::toStr(k));
+						l->gameAdd(g);
+					}
+				}
+			}
+*/
+
+			std::vector<Glib::ustring>::iterator gi;
+			LOG_DEBUG("Fabricantes: " << c->getManufacturers().size());
+			for (gi = c->getManufacturers().begin(); gi != c->getManufacturers().end(); ++gi)
+			{
+				LOG_DEBUG("Fabricante: " << (*gi));
+			}
+			LOG_DEBUG("Generos: " << c->getGenres().size());
+			for (gi = c->getGenres().begin(); gi != c->getGenres().end(); ++gi)
+			{
+				LOG_DEBUG("Genero: " << (*gi));
+			}
+
+			c->savePlatforms();
+			c->saveConfig();
+			delete c;
+		}
 
 	//LOG_DEBUG("sub: " << t.substr(t.size()-4, 4).lowercase());
 

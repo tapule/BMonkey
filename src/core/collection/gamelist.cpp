@@ -130,7 +130,10 @@ bool Gamelist::loadGames(void)
 					game = &game_tmp;
 				}
 				game_iter->getAttribute("name", game->name);
-				gameAdd(game);
+				if (!gameAdd(game) && isMaster())
+				{
+					delete game;
+				}
 			}
 			xml.close();
 			return true;
@@ -161,6 +164,8 @@ bool Gamelist::saveGames(void)
 	xml.startElement("gamelist");
 	if (m_size)
 	{
+		// Iteramos sobre los nodos en vez de sobre el mapa ya que es aquí donde
+		// realmente están ordenados.
 		// Ponemos un nodo temporal como último
 		m_last->setNext(&node_tmp);
 		node = m_first;
@@ -508,14 +513,14 @@ Item* Gamelist::itemForward(Item* item, const int count)
 	node = static_cast<GameNode* >(item);
 	if (isFiltered())
 	{
-		for (i = 0; i< count; ++i)
+		for (i = 0; i < count; ++i)
 		{
 			node = node->getNextFiltered();
 		}
 	}
 	else
 	{
-		for (i = 0; i< count; ++i)
+		for (i = 0; i < count; ++i)
 		{
 			node = node->getNext();
 		}
@@ -534,14 +539,14 @@ Item* Gamelist::itemBackward(Item* item, const int count)
 	node = static_cast<GameNode* >(item);
 	if (isFiltered())
 	{
-		for (i = 0; i< count; ++i)
+		for (i = 0; i < count; ++i)
 		{
 			node = node->getPrevFiltered();
 		}
 	}
 	else
 	{
-		for (i = 0; i< count; ++i)
+		for (i = 0; i < count; ++i)
 		{
 			node = node->getPrev();
 		}
@@ -560,7 +565,6 @@ Item* Gamelist::itemLetterForward(Item* item)
 
 	node = static_cast<GameNode* >(item);
 	title = node->itemTitle().substr(0,1).lowercase();
-	LOG_DEBUG("T: " << title);
 	if (isFiltered())
 	{
 		node_pos = node->getNextFiltered();
@@ -572,7 +576,6 @@ Item* Gamelist::itemLetterForward(Item* item)
 	else
 	{
 		node_pos = node->getNext();
-		LOG_DEBUG("T2: " << node_pos->itemTitle().substr(0,1).lowercase());
 		while ((node_pos != node) && (title.compare(node_pos->itemTitle().substr(0,1).lowercase()) == 0))
 		{
 			node_pos = node_pos->getNext();
@@ -720,12 +723,12 @@ GameNode* Gamelist::nodeGet(const Glib::ustring& name)
 void Gamelist::clean(void)
 {
 	GameNode node_tmp;
-	GameNode* node = &node_tmp;
+	GameNode* node = NULL;
 	GameNode* node_pos = NULL;
 
 	if (m_size)
 	{
-		// Ponemos un nodo temporal como último
+		// Ponemos un nodo temporal como último para controlar el final
 		m_last->setNext(&node_tmp);
 		node = m_first;
 		while (node != &node_tmp)
