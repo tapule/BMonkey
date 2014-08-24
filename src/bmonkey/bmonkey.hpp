@@ -25,7 +25,7 @@
 #include <glibmm/ustring.h>
 #include "../defines.hpp"
 #include "../utils/config.hpp"
-
+#include "../core/collection/collection.hpp"
 
 namespace bmonkey{
 
@@ -34,6 +34,21 @@ namespace bmonkey{
 class BMonkeyApp
 {
 public:
+
+	// Posibles comandos ejecutables por la aplicación
+	enum Command
+	{
+		COMMAND_NONE = 0,			/**< Ningun comando */
+		COMMAND_SHOW_VERSION,		/**< Mostrar versión del programa */
+		COMMAND_SHOW_HELP,			/**< Muestra la ayuda del program */
+		COMMAND_WINDOWED,			/**< Fuerza el modo ventana */
+		COMMAND_FULLSCREEN,			/**< Fuerza el modo fullscreen */
+		COMMAND_LOG_DISABLE,		/**< Deshabilita el log a fichero */
+		COMMAND_LOG_ENABLE,			/**< Habilita el log a fichero */
+		COMMAND_PLATFORM_ADD,		/**< Añade una nueva plataforma a la colección */
+		COMMAND_PLATFORM_IMPORT,	/**< Importa una plataforma desde un dat */
+		COMMAND_GAMELIST_ADD		/**< Añade una lista de jeugos nueva a una plataforma */
+	};
 
 	/**
 	 * Constructor parametrizado
@@ -67,12 +82,18 @@ private:
 	 * Parsea los parámetros pasados modificando el estado de la aplicación
 	 * @param argc Contador de parámetros
 	 * @param argv Vector de parámetros
-	 * @return -1 si los parámetros son incorrectos
-	 * 			0 si los parámetros son correctos pero se debe terminar la app
-	 * 			1 si los parámetros son correctos y podemos continuar la app
+	 * @return 	0 si los parámetros son correctos
+	 * 			1 si los parámetros no son correctos
 	 */
 	int parseParams(int argc, char** argv);
 
+	/**
+	 * Ejecuta el posible comando pasado por parámetros
+	 * @return -1 si se produjo algún error al ejecutar el comando
+	 * 			0 si el comando se ejecutó con exito pero la app debe terminar
+	 * 			1 si el comando se ejecutó con exito y la app debe continuar
+	 */
+	int execCommand(void);
 
 	/**
 	 * Muestra por la salida estandar un mensaje con información de uso
@@ -86,16 +107,66 @@ private:
 	void showVersion(void);
 
 	/**
+	 * Fuerza el modo de ventana
+	 */
+	void setWindowed(void);
+
+	/**
+	 * Fuerza el modo de pantalla completa
+	 */
+	void setFullscreen(void);
+
+	/**
+	 * Desactiva el log a fichero
+	 */
+	void logDisable(void);
+
+	/**
+	 * Activa el log a fichero
+	 */
+	void logEnable(void);
+
+	/**
+	 * Añade una nueva plataforma a la colección
+	 * @param name Nombre de la nueva plataforma
+	 * @return 0 si se pudo realizar la operación, -1 en otro caso
+	 */
+	int platformAdd(const Glib::ustring& name);
+
+	/**
+	 * Importa una colección desde un fichero dat
+	 * @param name Nombre de la plataforma a importar
+	 * @param file Fichero dat con los juegos a importar
+	 * @return 0 si se pudo realizar la operación, -1 en otro caso
+	 * @note Si la plataforma no existe, se creará
+	 */
+	int platformImport(const Glib::ustring& name, const Glib::ustring& file);
+
+	/**
+	 * Añade una nueva lista de juegos a la plataforma dada
+	 * @param platform Nombre de plataforma donde agregar la lista
+	 * @param name Nombre de la nueva lista de juegos
+	 * @return 0 si se pudo realizar la operación, -1 en otro caso
+	 */
+	int gamelistAdd(const Glib::ustring& platform, const Glib::ustring& name);
+
+	/**
 	 * Se encarga de cerrar adecuadamente los sistemas creados por el programa
 	 */
 	void clean(void);
 
 	Config* m_config;				/**< Sistema de configuración para la app */
+	Collection* m_collection;		/**< Colección de juegos del usuario */
 
 	bool m_log_enabled;				/**< Indica si el log está hablitado */
 	bool m_first_run;				/**< Indica si se trata del primer arranque */
 	Glib::ustring m_cfg_file;		/**< Path del fichero de configuración */
 	Glib::ustring m_working_dir;	/**< Path del directorio de trabajo */
+
+	Command m_command;				/**< Comando a ejecutar */
+	Glib::ustring m_param1;			/**< Primer parámetro para el comando */
+	Glib::ustring m_param2;			/**< Segundo parámetro para el comando */
+
 };
 
 } // namespace bmonkey

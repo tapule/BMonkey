@@ -27,20 +27,21 @@
 #include <glibmm/miscutils.h>
 #include <glibmm/fileutils.h>
 #include "../utils/utils.hpp"
-#include "../core/collection/collection.hpp"
 
 
 namespace bmonkey{
 
 BMonkeyApp::BMonkeyApp(const Glib::ustring& working_dir):
 	m_config(NULL),
+	m_collection(NULL),
 #ifdef ENABLE_DEBUG_MODE
 	m_log_enabled(true),
 #else
 	m_log_enabled(false),
 #endif
 	m_first_run(true),
-	m_working_dir(working_dir)
+	m_working_dir(working_dir),
+	m_command(COMMAND_NONE)
 {
 	assert(!m_working_dir.empty());
 }
@@ -65,29 +66,14 @@ int BMonkeyApp::run(int argc, char** argv)
 	}
 	// Almacenamos el directorio de trabajo actual en la configuración
 	m_config->setKey(BMONKEY_CFG_GLOBAL, "current_working_dir", m_working_dir);
-
-	// Parseamos los parámetros introducidos por linea de comandos
-	LOG_DEBUG("BMonkey: Parsing parameters...");
-	ret = parseParams(argc, argv);
-	if (ret < 1)
-	{
-		clean();
-		if (ret == 0)
-		{
-			return EXIT_SUCCESS;
-		}
-		else
-		{
-			return EXIT_FAILURE;
-		}
-	}
-
-	// Inicializamos el sistema de log
-	LOG_DEBUG("BMonkey: Initializing log...");
+	// Si no existe la entrada del estado del log, creamos una nueva
 	if (!m_config->getKey(BMONKEY_CFG_GLOBAL, "log_enabled", m_log_enabled))
 	{
 		m_config->setKey(BMONKEY_CFG_GLOBAL, "log_enabled", m_log_enabled);
 	}
+
+	// Inicializamos el sistema de log
+	LOG_DEBUG("BMonkey: Initializing log...");
 	if (m_log_enabled)
 	{
 		LOG_DEBUG("BMonkey: Log enabled.");
@@ -150,88 +136,36 @@ int BMonkeyApp::run(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
-
+	// Parseamos los parámetros introducidos por linea de comandos
+	LOG_DEBUG("BMonkey: Parsing parameters...");
+	ret = parseParams(argc, argv);
+	if (ret == 1)
+	{
+		clean();
+		return EXIT_FAILURE;
+	}
+	// Ejecutamos el posible comando
+	ret = execCommand();
+	if (ret < 1)
+	{
+		LOG_INFO("Shutting down BMonkey...");
+		clean();
+		if (ret == 0)
+		{
+			return EXIT_SUCCESS;
+		}
+		else
+		{
+			return EXIT_FAILURE;
+		}
+	}
 
 	/*******************************************************
 	 * Bucle principal de la aplicación
 	*******************************************************/
 	LOG_INFO("BMonkey: Running main_sec...");
 
-	// Platform p("Plataforma01", Glib::build_filename(m_working_dir, USER_LIBRARY_DIR));
-	int i, j, k;
-	Collection* c;
-	Platform* p;
-	Game* g;
-	Gamelist* l;
-	Item* it;
-	std::vector<Filter* > f(Filter::COUNT, NULL);
 
-
-		while(1)
-		{
-			c = new Collection(m_working_dir);
-			c->loadConfig();
-			c->loadPlatforms();
-			LOG_DEBUG("Plataformas: " << c->platformCount());
-
-/*
-			for (i = 0; i < 20; ++i)
-			{
-				p = c->platformCreate("Plataforma " + utils::toStr(i));
-				LOG_DEBUG("Plataforma: " << p->getName() << " GL: " << p->gamelistCount());
-
-				for (j = 0; j < 15; ++j)
-				{
-					p->gamelistCreate("Lista " + utils::toStr(j));
-				}
-
-				for (k = 0; k < 5000; ++k)
-				{
-					g = new Game(p->getDir());
-					g->name = utils::toStr(k) +" Juego " + utils::toStr(k);
-					g->title = utils::toStr(k) + " Título del juego " + utils::toStr(k);
-					g->manufacturer = "Manufacturer " + utils::toStr(rand() % 200);
-					g->genre = "Genre " + utils::toStr(rand() % 100);
-					if (!p->gamelistGet()->gameAdd(g))
-					{
-						delete g;
-					}
-				}
-
-				LOG_DEBUG("Plataformas: " << c->platformCount());
-				LOG_DEBUG("Listas: " << p->gamelistCount());
-				LOG_DEBUG("Games: " << p->gamelistGet()->gameCount());
-				LOG_DEBUG("Añadiendo en listas");
-				for (j = 0; j < 15; ++j)
-				{
-					l = p->gamelistGet("Lista " + utils::toStr(j));
-					for (k=0; k<1000; k=k+2)
-					{
-						g = p->gamelistGet()->gameGet(utils::toStr(k) + " Juego " + utils::toStr(k));
-						l->gameAdd(g);
-					}
-				}
-			}
-*/
-
-			std::vector<Glib::ustring>::iterator gi;
-			LOG_DEBUG("Fabricantes: " << c->getManufacturers().size());
-			for (gi = c->getManufacturers().begin(); gi != c->getManufacturers().end(); ++gi)
-			{
-				LOG_DEBUG("Fabricante: " << (*gi));
-			}
-			LOG_DEBUG("Generos: " << c->getGenres().size());
-			for (gi = c->getGenres().begin(); gi != c->getGenres().end(); ++gi)
-			{
-				LOG_DEBUG("Genero: " << (*gi));
-			}
-
-			c->savePlatforms();
-			c->saveConfig();
-			delete c;
-		}
-
-	//LOG_DEBUG("sub: " << t.substr(t.size()-4, 4).lowercase());
 
 
 	/*******************************************************/
@@ -266,75 +200,283 @@ int BMonkeyApp::parseParams(int argc, char** argv)
 {
 	int i;
 
+	m_command = COMMAND_NONE;
+	m_param1.clear();
+	m_param2.clear();
+
 	// Comenzamos en 1 ya que argv[0] es el nombre del programa ejecutado
 	i = 1;
 	while (i < argc)
 	{
-		// -v muestra su info y termina la ejecución de forma controlada
+		// -v muestra la versión del programa y termina
 		if ((strcmp(argv[i], "-v") == 0) || (strcmp(argv[i], "--version") == 0))
 		{
-			showVersion();
+			m_command = COMMAND_SHOW_VERSION;
 			return 0;
 		}
-		// -h muestra su info y terminan la ejecución de forma controlada
+		// -h muestra la ayuda del programa y termina
 		else if ((strcmp(argv[i], "-h") == 0) || (strcmp(argv[i], "--help") == 0))
 		{
-			showHelp(argv[0]);
+			m_command = COMMAND_SHOW_HELP;
+			m_param1 = argv[0];
 			return 0;
 		}
-		// -l desactiva el log
-		else if ((strcmp(argv[i], "-l") == 0) || (strcmp(argv[i], "--disable-log") == 0))
-		{
-			DEBUG("BMonkey: Disabling logging...");
-			m_config->setKey(BMONKEY_CFG_GLOBAL, "log_enabled", FALSE);
-			return 1;
-		}
-		// -L activa el log
-		else if ((strcmp(argv[i], "-L") == 0) || (strcmp(argv[i], "--enable-log") == 0))
-		{
-			DEBUG("BMonkey: Enabling logging...");
-			m_config->setKey(BMONKEY_CFG_GLOBAL, "log_enabled", TRUE);
-			return 1;
-		}
+		// -w fuerza el modo ventana
 		else if ((strcmp(argv[i], "-w") == 0) || (strcmp(argv[i], "--windowed") == 0))
 		{
-			DEBUG("BMonkey: Disabling fullscreen...");
-			m_config->setKey(BMONKEY_CFG_UI, "fullscreen_mode", FALSE);
+			m_command = COMMAND_WINDOWED;
+			return 0;
 		}
+		// -f fuerza el modo fullscreen
 		else if ((strcmp(argv[i], "-f") == 0) || (strcmp(argv[i], "--fullscreen") == 0))
 		{
-			DEBUG("BMonkey: Enabling fullscreen...");
-			m_config->setKey(BMONKEY_CFG_UI, "fullscreen_mode", TRUE);
+			m_command = COMMAND_FULLSCREEN;
+			return 0;
 		}
-		else
+		// -ld desactiva el log
+		else if ((strcmp(argv[i], "-ld") == 0) || (strcmp(argv[i], "--log-disable") == 0))
 		{
+			m_command = COMMAND_LOG_DISABLE;
+			return 0;
+		}
+		// -le activa el log
+		else if ((strcmp(argv[i], "-le") == 0) || (strcmp(argv[i], "--log-enable") == 0))
+		{
+			m_command = COMMAND_LOG_ENABLE;
+			return 0;
+		}
+		// -pa añade una plataforma a la colección
+		else if ((strcmp(argv[i], "-pa") == 0) || (strcmp(argv[i], "--platform-add") == 0))
+		{
+			m_command = COMMAND_PLATFORM_ADD;
+			// Necesitamos un parámetros más con el nombre de la plataforma
+			if (i < argc - 1)
+			{
+				m_param1 = argv[i + 1];
+			}
+			else
+			{
+				std::cout << "BMonkey: --platform-add wrong params:" << std::endl
+						<< "Usage: " << argv[0] << " --platform-add platform_name" << std::endl;
+				return 1;
+			}
+			return 0;
+		}
+		// -pi importa una plataforma desde un fichero dat
+		else if ((strcmp(argv[i], "-pi") == 0) || (strcmp(argv[i], "--platform-import") == 0))
+		{
+			m_command = COMMAND_PLATFORM_IMPORT;
+			// Necesitamos dos parámetros más, la plataforma y el fichero dat
+			if (i < argc - 2)
+			{
+				m_param1 = argv[i + 1];
+				m_param2 = argv[i + 2];
+			}
+			else
+			{
+				std::cout << "BMonkey: --platform-import wrong params:" << std::endl
+						<< "Usage: " << argv[0] << " --platform-import platform_name File" << std::endl;
+				return 1;
+			}
+			return 0;
+		}
+		// -ga añade una gamelist a una plataforma dada
+		else if ((strcmp(argv[i], "-ga") == 0) || (strcmp(argv[i], "--gamelist-add") == 0))
+		{
+			m_command = COMMAND_GAMELIST_ADD;
+			// Necesitamos dos parámetros más, la plataforma y el nombre de la lista
+			if (i < argc - 2)
+			{
+				m_param1 = argv[i + 1];
+				m_param2 = argv[i + 2];
+			}
+			else
+			{
+				std::cout << "BMonkey: --gamelist-add wrong params:" << std::endl
+						<< "Usage: " << argv[0] << " --gamelist-add platform_name gamelist-name" << std::endl;
+				return 1;
+			}
+			return 0;
+		}
+		else{
 			DEBUG("BMonkey: Unknown option \"" << argv[i] << "\"");
 			std::cout << "Unknown option \"" << argv[i] << "\"" << std::endl;
-			return -1;
+			return 1;
 		}
 		++i;
 	}
-	return 1;
+	return 0;
+}
+
+int BMonkeyApp::execCommand(void)
+{
+	int ret;
+
+	// Ejecución de los posibles comandos
+	switch (m_command)
+	{
+	case COMMAND_SHOW_VERSION:
+		showVersion();
+		ret = 0;
+		break;
+	case COMMAND_SHOW_HELP:
+		showHelp(m_param1);
+		ret = 0;
+		break;
+	case COMMAND_WINDOWED:
+		setWindowed();
+		ret = 1;
+		break;
+	case COMMAND_FULLSCREEN:
+		setFullscreen();
+		ret = 1;
+		break;
+	case COMMAND_LOG_DISABLE:
+		logDisable();
+		ret = 1;
+		break;
+	case COMMAND_LOG_ENABLE:
+		logEnable();
+		ret = 1;
+		break;
+	case COMMAND_PLATFORM_ADD:
+		ret = platformAdd(m_param1);
+		break;
+	case COMMAND_PLATFORM_IMPORT:
+		ret = platformImport(m_param1, m_param2);
+		break;
+	case COMMAND_GAMELIST_ADD:
+		ret = gamelistAdd(m_param1, m_param2);
+		break;
+	default:
+		ret = 1;
+		break;
+	}
+	return ret;
 }
 
 void BMonkeyApp::showHelp(const Glib::ustring& program)
 {
 	showVersion();
-	std::cout << "Usage: " << program << " [Options]" << std::endl
+	std::cout << "Usage: " << program << " [Options] [Platform Name] [File / Gamelist Name]" << std::endl
 			  << std::endl
 			  << "Available options:" << std::endl
 			  << "  -v, --version            Display BMonkey version information and exit" << std::endl
 			  << "  -h, --help               Display this help message and exit" << std::endl
-			  << "  -l, --disable-log        Disable logging" << std::endl
-			  << "  -L, --enable-log         Enable logging" << std::endl
 			  << "  -w, --windowed           Force windowed mode" << std::endl
-			  << "  -f, --fullscreen         Force full-screen mode" << std::endl;
+			  << "  -f, --fullscreen         Force full-screen mode" << std::endl
+			  << "  -ld, --log-disable       Disable logging" << std::endl
+			  << "  -le, --log-enable        Enable logging" << std::endl
+			  << "  -pa, --platform-add      Force full-screen mode" << std::endl
+			  << "  -pi, --platform-import   Disable logging" << std::endl
+			  << "  -ga, --gamelist-add      Enable logging" << std::endl;
 }
 
 void BMonkeyApp::showVersion(void)
 {
 	std::cout << "Bmonkey Frontend v" << PACKAGE_VERSION << std::endl
 			  << "Copyright (C) 2014 Juan Ángel Moreno Fernández" << std::endl;
+}
+
+void BMonkeyApp::setWindowed(void)
+{
+	LOG_DEBUG("BMonkey: Setting windowed mode...");
+	m_config->setKey(BMONKEY_CFG_SCREEN, "fullscreen", false);
+}
+
+void BMonkeyApp::setFullscreen(void)
+{
+	LOG_DEBUG("BMonkey: Setting fullscreen mode...");
+	m_config->setKey(BMONKEY_CFG_SCREEN, "fullscreen", true);
+}
+
+void BMonkeyApp::logDisable(void)
+{
+	if (m_log_enabled)
+	{
+		LOG_DEBUG("BMonkey: Disabling logging...");
+		m_log_enabled = false;
+		m_config->setKey(BMONKEY_CFG_GLOBAL, "log_enabled", m_log_enabled);
+		LOG_CLOSE();
+	}
+}
+
+void BMonkeyApp::logEnable(void)
+{
+	if (!m_log_enabled)
+	{
+		LOG_DEBUG("BMonkey: Enabling logging...");
+		m_log_enabled = true;
+		m_config->setKey(BMONKEY_CFG_GLOBAL, "log_enabled", m_log_enabled);
+		LOG_OPEN(Glib::build_filename(m_working_dir, BMONKEY_LOG_FILE));
+	}
+}
+
+int BMonkeyApp::platformAdd(const Glib::ustring& name)
+{
+	Platform* platform;
+	int ret = 0;
+
+	m_collection = new Collection(m_working_dir);
+	m_collection->loadConfig();
+	platform = m_collection->platformCreate(name);
+	if (!platform)
+	{
+		ret = -1;
+		LOG_DEBUG("BMonkey: Can't create platform \"" << name << "\"");
+		std::cout << "Can't create platform \"" << name << "\"" << std::endl;
+	}
+	// Cargamos la configuración y juegos por si la plataforma ya existe
+	platform->loadConfig();
+	platform->loadGames();
+	platform->saveGames();
+	platform->saveConfig();
+	m_collection->saveConfig();
+	delete m_collection;
+
+	return ret;
+}
+
+int BMonkeyApp::platformImport(const Glib::ustring& name, const Glib::ustring& file)
+{
+
+}
+
+int BMonkeyApp::gamelistAdd(const Glib::ustring& platform, const Glib::ustring& name)
+{
+	int ret = 0;
+	Platform* plt;
+
+	m_collection = new Collection(m_working_dir);
+	m_collection->loadConfig();
+	plt = m_collection->platformGet(platform);
+	if (!plt)
+	{
+		ret = -1;
+		LOG_DEBUG("BMonkey: Platform \"" << platform << "\" does not exist");
+		std::cout << "Platform \"" << platform << "\" does not exist" << std::endl;
+	}
+	else
+	{
+		plt->loadConfig();
+		plt->loadGames();
+		plt->loadGamelists();
+		if (!plt->gamelistCreate(name))
+		{
+			ret = -1;
+			LOG_DEBUG("BMonkey: Can't create gamelist \"" << name << "\"");
+			std::cout << "Can't create gamelist \"" << name << "\"" << std::endl;
+		}
+		else
+		{
+			plt->saveGamelists();
+		}
+	}
+	m_collection->saveConfig();
+	delete m_collection;
+
+	return ret;
+
 }
 
 void BMonkeyApp::clean(void)

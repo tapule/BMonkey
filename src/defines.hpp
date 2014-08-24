@@ -114,6 +114,7 @@
 #define BMONKEY_CFG_ROOT				"bmonkeycfg"
 #define BMONKEY_CFG_VERSION				"0.1"
 #define BMONKEY_CFG_GLOBAL				"global"
+#define BMONKEY_CFG_SCREEN				"screen"
 #define BMONKEY_CFG_UI					"ui"
 
 #endif // _DEFINES_HPP_
