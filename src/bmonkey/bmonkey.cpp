@@ -27,6 +27,7 @@
 #include <glibmm/miscutils.h>
 #include <glibmm/fileutils.h>
 #include "../utils/utils.hpp"
+#include "../core/datreader/dat_reader_factory.hpp"
 
 
 namespace bmonkey{
@@ -414,17 +415,17 @@ void BMonkeyApp::logEnable(void)
 
 int BMonkeyApp::platformAdd(const Glib::ustring& name)
 {
-	Platform* platform;
-	int ret = 0;
+	Platform* platform = NULL;
 
 	m_collection = new Collection(m_working_dir);
 	m_collection->loadConfig();
 	platform = m_collection->platformCreate(name);
 	if (!platform)
 	{
-		ret = -1;
 		LOG_DEBUG("BMonkey: Can't create platform \"" << name << "\"");
 		std::cout << "Can't create platform \"" << name << "\"" << std::endl;
+		delete m_collection;
+		return -1;
 	}
 	// Cargamos la configuración y juegos por si la plataforma ya existe
 	platform->loadConfig();
@@ -434,18 +435,90 @@ int BMonkeyApp::platformAdd(const Glib::ustring& name)
 	m_collection->saveConfig();
 	delete m_collection;
 
-	return ret;
+	return 0;
 }
 
 int BMonkeyApp::platformImport(const Glib::ustring& name, const Glib::ustring& file)
 {
+	DatReader* dat = NULL;
+	std::vector<DatSet> sets;
+	std::vector<DatSet>::iterator iter;
+	Platform* platform = NULL;
+	Gamelist* list = NULL;
+	Game* game = NULL;
+	int total = 0;
 
+	// Obtenemos un lector de dat para el fichero
+	dat = DatReaderFactory::getDatReader(file);
+	if (!dat)
+	{
+		std::cout << "Dat reader not found for file \"" << file << "\"" <<  std::endl;
+		return -1;
+	}
+	// Mostramos la info del dat y sus sets
+	std::cout << "Dat type: " << dat->getType() <<  std::endl;
+	if (!dat->read(sets))
+	{
+		std::cout << "Error reading sets" <<  std::endl;
+		delete dat;
+		return -1;
+	}
+	std::cout << "Total dat sets: " << sets.size() <<  std::endl;
+	std::cout << "-------------------------------------" <<  std::endl;
+
+	m_collection = new Collection(m_working_dir);
+	m_collection->loadConfig();
+	platform = m_collection->platformCreate(name);
+	if (!platform)
+	{
+		LOG_DEBUG("BMonkey: Can't create platform \"" << name << "\"");
+		std::cout << "Can't create platform \"" << name << "\"" << std::endl;
+		delete m_collection;
+		delete dat;
+		return -1;
+	}
+	// Cargamos la configuración y juegos por si la plataforma ya existe
+	platform->loadConfig();
+	// Obtenemos lista master y agremgamos los juegos
+	list = platform->gamelistGet();
+	// Procesamos todos los sets del dat
+	for (iter = sets.begin(); iter != sets.end(); ++iter)
+	{
+		if (!iter->is_bios)
+		{
+			std::cout << "Adding set: " << iter->name << " / \"" << iter->description << "\"" << std::endl;
+			game = new Game(platform->getDir());
+			game->name = iter->name;
+			game->title = iter->description;
+			game->cloneof = iter->clone_of;
+			game->crc = iter->crc;
+			game->manufacturer = iter->manufacturer;
+			game->year = iter->year;
+			game->genre = iter->genre;
+			game->players = iter->players;
+			list->gameAdd(game);
+			++total;
+		}
+	}
+	std::cout << "-------------------------------------" <<  std::endl;
+	std::cout << "New sets: " << total << std::endl;
+
+	// Remapeamos las listas de juegos si existen
+	platform->loadGamelists();
+	platform->saveGamelists();
+	platform->saveGames();
+	platform->saveConfig();
+	m_collection->saveConfig();
+	delete m_collection;
+	delete dat;
+
+	return 0;
 }
 
 int BMonkeyApp::gamelistAdd(const Glib::ustring& platform, const Glib::ustring& name)
 {
 	int ret = 0;
-	Platform* plt;
+	Platform* plt = NULL;
 
 	m_collection = new Collection(m_working_dir);
 	m_collection->loadConfig();
