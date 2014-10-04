@@ -115,6 +115,11 @@
 #define BMONKEY_CFG_VERSION				"0.1"
 #define BMONKEY_CFG_GLOBAL				"global"
 #define BMONKEY_CFG_SCREEN				"screen"
-#define BMONKEY_CFG_UI					"ui"
+#define BMONKEY_CFG_SOUND				"sound"
+#define BMONKEY_CFG_CORE				"core"
+#define BMONKEY_CFG_SCREENSAVER			"screensaver"
+#define BMONKEY_CFG_MENUS				"menus"
+
+
 
 #endif // _DEFINES_HPP_

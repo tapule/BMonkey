@@ -164,9 +164,50 @@ int BMonkeyApp::run(int argc, char** argv)
 	/*******************************************************
 	 * Bucle principal de la aplicación
 	*******************************************************/
-	LOG_INFO("BMonkey: Running main_sec...");
+	float fixed_fps = 60.f;
+	sf::Time fixed_fps_time = sf::Time::Zero;
+    sf::Time elapsed_time = sf::Time::Zero;
+    sf::Clock clock;
 
+    LOG_INFO("BMonkey: Initializing renderer...");
+ 	initRenderer();
 
+ 	// Obtenemos el tiempo para las actualizaciones fijas
+	if (!m_config->getKey(BMONKEY_CFG_CORE, "fixed_framerate", fixed_fps))
+	{
+		m_config->setKey(BMONKEY_CFG_CORE, "fixed_framerate", fixed_fps);
+	}
+	if (fixed_fps == 0)
+	{
+		fixed_fps = 60.f;
+	}
+	fixed_fps_time = sf::seconds(1.f/fixed_fps);
+
+    while (m_window.isOpen())
+    {
+    	elapsed_time += clock.restart();
+        while (elapsed_time > fixed_fps_time)
+        {
+
+        	elapsed_time -= fixed_fps_time;
+            //handleInput();
+            //update(fixed_fps_time);
+        	sf::Event event;
+			while (m_window.pollEvent(event))
+			{
+				if (event.type == sf::Event::Closed)
+				{
+					m_window.close();
+				}
+				if (event.type == sf::Event::KeyPressed)
+				{
+					m_window.close();
+				}
+
+			}
+        }
+        draw();
+    }
 
 
 	/*******************************************************/
@@ -550,6 +591,125 @@ int BMonkeyApp::gamelistAdd(const Glib::ustring& platform, const Glib::ustring& 
 
 	return ret;
 
+}
+
+void BMonkeyApp::initRenderer(void)
+{
+	bool fullscreen = false;
+	unsigned int width = 800;
+	unsigned int height = 600;
+	unsigned int bpp = 32;
+	Glib::ustring rotation_txt = "none";
+	float rotation = 0.f;
+	float offset_x = 0.f;
+	float offset_y = 0.f;
+	sf::ContextSettings ctx_settings;
+	unsigned int antialiasing_level = 0;
+	bool vsync = false;
+	unsigned int fps_limit = 0;
+	float joystick_threshold = 75.f;
+	//float mouse_threshold;
+	unsigned int style;
+	sf::View view;
+
+	// Comprobamos las variables de configuración y fijamos valores por defecto
+	if (!m_config->getKey(BMONKEY_CFG_SCREEN, "fullscreen", fullscreen))
+	{
+		m_config->setKey(BMONKEY_CFG_SCREEN, "fullscreen", fullscreen);
+	}
+	if (!m_config->getKey(BMONKEY_CFG_SCREEN, "width", width))
+	{
+		m_config->setKey(BMONKEY_CFG_SCREEN, "width", width);
+		m_config->setKey(BMONKEY_CFG_SCREEN, "heigth", height);
+	}
+	else
+	{
+		if (!m_config->getKey(BMONKEY_CFG_SCREEN, "heigth", height))
+		{
+			m_config->setKey(BMONKEY_CFG_SCREEN, "heigth", height);
+		}
+	}
+	if (!m_config->getKey(BMONKEY_CFG_SCREEN, "bpp", bpp))
+	{
+		m_config->setKey(BMONKEY_CFG_SCREEN, "bpp", bpp);
+	}
+	if (!m_config->getKey(BMONKEY_CFG_SCREEN, "rotation", rotation_txt))
+	{
+		m_config->setKey(BMONKEY_CFG_SCREEN, "rotation", rotation_txt);
+	}
+	else
+	{
+		rotation_txt = rotation_txt.lowercase();
+		if (rotation_txt == "left")
+		{
+			rotation = 90.f;
+			offset_x = (width - height) / 2.f;
+		}
+		else if (rotation_txt == "right")
+		{
+			rotation = -90.f;
+			offset_x = (width - height) / 2.f;
+		}
+		else if (rotation_txt == "inverted")
+		{
+			rotation = 180.f;
+		}
+	}
+	if (!m_config->getKey(BMONKEY_CFG_CORE, "antialiasing_level", antialiasing_level))
+	{
+		m_config->setKey(BMONKEY_CFG_CORE, "antialiasing_level", antialiasing_level);
+	}
+	if (!m_config->getKey(BMONKEY_CFG_CORE, "vertical_sync", vsync))
+	{
+		m_config->setKey(BMONKEY_CFG_CORE, "vertical_sync", vsync);
+	}
+	if (!m_config->getKey(BMONKEY_CFG_CORE, "framerate_limit", fps_limit))
+	{
+		m_config->setKey(BMONKEY_CFG_CORE, "framerate_limit", fps_limit);
+	}
+	if (!m_config->getKey(BMONKEY_CFG_CORE, "joystick_threshold", joystick_threshold))
+	{
+		m_config->setKey(BMONKEY_CFG_CORE, "joystick_threshold", joystick_threshold);
+	}
+
+	if (fullscreen)
+	{
+		style = sf::Style::Fullscreen;
+	}
+	else
+	{
+		style = sf::Style::Titlebar | sf::Style::Close;
+	}
+	ctx_settings.antialiasingLevel = antialiasing_level;
+	m_window.create(sf::VideoMode(width, height, bpp), "BMonkey 0.1", style, ctx_settings);
+
+	// !!! NO FUNCIONA BIEN
+	if (rotation != 0.f)
+	{
+		view = m_window.getDefaultView();
+		view.zoom(1.5f);
+		view.rotate(rotation);
+		//view.move(-100, 0);
+		m_window.setView(view);
+	}
+
+	m_window.setVerticalSyncEnabled(vsync);
+	// Si vsync está habilitado, el limite fps puede dar problemas
+	if (!vsync and fps_limit > 0)
+	{
+		m_window.setFramerateLimit(fps_limit);
+	}
+
+	if (joystick_threshold != 0)
+	{
+		m_window.setJoystickThreshold(joystick_threshold);
+	}
+}
+
+void BMonkeyApp::draw(void)
+{
+	m_window.clear();
+	m_window.display();
 }
 
 void BMonkeyApp::clean(void)

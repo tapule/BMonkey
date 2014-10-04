@@ -22,6 +22,7 @@
 #ifndef _BMONKEY_HPP_
 #define _BMONKEY_HPP_
 
+#include <SFML/Graphics.hpp>
 #include <glibmm/ustring.h>
 #include "../defines.hpp"
 #include "../utils/config.hpp"
@@ -151,6 +152,13 @@ private:
 	int gamelistAdd(const Glib::ustring& platform, const Glib::ustring& name);
 
 	/**
+	 * Inicializa la ventana y el sistema de renderizado
+	 */
+	void initRenderer(void);
+
+	void draw(void);
+
+	/**
 	 * Se encarga de cerrar adecuadamente los sistemas creados por el programa
 	 */
 	void clean(void);
@@ -167,6 +175,7 @@ private:
 	Glib::ustring m_param1;			/**< Primer parámetro para el comando */
 	Glib::ustring m_param2;			/**< Segundo parámetro para el comando */
 
+	sf::RenderWindow m_window;		/**< Ventana principal de la apliación */
 };
 
 } // namespace bmonkey
