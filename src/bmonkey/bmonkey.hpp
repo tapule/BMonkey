@@ -51,6 +51,15 @@ public:
 		COMMAND_GAMELIST_ADD		/**< Añade una lista de jeugos nueva a una plataforma */
 	};
 
+	// Posibles rotaciones de la pantalla
+	enum Rotation
+	{
+		NONE = 0,
+		RIGHT,
+		INVERTED,
+		LEFT
+	};
+
 	/**
 	 * Constructor parametrizado
 	 * @param working_dir Directorio de trabajo
@@ -154,7 +163,23 @@ private:
 	/**
 	 * Inicializa la ventana y el sistema de renderizado
 	 */
-	void initRenderer(void);
+	void screenInit(void);
+
+	/**
+	 * Establece una rotación determinada en la ventana
+	 * @param rotation Nueva rotación para la ventana
+	 */
+	void screenRotate(const Rotation rotation);
+
+	/**
+	 * Cambia a la siguiente rotación de la pantalla
+	 * @note El cambio de rotación se hace girandola a la derecha
+	 */
+	void screenSwitchRotation(void);
+
+
+
+
 
 	void draw(void);
 
@@ -176,6 +201,7 @@ private:
 	Glib::ustring m_param2;			/**< Segundo parámetro para el comando */
 
 	sf::RenderWindow m_window;		/**< Ventana principal de la apliación */
+	Rotation m_rotation;			/**< Rotación actual de la pantalla */
 };
 
 } // namespace bmonkey

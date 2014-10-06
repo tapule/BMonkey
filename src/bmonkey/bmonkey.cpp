@@ -28,6 +28,7 @@
 #include <glibmm/fileutils.h>
 #include "../utils/utils.hpp"
 #include "../core/datreader/dat_reader_factory.hpp"
+#include "../core/bmke/control_manager.hpp"
 
 
 namespace bmonkey{
@@ -42,7 +43,8 @@ BMonkeyApp::BMonkeyApp(const Glib::ustring& working_dir):
 #endif
 	m_first_run(true),
 	m_working_dir(working_dir),
-	m_command(COMMAND_NONE)
+	m_command(COMMAND_NONE),
+	m_rotation(NONE)
 {
 	assert(!m_working_dir.empty());
 }
@@ -168,9 +170,24 @@ int BMonkeyApp::run(int argc, char** argv)
 	sf::Time fixed_fps_time = sf::Time::Zero;
     sf::Time elapsed_time = sf::Time::Zero;
     sf::Clock clock;
+    ControlManager control_manager(m_window);
+    ControlManager::Event event;
 
     LOG_INFO("BMonkey: Initializing renderer...");
- 	initRenderer();
+ 	screenInit();
+ 	LOG_INFO("BMonkey: Loading keymap...");
+ 	if (!control_manager.load(Glib::build_filename(m_working_dir, BMONKEY_KEYMAP_FILE)))
+ 	{
+ 		control_manager.registerDefaultControls();
+ 	}
+
+
+    control_manager.enableEvent(ControlManager::SWITCH_ROTATION);
+
+    control_manager.enableEvent(ControlManager::PLATFORM_PREVIOUS);
+    control_manager.enableEvent(ControlManager::MENU_UP);
+    control_manager.enableEvent(ControlManager::GAME_MENU);
+
 
  	// Obtenemos el tiempo para las actualizaciones fijas
 	if (!m_config->getKey(BMONKEY_CFG_CORE, "fixed_framerate", fixed_fps))
@@ -188,27 +205,32 @@ int BMonkeyApp::run(int argc, char** argv)
     	elapsed_time += clock.restart();
         while (elapsed_time > fixed_fps_time)
         {
-
         	elapsed_time -= fixed_fps_time;
-            //handleInput();
-            //update(fixed_fps_time);
-        	sf::Event event;
-			while (m_window.pollEvent(event))
-			{
-				if (event.type == sf::Event::Closed)
-				{
-					m_window.close();
-				}
-				if (event.type == sf::Event::KeyPressed)
-				{
-					m_window.close();
-				}
 
+            // Esto es lo mismo que el handleInput();
+			while (control_manager.poolEvent(event))
+			{
+				if (event == ControlManager::EXIT)
+				{
+					m_window.close();
+				}
+				else if (event == ControlManager::SWITCH_ROTATION)
+				{
+					screenSwitchRotation();
+				}
+				else
+				{
+					LOG_DEBUG("E: " << event);
+					LOG_DEBUG("C: " << control_manager.getLastCommand());
+					LOG_DEBUG("----------");
+				}
 			}
+            //update(fixed_fps_time);
         }
         draw();
     }
 
+    control_manager.save();
 
 	/*******************************************************/
 
@@ -593,16 +615,14 @@ int BMonkeyApp::gamelistAdd(const Glib::ustring& platform, const Glib::ustring& 
 
 }
 
-void BMonkeyApp::initRenderer(void)
+void BMonkeyApp::screenInit(void)
 {
 	bool fullscreen = false;
 	unsigned int width = 800;
 	unsigned int height = 600;
 	unsigned int bpp = 32;
 	Glib::ustring rotation_txt = "none";
-	float rotation = 0.f;
-	float offset_x = 0.f;
-	float offset_y = 0.f;
+	Rotation rotation = NONE;
 	sf::ContextSettings ctx_settings;
 	unsigned int antialiasing_level = 0;
 	bool vsync = false;
@@ -642,17 +662,15 @@ void BMonkeyApp::initRenderer(void)
 		rotation_txt = rotation_txt.lowercase();
 		if (rotation_txt == "left")
 		{
-			rotation = 90.f;
-			offset_x = (width - height) / 2.f;
+			rotation = LEFT;
 		}
 		else if (rotation_txt == "right")
 		{
-			rotation = -90.f;
-			offset_x = (width - height) / 2.f;
+			rotation = RIGHT;
 		}
 		else if (rotation_txt == "inverted")
 		{
-			rotation = 180.f;
+			rotation = INVERTED;
 		}
 	}
 	if (!m_config->getKey(BMONKEY_CFG_CORE, "antialiasing_level", antialiasing_level))
@@ -682,23 +700,10 @@ void BMonkeyApp::initRenderer(void)
 	}
 	ctx_settings.antialiasingLevel = antialiasing_level;
 	m_window.create(sf::VideoMode(width, height, bpp), "BMonkey 0.1", style, ctx_settings);
-
-	// !!! NO FUNCIONA BIEN
-	if (rotation != 0.f)
-	{
-		view = m_window.getDefaultView();
-		view.zoom(1.5f);
-		view.rotate(rotation);
-		//view.move(-100, 0);
-		m_window.setView(view);
-	}
-
 	m_window.setVerticalSyncEnabled(vsync);
 	// Si vsync está habilitado, el limite fps puede dar problemas
-	if (!vsync and fps_limit > 0)
-	{
-		m_window.setFramerateLimit(fps_limit);
-	}
+	m_window.setFramerateLimit(fps_limit);
+	screenRotate(rotation);
 
 	if (joystick_threshold != 0)
 	{
@@ -706,9 +711,71 @@ void BMonkeyApp::initRenderer(void)
 	}
 }
 
+void BMonkeyApp::screenRotate(const Rotation rotation)
+{
+	unsigned int width;
+	unsigned int height;
+	sf::View view;
+	std::string rotation_txt;
+
+	// Asumimos que previamente se etableción una resolución adecuada
+	m_config->getKey(BMONKEY_CFG_SCREEN, "width", width);
+	m_config->getKey(BMONKEY_CFG_SCREEN, "heigth", height);
+
+	view = m_window.getDefaultView();
+	switch(rotation)
+	{
+	case RIGHT:
+		view.setRotation(90.f);
+		view.setCenter(height/2.f, width/2.f);
+		rotation_txt = "right";
+		break;
+	case INVERTED:
+		view.setRotation(180.f);
+		view.setCenter(width/2.f, height/2.f);
+		rotation_txt = "inverted";
+		break;
+	case LEFT:
+		view.setRotation(-90.f);
+		view.setCenter(height/2.f, width/2.f);
+		rotation_txt = "left";
+		break;
+	default:
+		view.setRotation(0.f);
+		view.setCenter(width/2.f, height/2.f);
+		rotation_txt = "none";
+		break;
+	}
+	m_window.setView(view);
+	// Guardamos nueva configuración de rotación
+	m_rotation = rotation;
+	m_config->setKey(BMONKEY_CFG_SCREEN, "rotation", rotation_txt);
+}
+
+void BMonkeyApp::screenSwitchRotation(void)
+{
+	int rotation;
+
+	rotation = m_rotation;
+	if (rotation == LEFT)
+	{
+		rotation = NONE;
+	}
+	else
+	{
+		++rotation;
+	}
+	screenRotate(static_cast<Rotation>(rotation));
+}
+
 void BMonkeyApp::draw(void)
 {
+	sf::Texture texture;
+    texture.loadFromFile("v.png");
+    sf::Sprite sprite(texture);
+
 	m_window.clear();
+	m_window.draw(sprite);
 	m_window.display();
 }
 
