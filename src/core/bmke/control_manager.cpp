@@ -269,14 +269,24 @@ bool ControlManager::poolEvent(Event& event)
 
 	while (m_window.pollEvent(sfml_event))
 	{
-		// Antes de nada comprobamos el evento de cierre
+		// Antes de nada comprobamos los eventos del sistema
 		if (sfml_event.type == sf::Event::Closed)
 		{
 			event = EXIT;
 			return true;
 		}
+		if (sfml_event.type == sf::Event::GainedFocus)
+		{
+			event = FOCUSED;
+			return true;
+		}
+		if (sfml_event.type == sf::Event::LostFocus)
+		{
+			event = UNFOCUSED;
+			return true;
+		}
 		// Si se trata de un evento que no tiene sentido para el fe, lo ignoramos
-		if (sfml_event.type == sf::Event::Resized || sfml_event.type == sf::Event::LostFocus || sfml_event.type == sf::Event::GainedFocus || sfml_event.type == sf::Event::TextEntered)
+		if (sfml_event.type == sf::Event::Resized || sfml_event.type == sf::Event::TextEntered || sfml_event.type == sf::Event::MouseEntered || sfml_event.type == sf::Event::MouseLeft)
 		{
 			continue;
 		}

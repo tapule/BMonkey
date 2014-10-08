@@ -70,8 +70,11 @@ public:
 		GAME_MENU,				/**< Abre el menú "Game" */
 		CONTROLS_MENU,			/**< Abre el menú "Controls" */
 		SWITCH_ROTATION,		/**< Cambia la rotación de la pantalla */
+		// Estos son eventos del sistema, no se pueden desactivar
 		OTHER,					/**< Otro evento desconocido */
-		EXIT					/**< Evento de finalización del programa */
+		EXIT,					/**< Evento de finalización del programa */
+		FOCUSED,				/**< La ventana gana el foco */
+		UNFOCUSED				/**< La ventana pierde el foco */
 	};
 
 	/**

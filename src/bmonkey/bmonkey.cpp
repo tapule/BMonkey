@@ -29,6 +29,7 @@
 #include "../utils/utils.hpp"
 #include "../core/datreader/dat_reader_factory.hpp"
 #include "../core/bmke/control_manager.hpp"
+#include "../core/bmke/sound_manager.hpp"
 
 
 namespace bmonkey{
@@ -172,6 +173,7 @@ int BMonkeyApp::run(int argc, char** argv)
     sf::Clock clock;
     ControlManager control_manager(m_window);
     ControlManager::Event event;
+    SoundManager sound_manager;
 
     LOG_INFO("BMonkey: Initializing renderer...");
  	screenInit();
@@ -180,13 +182,33 @@ int BMonkeyApp::run(int argc, char** argv)
  	{
  		control_manager.registerDefaultControls();
  	}
+ 	LOG_INFO("BMonkey: Loading sounds...");
 
+ 	sound_manager.loadSound(SoundManager::SELECT, "sounds/gs1.ogg");
+ 	sound_manager.loadSound(SoundManager::BACK, "sounds/gs2.ogg");
+ 	sound_manager.loadSound(SoundManager::PREVIOUS, "sounds/gs3.ogg");
+ 	sound_manager.loadSound(SoundManager::NEXT, "sounds/gs4.ogg");
+ 	sound_manager.loadSound(SoundManager::UP, "sounds/gs5.ogg");
+ 	sound_manager.loadSound(SoundManager::DOWN, "sounds/gs6.ogg");
+ 	sound_manager.loadSound(SoundManager::LEFT, "sounds/gs7.ogg");
+ 	sound_manager.loadSound(SoundManager::RIGHT, "sounds/gs8.ogg");
+ 	//sound_manager.loadSound(SoundManager::JUMP_BACKWARD, "sounds/gs9.ogg");
+ 	sound_manager.loadSound(SoundManager::JUMP_FORWARD, "sounds/gs10.ogg");
+ 	sound_manager.loadSound(SoundManager::MENU_OPEN, "sounds/gs11.ogg");
+ 	sound_manager.loadSound(SoundManager::ERROR, "sounds/gs12.ogg");
+ 	sound_manager.loadSound(SoundManager::SPECIAL, "sounds/gs13.ogg");
+ 	sound_manager.openMusic("sounds/mus.ogg");
+ 	sound_manager.setMusicVolume(75.f);
+ 	sound_manager.setSoundVolume(75.f);
 
-    control_manager.enableEvent(ControlManager::SWITCH_ROTATION);
-
+    control_manager.enableEvent(ControlManager::SELECT);
+    control_manager.enableEvent(ControlManager::BACK);
     control_manager.enableEvent(ControlManager::PLATFORM_PREVIOUS);
-    control_manager.enableEvent(ControlManager::MENU_UP);
-    control_manager.enableEvent(ControlManager::GAME_MENU);
+    control_manager.enableEvent(ControlManager::PLATFORM_NEXT);
+    control_manager.enableEvent(ControlManager::GAME_PREVIOUS);
+    control_manager.enableEvent(ControlManager::GAME_NEXT);
+    control_manager.enableEvent(ControlManager::EXIT_MENU);
+    control_manager.enableEvent(ControlManager::SWITCH_ROTATION);
 
 
  	// Obtenemos el tiempo para las actualizaciones fijas
@@ -210,19 +232,47 @@ int BMonkeyApp::run(int argc, char** argv)
             // Esto es lo mismo que el handleInput();
 			while (control_manager.poolEvent(event))
 			{
-				if (event == ControlManager::EXIT)
+
+				switch (event)
 				{
+				case ControlManager::EXIT:
 					m_window.close();
-				}
-				else if (event == ControlManager::SWITCH_ROTATION)
-				{
-					screenSwitchRotation();
-				}
-				else
-				{
-					LOG_DEBUG("E: " << event);
-					LOG_DEBUG("C: " << control_manager.getLastCommand());
-					LOG_DEBUG("----------");
+					break;
+				case ControlManager::UNFOCUSED:
+					sound_manager.pauseMusic();
+					sound_manager.stopAllSound();
+					break;
+				case ControlManager::FOCUSED:
+					sound_manager.playMusic();
+					break;
+				case ControlManager::SELECT:
+					sound_manager.playSound(SoundManager::SELECT);
+					break;
+				case ControlManager::BACK:
+					sound_manager.playSound(static_cast<SoundManager::Effect>(rand() % 13));
+					break;
+				case ControlManager::PLATFORM_PREVIOUS:
+					sound_manager.setSoundVolume(sound_manager.getSoundVolume() - 5);
+					LOG_DEBUG("snd vol: " << sound_manager.getSoundVolume());
+					break;
+				case ControlManager::PLATFORM_NEXT:
+					sound_manager.setSoundVolume(sound_manager.getSoundVolume() + 5);
+					LOG_DEBUG("snd vol: " << sound_manager.getSoundVolume());
+					break;
+				case ControlManager::GAME_PREVIOUS:
+					sound_manager.setMusicVolume(sound_manager.getMusicVolume() + 5);
+					LOG_DEBUG("mus vol: " << sound_manager.getMusicVolume());
+					break;
+				case ControlManager::GAME_NEXT:
+					sound_manager.setMusicVolume(sound_manager.getMusicVolume() - 5);
+					LOG_DEBUG("mus vol: " << sound_manager.getMusicVolume());
+					break;
+				case ControlManager::EXIT_MENU:
+					sound_manager.stopMusic();
+					break;
+				case ControlManager::SWITCH_ROTATION:
+					sound_manager.playMusic();
+					break;
 				}
 			}
             //update(fixed_fps_time);
