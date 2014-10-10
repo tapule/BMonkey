@@ -38,7 +38,7 @@
 // Activa el modo de ejecución local.
 // El modo de ejecución local implica que todo el procesamiento se realizará
 // desde el directorio donde reside el binario.
-//#define ENABLE_LOCAL_MODE
+#define ENABLE_LOCAL_MODE
 
 // En win siempre se usará el modo local
 #ifdef OS_WIN

@@ -30,6 +30,7 @@
 #include "../core/datreader/dat_reader_factory.hpp"
 #include "../core/bmke/control_manager.hpp"
 #include "../core/bmke/sound_manager.hpp"
+#include "../core/bmke/font_manager.hpp"
 
 
 namespace bmonkey{
@@ -174,6 +175,7 @@ int BMonkeyApp::run(int argc, char** argv)
     ControlManager control_manager(m_window);
     ControlManager::Event event;
     SoundManager sound_manager;
+    FontManager font_manager;
 
     LOG_INFO("BMonkey: Initializing renderer...");
  	screenInit();
@@ -209,6 +211,21 @@ int BMonkeyApp::run(int argc, char** argv)
     control_manager.enableEvent(ControlManager::GAME_NEXT);
     control_manager.enableEvent(ControlManager::EXIT_MENU);
     control_manager.enableEvent(ControlManager::SWITCH_ROTATION);
+
+    // Fuentes
+    font_manager.loadFont("data/fonts/FreeMonoBold.ttf");
+    font_manager.loadFont("data/fonts/FreeSerif.ttf");
+    font_manager.loadFont("data/fonts/FreeSerifBold.ttf");
+    font_manager.loadFont("data/fonts/FreeMonoBold.ttf");
+    font_manager.loadFont("data/fonts/FreeSerif.ttf");
+    font_manager.loadFont("data/fonts/FreeSerifBold.ttf");
+    font_manager.loadFont("data/fonts/FreeMonoBold.ttf");
+    font_manager.loadFont("data/fonts/FreeSerif.ttf");
+    font_manager.loadFont("data/fonts/FreeSerifBold.ttf");
+    font_manager.deleteFont("data/fonts/FreeSerifBold.ttf");
+    font_manager.deleteFont("data/fonts/FreeSerifBold.ttf");
+    font_manager.deleteFont("data/fonts/FreeSerifBold.ttf");
+    font_manager.deleteFont("data/fonts/FreeSerifBold.ttf");
 
 
  	// Obtenemos el tiempo para las actualizaciones fijas

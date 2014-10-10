@@ -394,7 +394,7 @@ void ControlManager::registerDefaultControls(void)
 	registerEvent(MENU_LEFT, 0, "Key " + m_sfml_key_str[sf::Keyboard::Left]);
 	registerEvent(MENU_RIGHT, 0, "Key " + m_sfml_key_str[sf::Keyboard::Right]);
 	registerEvent(EXIT_MENU, 0, "Key " + m_sfml_key_str[sf::Keyboard::Escape]);
-	registerEvent(GAMELIST_MENU, 0, "Key " + m_sfml_key_str[sf::Keyboard::L]);
+	registerEvent(LISTS_MENU, 0, "Key " + m_sfml_key_str[sf::Keyboard::L]);
 	registerEvent(VOLUME_MENU, 0, "Key " + m_sfml_key_str[sf::Keyboard::V]);
 	registerEvent(FILTERS_MENU, 0, "Key " + m_sfml_key_str[sf::Keyboard::F]);
 	registerEvent(GAME_MENU, 0, "Key " + m_sfml_key_str[sf::Keyboard::G]);

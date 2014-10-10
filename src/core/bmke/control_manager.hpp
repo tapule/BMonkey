@@ -64,7 +64,7 @@ public:
 		MENU_LEFT,				/**< Selecciona el item a la izquierda del actual */
 		MENU_RIGHT,				/**< Selecciona el item a la derecha del actual */
 		EXIT_MENU,				/**< Abre el menú "Exit" */
-		GAMELIST_MENU,			/**< Abre el menú "GameList" */
+		LISTS_MENU,				/**< Abre el menú "Lists" */
 		VOLUME_MENU,			/**< Abre el menú "Volume" */
 		FILTERS_MENU,			/**< Abre el menú "Filters" */
 		GAME_MENU,				/**< Abre el menú "Game" */
