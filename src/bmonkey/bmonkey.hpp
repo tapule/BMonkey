@@ -30,6 +30,8 @@
 #include "../core/bmke/control_manager.hpp"
 #include "../core/bmke/font_manager.hpp"
 
+#include "../thirdparty/sfeMovie/Movie.hpp"
+
 namespace bmonkey{
 
 /**
@@ -233,6 +235,9 @@ private:
 	sf::Texture sprite_texture;
 	sf::Sprite back;
 	sf::Sprite sprite;
+	sfe::Movie movie1;
+	sfe::Movie movie2;
+
 };
 
 } // namespace bmonkey

@@ -2,3 +2,5 @@ BMonkey by:
 - Juan Ángel Moreno Fernandez <jamf.dev@gmail.com>
 
 BMonkey uses:
+- SFML from Laurent Gomila: http://www.sfml-dev.org
+- sfeMovie from Lucas Soltic (ie. Ceylo): http://sfemovie.yalir.org 

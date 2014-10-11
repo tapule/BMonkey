@@ -30,7 +30,6 @@
 #include "../core/datreader/dat_reader_factory.hpp"
 #include "../core/bmke/sound_manager.hpp"
 
-
 namespace bmonkey{
 
 BMonkeyApp::BMonkeyApp(const Glib::ustring& working_dir):
@@ -710,15 +709,20 @@ void BMonkeyApp::screenInit(void)
 	if (m_show_fps)
 	{
 		m_fps_text.setFont(*(m_font_manager.getSystemFont(FontManager::DEFAULT)));
-		m_fps_text.setPosition(5.f, 5.f);
-		m_fps_text.setCharacterSize(10);
+		m_fps_text.setPosition(5.f, 15.f);
+		m_fps_text.setCharacterSize(30);
 	}
 
 	// Objetos temporales, solo para pruebas
-	back_texture.loadFromFile("v.png");
+	back_texture.loadFromFile("h.png");
 	sprite_texture.loadFromFile("sprite.png");
 	back.setTexture(back_texture);
 	sprite.setTexture(sprite_texture);
+	movie1.openFromFile("19xx.avi");
+	movie2.openFromFile("gng.avi");
+	movie2.setPosition(500,200);
+	movie1.play();
+	movie2.play();
 }
 
 void BMonkeyApp::screenRotate(const Rotation rotation)
@@ -820,16 +824,27 @@ void BMonkeyApp::processInput(void)
 			sound_manager.setMusicVolume(sound_manager.getMusicVolume() - 5);
 			LOG_DEBUG("mus vol: " << sound_manager.getMusicVolume());
 			break;
-		case ControlManager::EXIT_MENU:
-			sound_manager.stopMusic();
-			break;
 */
+		case ControlManager::EXIT_MENU:
+			m_window.close();
+			break;
 		}
 	}
 }
 
 void BMonkeyApp::update(sf::Time delta_time)
 {
+	movie1.update();
+	movie2.update();
+
+	if (movie1.getStatus() == sfe::Status::Stopped)
+	{
+		movie1.play();
+	}
+	if (movie2.getStatus() == sfe::Status::Stopped)
+	{
+		movie2.play();
+	}
 
 }
 
@@ -861,7 +876,7 @@ void BMonkeyApp::draw(void)
 	m_window.clear();
 	m_window.draw(back);
 
-	for (int i = 0; i< 10000; i++)
+	for (int i = 0; i< 500; i++)
 	{
 		sprite.setPosition(rand() % 1024, rand() % 768);
 		scale = (rand() % 200) / 100;
@@ -869,6 +884,11 @@ void BMonkeyApp::draw(void)
 		sprite.setRotation(rand() % 360);
 		m_window.draw(sprite);
 	}
+	m_window.draw(movie1);
+	m_window.draw(movie2);
+
+
+
 	// Esto debe ser lo último
 	if (m_show_fps)
 	{
