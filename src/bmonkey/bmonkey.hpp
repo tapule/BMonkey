@@ -27,6 +27,8 @@
 #include "../defines.hpp"
 #include "../utils/config.hpp"
 #include "../core/collection/collection.hpp"
+#include "../core/bmke/control_manager.hpp"
+#include "../core/bmke/font_manager.hpp"
 
 namespace bmonkey{
 
@@ -86,7 +88,7 @@ private:
 	 * @return True si localizó el fichero de configuración del usuario, false
 	 * en otro caso.
 	 */
-	bool findConfigFile(Glib::ustring& file);
+	bool findConfigFile(Glib::ustring& file) const;
 
 	/**
 	 * Parsea los parámetros pasados modificando el estado de la aplicación
@@ -104,17 +106,16 @@ private:
 	 * 			1 si el comando se ejecutó con exito y la app debe continuar
 	 */
 	int execCommand(void);
-
 	/**
 	 * Muestra por la salida estandar un mensaje con información de uso
 	 * @param program Nombre real del binario ejecutado
 	 */
-	void showHelp(const Glib::ustring& program);
+	void showHelp(const Glib::ustring& program) const;
 
 	/**
 	 * Muestra por la salida estandar un mensaje con información de la versión
 	 */
-	void showVersion(void);
+	void showVersion(void) const;
 
 	/**
 	 * Fuerza el modo de ventana
@@ -177,10 +178,26 @@ private:
 	 */
 	void screenSwitchRotation(void);
 
+	/**
+	 * Se encarga de procesar las entradas realizadas por el usuario
+	 */
+	void processInput(void);
 
+	/**
+	 * Actualiza la lógica de la escena
+	 * @param delta_time Tiempo transcurrido desde la última actualización
+	 */
+	void update(sf::Time delta_time);
 
+	/**
+	 * Se encarga de actualizar el recuento de fps's
+	 * @param delta_time Tiempo transcurrido desde la última actualización
+	 */
+	void updateFps(sf::Time delta_time);
 
-
+	/**
+	 * Renderiza la escena
+	 */
 	void draw(void);
 
 	/**
@@ -202,6 +219,20 @@ private:
 
 	sf::RenderWindow m_window;		/**< Ventana principal de la apliación */
 	Rotation m_rotation;			/**< Rotación actual de la pantalla */
+	bool m_show_fps;
+	ControlManager m_control_manager; /**< Gestor de eventos del usuario */
+	FontManager m_font_manager;		/**< Gestor de fuentes para el fe */
+
+	// Contador de frames del libro SFML Game Development
+	sf::Text m_fps_text;
+	sf::Time m_fps_update_time;
+	std::size_t m_fps_num_frames;
+
+	// Objetos temporales, solo para pruebas
+	sf::Texture back_texture;
+	sf::Texture sprite_texture;
+	sf::Sprite back;
+	sf::Sprite sprite;
 };
 
 } // namespace bmonkey

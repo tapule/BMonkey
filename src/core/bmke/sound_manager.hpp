@@ -108,7 +108,7 @@ public:
 	 * Obtiene el volumen actual para los efectos de sonido
 	 * @return Volumen actual para los efectos de volumen
 	 */
-	float getSoundVolume(void);
+	float getSoundVolume(void) const;
 
 	/**
 	 * Establece el volumen para los efectos de sonido
@@ -145,7 +145,7 @@ public:
 	 * Obtiene el volumen actual para la música de fondo
 	 * @return Volumen actual para la música de fondo
 	 */
-	float getMusicVolume(void);
+	float getMusicVolume(void) const;
 
 	/**
 	 * Establece el volumen para la música de fondo

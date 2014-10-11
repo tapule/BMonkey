@@ -31,7 +31,7 @@ inline bool ControlManager::save(void)
 	}
 }
 
-inline std::vector<bool> ControlManager::getEventsStatus(void)
+inline std::vector<bool> ControlManager::getEventsStatus(void) const
 {
 	return m_events_status;
 }
@@ -42,13 +42,13 @@ inline void ControlManager::setEventsStatus(const std::vector<bool>& status)
 	m_events_status = status;
 }
 
-inline void ControlManager::enableEvent(const Event& event)
+inline void ControlManager::enableEvent(const Event event)
 {
 	assert(event < OTHER);
 	m_events_status[event] = true;
 }
 
-inline void ControlManager::disableEvent(const Event& event)
+inline void ControlManager::disableEvent(const Event event)
 {
 	assert(event < OTHER);
 	m_events_status[event] = false;
@@ -59,7 +59,7 @@ inline void ControlManager::ignoreAltKey(const bool ignore)
 	m_ignore_alt_key = ignore;
 }
 
-inline std::string ControlManager::getAltKey(const unsigned char set)
+inline std::string ControlManager::getAltKey(const unsigned char set) const
 {
 	assert(set < MAX_CONTROL_SETS);
 	return m_alt_keys[set];
@@ -72,12 +72,12 @@ inline void ControlManager::registerAltKey(const unsigned char set, const std::s
 	m_alt_keys[set] = command;
 }
 
-inline std::string ControlManager::getLastCommand(void)
+inline std::string ControlManager::getLastCommand(void) const
 {
 	return m_last_command;
 }
 
-inline std::vector<std::string> ControlManager::getControlSet(const unsigned char set)
+inline std::vector<std::string> ControlManager::getControlSet(const unsigned char set) const
 {
 	assert(set < MAX_CONTROL_SETS);
 

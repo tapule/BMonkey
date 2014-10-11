@@ -119,14 +119,14 @@ public:
 	 * @param event Evento a habilitar
 	 * @note El evento OTHER no puede ser modificado
 	 */
-	void enableEvent(const Event& event);
+	void enableEvent(const Event event);
 
 	/**
 	 * Deshabilita un evento indicado
 	 * @param event Evento a deshabilitar
 	 * @note El evento OTHER no puede ser modificado
 	 */
-	void disableEvent(const Event& event);
+	void disableEvent(const Event event);
 
 	/**
 	 * Deshabilita todos los eventos excepto OTHER que no puede ser modificado
@@ -139,13 +139,13 @@ public:
 	 * @param set Control set en el que registrar el evento
 	 * @param command Comando a registrar
 	 */
-	void registerEvent(const Event& event, const unsigned char set, const std::string& command);
+	void registerEvent(const Event event, const unsigned char set, const std::string& command);
 
 	/**
 	 * Obtiene el estado actual de los eventos del sistema
 	 * @return Vector con todos los estados de los eventos del sistema
 	 */
-	std::vector<bool> getEventsStatus(void);
+	std::vector<bool> getEventsStatus(void) const;
 
 	/**
 	 * Establece los estados de los eventos del sistema
@@ -164,7 +164,7 @@ public:
 	 * @param set Control set del que obtener su Alt key
 	 * @return Comando configurado para la Alt key para en el control set dado
 	 */
-	std::string getAltKey(const unsigned char set);
+	std::string getAltKey(const unsigned char set) const;
 
 	/**
 	 * Registra para un control set, el comando de su Alt key
@@ -177,14 +177,14 @@ public:
 	 * Obtiene la representación textual del último comando generado
 	 * @return Último comando generado en versión textual
 	 */
-	std::string getLastCommand(void);
+	std::string getLastCommand(void) const;
 
 	/**
 	 * Obtiene la configuración actual para un control set indicado
 	 * @param set Control set del que se quiere obtener su configuración
 	 * @return Configuración del control set para todos los eventos
 	 */
-	std::vector<std::string> getControlSet(const unsigned char set);
+	std::vector<std::string> getControlSet(const unsigned char set) const;
 
 	/**
 	 * Registra los comandos por defecto de BMonkey para los diferentes control sets

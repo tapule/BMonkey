@@ -39,7 +39,7 @@ inline void SoundManager::stopSound(const Effect effect)
 	}
 }
 
-inline float SoundManager::getSoundVolume(void)
+inline float SoundManager::getSoundVolume(void) const
 {
 	return m_sound_volume;
 }
@@ -69,7 +69,7 @@ inline void SoundManager::stopMusic(void)
 	}
 }
 
-inline float SoundManager::getMusicVolume(void)
+inline float SoundManager::getMusicVolume(void) const
 {
 	return m_music_volume;
 }

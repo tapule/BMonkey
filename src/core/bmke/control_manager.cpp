@@ -361,7 +361,7 @@ void ControlManager::disableAllEvent(void)
 	}
 }
 
-void ControlManager::registerEvent(const Event& event, const unsigned char set, const std::string& command)
+void ControlManager::registerEvent(const Event event, const unsigned char set, const std::string& command)
 {
 	assert(event < OTHER);
 	assert(set < MAX_CONTROL_SETS);

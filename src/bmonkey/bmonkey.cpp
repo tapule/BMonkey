@@ -28,16 +28,14 @@
 #include <glibmm/fileutils.h>
 #include "../utils/utils.hpp"
 #include "../core/datreader/dat_reader_factory.hpp"
-#include "../core/bmke/control_manager.hpp"
 #include "../core/bmke/sound_manager.hpp"
-#include "../core/bmke/font_manager.hpp"
 
 
 namespace bmonkey{
 
 BMonkeyApp::BMonkeyApp(const Glib::ustring& working_dir):
-	m_config(NULL),
-	m_collection(NULL),
+	m_config(nullptr),
+	m_collection(nullptr),
 #ifdef ENABLE_DEBUG_MODE
 	m_log_enabled(true),
 #else
@@ -46,7 +44,11 @@ BMonkeyApp::BMonkeyApp(const Glib::ustring& working_dir):
 	m_first_run(true),
 	m_working_dir(working_dir),
 	m_command(COMMAND_NONE),
-	m_rotation(NONE)
+	m_rotation(NONE),
+	m_show_fps(false),
+	m_control_manager(m_window),
+	m_fps_update_time(sf::Time::Zero),
+	m_fps_num_frames(0)
 {
 	assert(!m_working_dir.empty());
 }
@@ -170,65 +172,28 @@ int BMonkeyApp::run(int argc, char** argv)
 	*******************************************************/
 	float fixed_fps = 60.f;
 	sf::Time fixed_fps_time = sf::Time::Zero;
-    sf::Time elapsed_time = sf::Time::Zero;
+    sf::Time time_since_last_update = sf::Time::Zero;
+    sf::Time delta_time  = sf::Time::Zero;
     sf::Clock clock;
-    ControlManager control_manager(m_window);
-    ControlManager::Event event;
-    SoundManager sound_manager;
-    FontManager font_manager;
 
     LOG_INFO("BMonkey: Initializing renderer...");
  	screenInit();
  	LOG_INFO("BMonkey: Loading keymap...");
- 	if (!control_manager.load(Glib::build_filename(m_working_dir, BMONKEY_KEYMAP_FILE)))
+ 	if (!m_control_manager.load(Glib::build_filename(m_working_dir, BMONKEY_KEYMAP_FILE)))
  	{
- 		control_manager.registerDefaultControls();
+ 		m_control_manager.registerDefaultControls();
  	}
- 	LOG_INFO("BMonkey: Loading sounds...");
+    m_control_manager.enableEvent(ControlManager::SWITCH_ROTATION);
 
- 	sound_manager.loadSound(SoundManager::SELECT, "sounds/gs1.ogg");
- 	sound_manager.loadSound(SoundManager::BACK, "sounds/gs2.ogg");
- 	sound_manager.loadSound(SoundManager::PREVIOUS, "sounds/gs3.ogg");
- 	sound_manager.loadSound(SoundManager::NEXT, "sounds/gs4.ogg");
- 	sound_manager.loadSound(SoundManager::UP, "sounds/gs5.ogg");
- 	sound_manager.loadSound(SoundManager::DOWN, "sounds/gs6.ogg");
- 	sound_manager.loadSound(SoundManager::LEFT, "sounds/gs7.ogg");
- 	sound_manager.loadSound(SoundManager::RIGHT, "sounds/gs8.ogg");
- 	//sound_manager.loadSound(SoundManager::JUMP_BACKWARD, "sounds/gs9.ogg");
- 	sound_manager.loadSound(SoundManager::JUMP_FORWARD, "sounds/gs10.ogg");
- 	sound_manager.loadSound(SoundManager::MENU_OPEN, "sounds/gs11.ogg");
- 	sound_manager.loadSound(SoundManager::ERROR, "sounds/gs12.ogg");
- 	sound_manager.loadSound(SoundManager::SPECIAL, "sounds/gs13.ogg");
- 	sound_manager.openMusic("sounds/mus.ogg");
- 	sound_manager.setMusicVolume(75.f);
- 	sound_manager.setSoundVolume(75.f);
+    m_control_manager.enableEvent(ControlManager::SELECT);
+    m_control_manager.enableEvent(ControlManager::BACK);
+    m_control_manager.enableEvent(ControlManager::PLATFORM_PREVIOUS);
+    m_control_manager.enableEvent(ControlManager::PLATFORM_NEXT);
+    m_control_manager.enableEvent(ControlManager::GAME_PREVIOUS);
+    m_control_manager.enableEvent(ControlManager::GAME_NEXT);
+    m_control_manager.enableEvent(ControlManager::EXIT_MENU);
 
-    control_manager.enableEvent(ControlManager::SELECT);
-    control_manager.enableEvent(ControlManager::BACK);
-    control_manager.enableEvent(ControlManager::PLATFORM_PREVIOUS);
-    control_manager.enableEvent(ControlManager::PLATFORM_NEXT);
-    control_manager.enableEvent(ControlManager::GAME_PREVIOUS);
-    control_manager.enableEvent(ControlManager::GAME_NEXT);
-    control_manager.enableEvent(ControlManager::EXIT_MENU);
-    control_manager.enableEvent(ControlManager::SWITCH_ROTATION);
-
-    // Fuentes
-    font_manager.loadFont("data/fonts/FreeMonoBold.ttf");
-    font_manager.loadFont("data/fonts/FreeSerif.ttf");
-    font_manager.loadFont("data/fonts/FreeSerifBold.ttf");
-    font_manager.loadFont("data/fonts/FreeMonoBold.ttf");
-    font_manager.loadFont("data/fonts/FreeSerif.ttf");
-    font_manager.loadFont("data/fonts/FreeSerifBold.ttf");
-    font_manager.loadFont("data/fonts/FreeMonoBold.ttf");
-    font_manager.loadFont("data/fonts/FreeSerif.ttf");
-    font_manager.loadFont("data/fonts/FreeSerifBold.ttf");
-    font_manager.deleteFont("data/fonts/FreeSerifBold.ttf");
-    font_manager.deleteFont("data/fonts/FreeSerifBold.ttf");
-    font_manager.deleteFont("data/fonts/FreeSerifBold.ttf");
-    font_manager.deleteFont("data/fonts/FreeSerifBold.ttf");
-
-
- 	// Obtenemos el tiempo para las actualizaciones fijas
+  	// Obtenemos el tiempo para las actualizaciones fijas
 	if (!m_config->getKey(BMONKEY_CFG_CORE, "fixed_framerate", fixed_fps))
 	{
 		m_config->setKey(BMONKEY_CFG_CORE, "fixed_framerate", fixed_fps);
@@ -241,63 +206,22 @@ int BMonkeyApp::run(int argc, char** argv)
 
     while (m_window.isOpen())
     {
-    	elapsed_time += clock.restart();
-        while (elapsed_time > fixed_fps_time)
+    	delta_time = clock.restart();
+    	time_since_last_update += delta_time;
+        while (time_since_last_update > fixed_fps_time)
         {
-        	elapsed_time -= fixed_fps_time;
-
-            // Esto es lo mismo que el handleInput();
-			while (control_manager.poolEvent(event))
-			{
-
-				switch (event)
-				{
-				case ControlManager::EXIT:
-					m_window.close();
-					break;
-				case ControlManager::UNFOCUSED:
-					sound_manager.pauseMusic();
-					sound_manager.stopAllSound();
-					break;
-				case ControlManager::FOCUSED:
-					sound_manager.playMusic();
-					break;
-				case ControlManager::SELECT:
-					sound_manager.playSound(SoundManager::SELECT);
-					break;
-				case ControlManager::BACK:
-					sound_manager.playSound(static_cast<SoundManager::Effect>(rand() % 13));
-					break;
-				case ControlManager::PLATFORM_PREVIOUS:
-					sound_manager.setSoundVolume(sound_manager.getSoundVolume() - 5);
-					LOG_DEBUG("snd vol: " << sound_manager.getSoundVolume());
-					break;
-				case ControlManager::PLATFORM_NEXT:
-					sound_manager.setSoundVolume(sound_manager.getSoundVolume() + 5);
-					LOG_DEBUG("snd vol: " << sound_manager.getSoundVolume());
-					break;
-				case ControlManager::GAME_PREVIOUS:
-					sound_manager.setMusicVolume(sound_manager.getMusicVolume() + 5);
-					LOG_DEBUG("mus vol: " << sound_manager.getMusicVolume());
-					break;
-				case ControlManager::GAME_NEXT:
-					sound_manager.setMusicVolume(sound_manager.getMusicVolume() - 5);
-					LOG_DEBUG("mus vol: " << sound_manager.getMusicVolume());
-					break;
-				case ControlManager::EXIT_MENU:
-					sound_manager.stopMusic();
-					break;
-				case ControlManager::SWITCH_ROTATION:
-					sound_manager.playMusic();
-					break;
-				}
-			}
-            //update(fixed_fps_time);
+        	time_since_last_update -= fixed_fps_time;
+        	processInput();
+            update(fixed_fps_time);
         }
+    	if (m_show_fps)
+    	{
+    		updateFps(delta_time);
+    	}
         draw();
     }
 
-    control_manager.save();
+    m_control_manager.save();
 
 	/*******************************************************/
 
@@ -308,7 +232,7 @@ int BMonkeyApp::run(int argc, char** argv)
 	return EXIT_SUCCESS;
 }
 
-bool BMonkeyApp::findConfigFile(Glib::ustring& file)
+bool BMonkeyApp::findConfigFile(Glib::ustring& file) const
 {
 	Glib::ustring cfg_file;
 
@@ -486,7 +410,7 @@ int BMonkeyApp::execCommand(void)
 	return ret;
 }
 
-void BMonkeyApp::showHelp(const Glib::ustring& program)
+void BMonkeyApp::showHelp(const Glib::ustring& program) const
 {
 	showVersion();
 	std::cout << "Usage: " << program << " [Options] [Platform Name] [File / Gamelist Name]" << std::endl
@@ -503,7 +427,7 @@ void BMonkeyApp::showHelp(const Glib::ustring& program)
 			  << "  -ga, --gamelist-add      Enable logging" << std::endl;
 }
 
-void BMonkeyApp::showVersion(void)
+void BMonkeyApp::showVersion(void) const
 {
 	std::cout << "Bmonkey Frontend v" << PACKAGE_VERSION << std::endl
 			  << "Copyright (C) 2014 Juan Ángel Moreno Fernández" << std::endl;
@@ -545,7 +469,7 @@ void BMonkeyApp::logEnable(void)
 
 int BMonkeyApp::platformAdd(const Glib::ustring& name)
 {
-	Platform* platform = NULL;
+	Platform* platform = nullptr;
 
 	m_collection = new Collection(m_working_dir);
 	m_collection->loadConfig();
@@ -570,12 +494,12 @@ int BMonkeyApp::platformAdd(const Glib::ustring& name)
 
 int BMonkeyApp::platformImport(const Glib::ustring& name, const Glib::ustring& file)
 {
-	DatReader* dat = NULL;
+	DatReader* dat = nullptr;
 	std::vector<DatSet> sets;
 	std::vector<DatSet>::iterator iter;
-	Platform* platform = NULL;
-	Gamelist* list = NULL;
-	Game* game = NULL;
+	Platform* platform = nullptr;
+	Gamelist* list = nullptr;
+	Game* game = nullptr;
 	int total = 0;
 
 	// Obtenemos un lector de dat para el fichero
@@ -648,7 +572,7 @@ int BMonkeyApp::platformImport(const Glib::ustring& name, const Glib::ustring& f
 int BMonkeyApp::gamelistAdd(const Glib::ustring& platform, const Glib::ustring& name)
 {
 	int ret = 0;
-	Platform* plt = NULL;
+	Platform* plt = nullptr;
 
 	m_collection = new Collection(m_working_dir);
 	m_collection->loadConfig();
@@ -679,7 +603,6 @@ int BMonkeyApp::gamelistAdd(const Glib::ustring& platform, const Glib::ustring& 
 	delete m_collection;
 
 	return ret;
-
 }
 
 void BMonkeyApp::screenInit(void)
@@ -765,6 +688,7 @@ void BMonkeyApp::screenInit(void)
 	{
 		style = sf::Style::Titlebar | sf::Style::Close;
 	}
+
 	ctx_settings.antialiasingLevel = antialiasing_level;
 	m_window.create(sf::VideoMode(width, height, bpp), "BMonkey 0.1", style, ctx_settings);
 	m_window.setVerticalSyncEnabled(vsync);
@@ -776,6 +700,25 @@ void BMonkeyApp::screenInit(void)
 	{
 		m_window.setJoystickThreshold(joystick_threshold);
 	}
+
+	// Inicialización del visor de fps's
+	if (!m_config->getKey(BMONKEY_CFG_SCREEN, "show_fps", m_show_fps))
+	{
+		m_config->setKey(BMONKEY_CFG_SCREEN, "show_fps", m_show_fps);
+	}
+
+	if (m_show_fps)
+	{
+		m_fps_text.setFont(*(m_font_manager.getSystemFont(FontManager::DEFAULT)));
+		m_fps_text.setPosition(5.f, 5.f);
+		m_fps_text.setCharacterSize(10);
+	}
+
+	// Objetos temporales, solo para pruebas
+	back_texture.loadFromFile("v.png");
+	sprite_texture.loadFromFile("sprite.png");
+	back.setTexture(back_texture);
+	sprite.setTexture(sprite_texture);
 }
 
 void BMonkeyApp::screenRotate(const Rotation rotation)
@@ -835,14 +778,102 @@ void BMonkeyApp::screenSwitchRotation(void)
 	screenRotate(static_cast<Rotation>(rotation));
 }
 
+void BMonkeyApp::processInput(void)
+{
+	ControlManager::Event event;
+
+	while (m_control_manager.poolEvent(event))
+	{
+
+		switch (event)
+		{
+		case ControlManager::EXIT:
+			m_window.close();
+			break;
+		case ControlManager::UNFOCUSED:
+			break;
+		case ControlManager::FOCUSED:
+			break;
+		case ControlManager::SWITCH_ROTATION:
+			screenSwitchRotation();
+			break;
+/*
+		case ControlManager::SELECT:
+			sound_manager.playSound(SoundManager::SELECT);
+			break;
+		case ControlManager::BACK:
+			sound_manager.playSound(static_cast<SoundManager::Effect>(rand() % 13));
+			break;
+		case ControlManager::PLATFORM_PREVIOUS:
+			sound_manager.setSoundVolume(sound_manager.getSoundVolume() - 5);
+			LOG_DEBUG("snd vol: " << sound_manager.getSoundVolume());
+			break;
+		case ControlManager::PLATFORM_NEXT:
+			sound_manager.setSoundVolume(sound_manager.getSoundVolume() + 5);
+			LOG_DEBUG("snd vol: " << sound_manager.getSoundVolume());
+			break;
+		case ControlManager::GAME_PREVIOUS:
+			sound_manager.setMusicVolume(sound_manager.getMusicVolume() + 5);
+			LOG_DEBUG("mus vol: " << sound_manager.getMusicVolume());
+			break;
+		case ControlManager::GAME_NEXT:
+			sound_manager.setMusicVolume(sound_manager.getMusicVolume() - 5);
+			LOG_DEBUG("mus vol: " << sound_manager.getMusicVolume());
+			break;
+		case ControlManager::EXIT_MENU:
+			sound_manager.stopMusic();
+			break;
+*/
+		}
+	}
+}
+
+void BMonkeyApp::update(sf::Time delta_time)
+{
+
+}
+
+void BMonkeyApp::updateFps(sf::Time delta_time)
+{
+	Glib::ustring text;
+	static const sf::Time one_second = sf::seconds(1.0f);
+
+	m_fps_update_time += delta_time;
+	++m_fps_num_frames;
+
+	if (m_fps_update_time >= one_second)
+	{
+
+		text = "Frames / Second = " + utils::toStr(m_fps_num_frames) + "\n" +
+				"Time / Update = " + utils::toStr(m_fps_update_time.asMicroseconds() / m_fps_num_frames) + "us";
+
+		m_fps_text.setString(text.raw());
+
+		m_fps_update_time -= one_second;
+		m_fps_num_frames = 0;
+	}
+}
+
 void BMonkeyApp::draw(void)
 {
-	sf::Texture texture;
-    texture.loadFromFile("v.png");
-    sf::Sprite sprite(texture);
+	float scale;
 
 	m_window.clear();
-	m_window.draw(sprite);
+	m_window.draw(back);
+
+	for (int i = 0; i< 10000; i++)
+	{
+		sprite.setPosition(rand() % 1024, rand() % 768);
+		scale = (rand() % 200) / 100;
+		sprite.setScale(scale, scale);
+		sprite.setRotation(rand() % 360);
+		m_window.draw(sprite);
+	}
+	// Esto debe ser lo último
+	if (m_show_fps)
+	{
+		m_window.draw(m_fps_text);
+	}
 	m_window.display();
 }
 
@@ -857,7 +888,7 @@ void BMonkeyApp::clean(void)
 		m_cfg_file = Glib::build_filename(m_working_dir, BMONKEY_CFG_FILE);
 		m_config->save(m_cfg_file);
 		delete m_config;
-		m_config = NULL;
+		m_config = nullptr;
 	}
 
 	LOG_CLOSE();
