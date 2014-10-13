@@ -27,6 +27,8 @@
 namespace bmonkey{
 
 
+FontManager* FontManager::m_font_manager = nullptr;
+
 FontManager::FontManager(void):
 	m_system_fonts(COUNT)
 {
@@ -41,6 +43,15 @@ FontManager::FontManager(void):
 FontManager::~FontManager(void)
 {
 	clear();
+}
+
+FontManager* FontManager::getInstance(void)
+{
+	if (!m_font_manager)
+	{
+		m_font_manager = new FontManager();
+	}
+	return m_font_manager;
 }
 
 sf::Font* FontManager::loadFont(const Glib::ustring& file)

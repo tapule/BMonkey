@@ -53,7 +53,8 @@ AM_PROG_LIBTOOL
 #AC_SUBST(GTKMM_LIBS)
 
 # Comprobamos las librerías glibmm y exportamos sus flags
-PKG_CHECK_MODULES(GLIBMM, [glibmm-2.4 giomm-2.4])
+# PKG_CHECK_MODULES(GLIBMM, [glibmm-2.4 giomm-2.4])
+PKG_CHECK_MODULES(GLIBMM, [glibmm-2.4])
 AC_SUBST(GLIBMM_CFLAGS)
 AC_SUBST(GLIBMM_LIBS)
 
@@ -82,22 +83,22 @@ AC_SUBST(SFML_CFLAGS)
 AC_SUBST(SFML_LIBS)
 
 # Comprobamos las librerías OpenGL y exportamos sus flags
-OGL_CFLAGS="-pthread"
-OGL_LIBS="-lpthread"
+# OGL_CFLAGS="-pthread"
+# OGL_LIBS="-lpthread"
 
-AC_CHECK_LIB(GL, glEnable,
-    [ OGL_LIBS="$OGL_LIBS -lGL -lm" ],
-    [ AC_MSG_ERROR("GL not found") ])
+# AC_CHECK_LIB(GL, glEnable,
+#     [ OGL_LIBS="$OGL_LIBS -lGL -lm" ],
+#     [ AC_MSG_ERROR("GL not found") ])
 
-AC_CHECK_LIB(GLU, gluProject,
-    [ OGL_LIBS="$OGL_LIBS -lGLU" ],
-    [ AC_MSG_ERROR("GLU not found") ])
+# AC_CHECK_LIB(GLU, gluProject,
+#     [ OGL_LIBS="$OGL_LIBS -lGLU" ],
+#     [ AC_MSG_ERROR("GLU not found") ])
 
-AC_CHECK_LIB(glut, glutInit,
-    [ OGL_LIBS="$OGL_LIBS -lglut  -lSM -lICE -lXmu -lXi" ],
-    [ AC_MSG_ERROR("glut not found") ])
-AC_SUBST(OGL_CFLAGS)
-AC_SUBST(OGL_LIBS)
+# AC_CHECK_LIB(glut, glutInit,
+#     [ OGL_LIBS="$OGL_LIBS -lglut  -lSM -lICE -lXmu -lXi" ],
+#     [ AC_MSG_ERROR("glut not found") ])
+# AC_SUBST(OGL_CFLAGS)
+# AC_SUBST(OGL_LIBS)
 
 # Comprobamos parámetros
 #    Activar modo debug --enable-debug

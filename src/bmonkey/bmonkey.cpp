@@ -45,7 +45,8 @@ BMonkeyApp::BMonkeyApp(const Glib::ustring& working_dir):
 	m_command(COMMAND_NONE),
 	m_rotation(NONE),
 	m_show_fps(false),
-	m_control_manager(m_window),
+	m_control_manager(ControlManager::getInstance()),
+	m_font_manager(FontManager::getInstance()),
 	m_fps_update_time(sf::Time::Zero),
 	m_fps_num_frames(0)
 {
@@ -166,6 +167,17 @@ int BMonkeyApp::run(int argc, char** argv)
 		}
 	}
 
+    LOG_INFO("BMonkey: Initializing renderer...");
+ 	screenInit();
+ 	LOG_INFO("BMonkey: Loading keymap...");
+ 	m_control_manager->setWindow(m_window);
+ 	if (!m_control_manager->load(Glib::build_filename(m_working_dir, BMONKEY_KEYMAP_FILE)))
+ 	{
+ 		m_control_manager->registerDefaultControls();
+ 	}
+
+
+
 	/*******************************************************
 	 * Bucle principal de la aplicación
 	*******************************************************/
@@ -175,22 +187,14 @@ int BMonkeyApp::run(int argc, char** argv)
     sf::Time delta_time  = sf::Time::Zero;
     sf::Clock clock;
 
-    LOG_INFO("BMonkey: Initializing renderer...");
- 	screenInit();
- 	LOG_INFO("BMonkey: Loading keymap...");
- 	if (!m_control_manager.load(Glib::build_filename(m_working_dir, BMONKEY_KEYMAP_FILE)))
- 	{
- 		m_control_manager.registerDefaultControls();
- 	}
-    m_control_manager.enableEvent(ControlManager::SWITCH_ROTATION);
-
-    m_control_manager.enableEvent(ControlManager::SELECT);
-    m_control_manager.enableEvent(ControlManager::BACK);
-    m_control_manager.enableEvent(ControlManager::PLATFORM_PREVIOUS);
-    m_control_manager.enableEvent(ControlManager::PLATFORM_NEXT);
-    m_control_manager.enableEvent(ControlManager::GAME_PREVIOUS);
-    m_control_manager.enableEvent(ControlManager::GAME_NEXT);
-    m_control_manager.enableEvent(ControlManager::EXIT_MENU);
+    m_control_manager->enableEvent(ControlManager::SWITCH_ROTATION);
+    m_control_manager->enableEvent(ControlManager::SELECT);
+    m_control_manager->enableEvent(ControlManager::BACK);
+    m_control_manager->enableEvent(ControlManager::PLATFORM_PREVIOUS);
+    m_control_manager->enableEvent(ControlManager::PLATFORM_NEXT);
+    m_control_manager->enableEvent(ControlManager::GAME_PREVIOUS);
+    m_control_manager->enableEvent(ControlManager::GAME_NEXT);
+    m_control_manager->enableEvent(ControlManager::EXIT_MENU);
 
   	// Obtenemos el tiempo para las actualizaciones fijas
 	if (!m_config->getKey(BMONKEY_CFG_CORE, "fixed_framerate", fixed_fps))
@@ -220,8 +224,7 @@ int BMonkeyApp::run(int argc, char** argv)
         draw();
     }
 
-    m_control_manager.save();
-
+    m_control_manager->save();
 	/*******************************************************/
 
 	// Limpiamos los sistemas creados
@@ -708,7 +711,7 @@ void BMonkeyApp::screenInit(void)
 
 	if (m_show_fps)
 	{
-		m_fps_text.setFont(*(m_font_manager.getSystemFont(FontManager::DEFAULT)));
+		m_fps_text.setFont(*(m_font_manager->getSystemFont(FontManager::DEFAULT)));
 		m_fps_text.setPosition(5.f, 15.f);
 		m_fps_text.setCharacterSize(30);
 	}
@@ -786,7 +789,7 @@ void BMonkeyApp::processInput(void)
 {
 	ControlManager::Event event;
 
-	while (m_control_manager.poolEvent(event))
+	while (m_control_manager->poolEvent(event))
 	{
 
 		switch (event)

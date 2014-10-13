@@ -24,6 +24,7 @@
 
 namespace bmonkey{
 
+SoundManager* SoundManager::m_sound_manager = nullptr;
 
 SoundManager::SoundManager(void):
 	m_special_buffer(nullptr),

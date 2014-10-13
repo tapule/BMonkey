@@ -36,10 +36,12 @@ namespace bmonkey{
  * frontend.
  * Actua como una especie de almacén para las texturas que se van cargando desde
  * fichero, proporcionando métodos para su carga y descarga.
+ * Se define como singleton, de forma que solamente tendrémos una instancia
+ * durante toda la ejecución.
  */
 class TextureManager
 {
-public:
+protected:
 
 	/**
 	 * Constructor de la clase
@@ -50,6 +52,24 @@ public:
 	 * Destructor de la clase
 	 */
 	virtual ~TextureManager(void);
+
+	/**
+	 * Constructor de copia anulado para reforzar el singleton
+	 */
+	TextureManager(TextureManager const&);
+
+	/**
+	 * Operador de copia anulado para reforzar el singleton
+	 */
+	TextureManager& operator=(TextureManager const&);
+
+public:
+
+	/**
+	 * Obtiene la instancia única del manager
+	 * @return Instancia única del manager
+	 */
+	static TextureManager* getInstance(void);
 
 	/**
 	 * Carga una textura en el manager y la devuelve
@@ -95,8 +115,10 @@ private:
 		sf::Texture* texture;
 	};
 
-	std::unordered_map<std::string, Resource > m_textures; /**< Almacen de texturas */
-	bool m_smooth;
+	std::unordered_map<std::string, Resource > m_textures;	/**< Almacen de texturas */
+	bool m_smooth;								/**< Indica si se debe aplicar suavizado a las texturas */
+
+	static TextureManager* m_texture_manager;	/**< Instancia única del manager */
 };
 
 } // namespace bmonkey

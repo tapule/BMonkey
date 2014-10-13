@@ -33,6 +33,8 @@ namespace bmonkey{
 
 const unsigned char ControlManager::MAX_CONTROL_SETS = 2;
 
+ControlManager* ControlManager::m_control_manager = nullptr;
+
 const std::vector<std::string> ControlManager::m_sfml_key_str =
 {
 	"A",
@@ -138,8 +140,8 @@ const std::vector<std::string> ControlManager::m_sfml_key_str =
 	"Pause"
 };
 
-ControlManager::ControlManager(sf::Window& window):
-	m_window(window),
+ControlManager::ControlManager():
+	m_window(nullptr),
 	m_mouse_pos(sf::Mouse::getPosition()),
 	m_ignore_alt_key(false),
 	m_alt_keys(MAX_CONTROL_SETS, ""),
@@ -267,7 +269,7 @@ bool ControlManager::poolEvent(Event& event)
 	int i;
 	bool ret = false;
 
-	while (m_window.pollEvent(sfml_event))
+	while (m_window->pollEvent(sfml_event))
 	{
 		// Antes de nada comprobamos los eventos del sistema
 		if (sfml_event.type == sf::Event::Closed)

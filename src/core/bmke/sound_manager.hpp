@@ -42,6 +42,8 @@ namespace bmonkey{
  * reproducciones múltiples de sonidos sin necesidad de limpiar el resto de
  * efectos de sonido.
  * La música de fondo se reproducirá en loop.
+ * Se define como singleton, de forma que solamente tendrémos una instancia
+ * durante toda la ejecución.
  */
 class SoundManager
 {
@@ -66,6 +68,8 @@ public:
 		COUNT			/**< Contador de sonidos */
 	};
 
+protected:
+
 	/**
 	 * Constructor de la clase
 	 */
@@ -75,6 +79,24 @@ public:
 	 * Destructor de la clase
 	 */
 	virtual ~SoundManager(void);
+
+	/**
+	 * Constructor de copia anulado para reforzar el singleton
+	 */
+	SoundManager(SoundManager const&);
+
+	/**
+	 * Operador de copia anulado para reforzar el singleton
+	 */
+	SoundManager& operator=(SoundManager const&);
+
+public:
+
+	/**
+	 * Obtiene la instancia única del manager
+	 * @return Instancia única del manager
+	 */
+	static SoundManager* getInstance(void);
 
 	/**
 	 * Carga un audio para un efecto determinado
@@ -166,6 +188,8 @@ private:
 	sf::Music* m_music;						/**< Música del sound manager */
 	float m_sound_volume;					/**< Volumen para los sonidos */
 	float m_music_volume;					/**< Volumen para la música */
+
+	static SoundManager* m_sound_manager;	/**< Instancia única del manager */
 };
 
 // Inclusión de los métodos inline

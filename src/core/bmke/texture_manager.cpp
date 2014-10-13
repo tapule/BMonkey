@@ -24,6 +24,7 @@
 
 namespace bmonkey{
 
+TextureManager* TextureManager::m_texture_manager = nullptr;
 
 TextureManager::TextureManager(void):
 	m_smooth(false)
@@ -33,6 +34,15 @@ TextureManager::TextureManager(void):
 TextureManager::~TextureManager(void)
 {
 	clear();
+}
+
+TextureManager* TextureManager::getInstance(void)
+{
+	if (!m_texture_manager)
+	{
+		m_texture_manager = new TextureManager();
+	}
+	return m_texture_manager;
 }
 
 sf::Texture* TextureManager::loadTexture(const Glib::ustring& file, const bool repeated)

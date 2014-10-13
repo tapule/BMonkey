@@ -19,6 +19,20 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
+inline ControlManager* ControlManager::getInstance(void)
+{
+	if (!m_control_manager)
+	{
+		m_control_manager = new ControlManager();
+	}
+	return m_control_manager;
+}
+
+inline void ControlManager::setWindow(sf::Window& window)
+{
+	m_window = &window;
+}
+
 inline bool ControlManager::save(void)
 {
 	if (!m_file.empty())

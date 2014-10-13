@@ -222,8 +222,8 @@ private:
 	sf::RenderWindow m_window;		/**< Ventana principal de la apliación */
 	Rotation m_rotation;			/**< Rotación actual de la pantalla */
 	bool m_show_fps;
-	ControlManager m_control_manager; /**< Gestor de eventos del usuario */
-	FontManager m_font_manager;		/**< Gestor de fuentes para el fe */
+	ControlManager* m_control_manager; /**< Gestor de eventos del usuario */
+	FontManager* m_font_manager;	/**< Gestor de fuentes para el fe */
 
 	// Contador de frames del libro SFML Game Development
 	sf::Text m_fps_text;

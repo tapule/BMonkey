@@ -38,6 +38,8 @@ namespace bmonkey{
  * una tecla modificadora o Alt Key para poder aumentar el uso de las diferentes
  * teclas, botones, etc.
  * Permite habilitar o deshabilitar los eventos.
+ * Se define como singleton, de forma que solamente tendrémos una instancia
+ * durante toda la ejecución.
  */
 class ControlManager
 {
@@ -77,15 +79,40 @@ public:
 		UNFOCUSED				/**< La ventana pierde el foco */
 	};
 
+protected:
 	/**
 	 * Constructor de la clase
 	 */
-	ControlManager(sf::Window& window);
+	ControlManager(void);
 
 	/**
 	 * Destructor de la clase
 	 */
 	virtual ~ControlManager(void);
+
+	/**
+	 * Constructor de copia anulado para reforzar el singleton
+	 */
+	ControlManager(ControlManager const&);
+
+	/**
+	 * Operador de copia anulado para reforzar el singleton
+	 */
+	ControlManager& operator=(ControlManager const&);
+
+public:
+
+	/**
+	 * Obtiene la instancia única del manager
+	 * @return Instancia única del manager
+	 */
+	static ControlManager* getInstance(void);
+
+	/**
+	 * Establece la ventana que será manejada por el manager
+	 * @param window Ventana a manejar por el manager
+	 */
+	void setWindow(sf::Window& window);
 
 	/**
 	 * Carga la configuración de los eventos desde un fichero XML
@@ -200,7 +227,7 @@ private:
 	 */
 	std::string sfmlEventToStr(const sf::Event& event);
 
-	sf::Window& m_window;					/**< Ventana gestionada por el control manager */
+	sf::Window* m_window;					/**< Ventana gestionada por el control manager */
 	Glib::ustring m_file;					/**< Fichero de configuración usado */
 	std::string m_last_command;				/**< Último comando pulsado */
 	sf::Vector2i m_mouse_pos;				/**< Última posición del ratón detectada */
@@ -213,6 +240,8 @@ private:
 	std::vector<bool> m_events_status;		/**< Estado de cada uno de los eventos */
 
 	static const std::vector<std::string> m_sfml_key_str;	/**< Mapeado a texto de las teclas de sfml */
+
+	static ControlManager* m_control_manager; /**< Instancia única del manager */
 };
 
 // Inclusión de los métodos inline
