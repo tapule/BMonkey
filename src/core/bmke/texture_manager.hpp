@@ -74,6 +74,7 @@ public:
 	/**
 	 * Carga una textura en el manager y la devuelve
 	 * @param file Path del fichero de la textura
+	 * @param repeated Indica si la textura se debe repetir en el eje x e y
 	 * @return Textura cargada o null si no se pudo cargar
 	 * @note Si la textura ya existe en el manager, no volverá a cargarla
 	 * @note La lista de formatos de imagenes soportados es la siguiente: bmp,

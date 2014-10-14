@@ -225,6 +225,7 @@ int BMonkeyApp::run(int argc, char** argv)
     }
 
     m_control_manager->save();
+    MovieManager::getInstance()->stopAll();
 	/*******************************************************/
 
 	// Limpiamos los sistemas creados
@@ -721,11 +722,11 @@ void BMonkeyApp::screenInit(void)
 	sprite_texture.loadFromFile("sprite.png");
 	back.setTexture(back_texture);
 	sprite.setTexture(sprite_texture);
-	movie1.openFromFile("19xx.avi");
-	movie2.openFromFile("gng.avi");
-	movie2.setPosition(500,200);
-	movie1.play();
-	movie2.play();
+	movie1 = MovieManager::getInstance()->loadMovie("19xx.avi");
+	movie2= MovieManager::getInstance()->loadMovie("gng.avi");
+	movie2->setPosition(500,200);
+	movie1->play();
+	movie2->play();
 }
 
 void BMonkeyApp::screenRotate(const Rotation rotation)
@@ -803,6 +804,13 @@ void BMonkeyApp::processInput(void)
 			break;
 		case ControlManager::SWITCH_ROTATION:
 			screenSwitchRotation();
+			if (movie1)
+			{
+				MovieManager::getInstance()->deleteMovie(movie1);
+				movie1 = nullptr;
+				MovieManager::getInstance()->deleteMovie(movie2);
+				movie1 = nullptr;
+			}
 			break;
 /*
 		case ControlManager::SELECT:
@@ -837,16 +845,18 @@ void BMonkeyApp::processInput(void)
 
 void BMonkeyApp::update(sf::Time delta_time)
 {
-	movie1.update();
-	movie2.update();
-
-	if (movie1.getStatus() == sfe::Status::Stopped)
+	if (movie1)
 	{
-		movie1.play();
-	}
-	if (movie2.getStatus() == sfe::Status::Stopped)
-	{
-		movie2.play();
+		movie1->update();
+		if (movie1->getStatus() == sfe::Status::Stopped)
+		{
+			movie1->play();
+		}
+		movie2->update();
+		if (movie2->getStatus() == sfe::Status::Stopped)
+		{
+			movie2->play();
+		}
 	}
 
 }
@@ -887,9 +897,11 @@ void BMonkeyApp::draw(void)
 		sprite.setRotation(rand() % 360);
 		m_window.draw(sprite);
 	}
-	m_window.draw(movie1);
-	m_window.draw(movie2);
-
+	if (movie1)
+	{
+		m_window.draw(*movie1);
+		m_window.draw(*movie2);
+	}
 
 
 	// Esto debe ser lo último
@@ -913,7 +925,6 @@ void BMonkeyApp::clean(void)
 		delete m_config;
 		m_config = nullptr;
 	}
-
 	LOG_CLOSE();
 }
 
