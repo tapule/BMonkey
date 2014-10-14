@@ -28,6 +28,7 @@
 #include <glibmm/fileutils.h>
 #include "../utils/utils.hpp"
 #include "../core/datreader/dat_reader_factory.hpp"
+#include "../core/bmke/volume_manager.hpp"
 #include "../core/bmke/sound_manager.hpp"
 
 namespace bmonkey{
@@ -175,8 +176,8 @@ int BMonkeyApp::run(int argc, char** argv)
  	{
  		m_control_manager->registerDefaultControls();
  	}
-
-
+    LOG_INFO("BMonkey: Volume init...");
+    volumeInit();
 
 	/*******************************************************
 	 * Bucle principal de la aplicación
@@ -786,6 +787,34 @@ void BMonkeyApp::screenSwitchRotation(void)
 	screenRotate(static_cast<Rotation>(rotation));
 }
 
+void BMonkeyApp::volumeInit(void)
+{
+	float master_volume = 100.f;
+	float sound_volume = 100.f;
+	float music_volume = 100.f;
+	float movie_volume = 100.f;
+
+	// Comprobamos las variables de configuración y fijamos valores por defecto
+	if (!m_config->getKey(BMONKEY_CFG_SOUND, "master_volume", master_volume))
+	{
+		m_config->setKey(BMONKEY_CFG_SOUND, "master_volume", master_volume);
+	}
+	if (!m_config->getKey(BMONKEY_CFG_SOUND, "sound_volume", sound_volume))
+	{
+		m_config->setKey(BMONKEY_CFG_SOUND, "sound_volume", sound_volume);
+	}
+	if (!m_config->getKey(BMONKEY_CFG_SOUND, "music_volume", music_volume))
+	{
+		m_config->setKey(BMONKEY_CFG_SOUND, "music_volume", music_volume);
+	}
+	if (!m_config->getKey(BMONKEY_CFG_SOUND, "movie_volume", movie_volume))
+	{
+		m_config->setKey(BMONKEY_CFG_SOUND, "movie_volume", movie_volume);
+	}
+
+	VolumeManager::getInstance()->setVolume(master_volume, sound_volume, music_volume, movie_volume);
+}
+
 void BMonkeyApp::processInput(void)
 {
 	ControlManager::Event event;
@@ -914,9 +943,18 @@ void BMonkeyApp::draw(void)
 
 void BMonkeyApp::clean(void)
 {
+	VolumeManager* volume_manager = VolumeManager::getInstance();
+
 	// Guardamos la configuración
 	if(m_config)
 	{
+
+		LOG_INFO("BMonkey: Saving volumes...");
+		m_config->setKey(BMONKEY_CFG_SOUND, "master_volume", volume_manager->getMasterVolume());
+		m_config->setKey(BMONKEY_CFG_SOUND, "sound_volume", volume_manager->getSoundVolume());
+		m_config->setKey(BMONKEY_CFG_SOUND, "music_volume", volume_manager->getMusicVolume());
+		m_config->setKey(BMONKEY_CFG_SOUND, "movie_volume", volume_manager->getMovieVolume());
+
 		LOG_INFO("BMonkey: Shutting down Config system...");
 		// Almacenamos antes el último directorio de trabajo
 		m_config->setKey(BMONKEY_CFG_GLOBAL, "last_working_dir", m_working_dir);

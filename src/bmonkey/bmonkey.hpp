@@ -180,6 +180,11 @@ private:
 	void screenSwitchRotation(void);
 
 	/**
+	 * Inicializa los volumenes del sistema
+	 */
+	void volumeInit(void);
+
+	/**
 	 * Se encarga de procesar las entradas realizadas por el usuario
 	 */
 	void processInput(void);
