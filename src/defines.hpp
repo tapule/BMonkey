@@ -86,6 +86,7 @@
 #define USER_LIBRARY_DIR				"library"
 #define USER_COLLECTION_DIR				"collection"		// library/collection
 #define USER_THEMES_DIR					"themes"
+#define USER_SCREENSHOT_DIR				"screenshots"
 
 // Estructura de directorios para las plataformas
 // Toda la estructura se montará a partir del directorio de la plataforma

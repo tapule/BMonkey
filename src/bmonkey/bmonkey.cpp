@@ -144,6 +144,15 @@ int BMonkeyApp::run(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
+	// Comprobamos el directorio de capturas del usuario
+	LOG_INFO("BMonkey: Checking user screenshots directory...");
+	tmp_dir = Glib::build_filename(m_working_dir, USER_SCREENSHOT_DIR);
+	if (!utils::checkOrCreateDir(tmp_dir))
+	{
+		clean();
+		return EXIT_FAILURE;
+	}
+
 	// Parseamos los parámetros introducidos por linea de comandos
 	LOG_DEBUG("BMonkey: Parsing parameters...");
 	ret = parseParams(argc, argv);
@@ -189,6 +198,7 @@ int BMonkeyApp::run(int argc, char** argv)
     sf::Clock clock;
 
     m_control_manager->enableEvent(ControlManager::SWITCH_ROTATION);
+    m_control_manager->enableEvent(ControlManager::TAKE_SCREENSHOT);
     m_control_manager->enableEvent(ControlManager::SELECT);
     m_control_manager->enableEvent(ControlManager::BACK);
     m_control_manager->enableEvent(ControlManager::PLATFORM_PREVIOUS);
@@ -787,6 +797,29 @@ void BMonkeyApp::screenSwitchRotation(void)
 	screenRotate(static_cast<Rotation>(rotation));
 }
 
+void BMonkeyApp::screenCapture(void)
+{
+	Glib::ustring screenshot_dir;
+	Glib::ustring screenshot_file;
+	int id = 0;
+
+	screenshot_dir = Glib::build_filename(m_working_dir, USER_SCREENSHOT_DIR);
+	do
+	{
+		screenshot_file = Glib::build_filename(screenshot_dir, "screenshot_" + utils::toStr(id) + ".png");
+		++id;
+	} while (Glib::file_test(screenshot_file, Glib::FILE_TEST_EXISTS));
+
+	if(!m_window.capture().saveToFile(screenshot_file))
+	{
+		LOG_ERROR("BMonkey: Can't create screenshot \"" << screenshot_file << "\"");
+	}
+	else
+	{
+		LOG_INFO("BMonkey: Screenshot taken to \"" << screenshot_file << "\"");
+	}
+}
+
 void BMonkeyApp::volumeInit(void)
 {
 	float master_volume = 100.f;
@@ -841,6 +874,9 @@ void BMonkeyApp::processInput(void)
 				movie1 = nullptr;
 			}
 			break;
+		case ControlManager::TAKE_SCREENSHOT:
+			screenCapture();
+			break;
 /*
 		case ControlManager::SELECT:
 			sound_manager.playSound(SoundManager::SELECT);
@@ -874,7 +910,7 @@ void BMonkeyApp::processInput(void)
 
 void BMonkeyApp::update(sf::Time delta_time)
 {
-	if (movie1)
+/*	if (movie1)
 	{
 		movie1->update();
 		if (movie1->getStatus() == sfe::Status::Stopped)
@@ -887,7 +923,7 @@ void BMonkeyApp::update(sf::Time delta_time)
 			movie2->play();
 		}
 	}
-
+*/
 }
 
 void BMonkeyApp::updateFps(sf::Time delta_time)
@@ -928,6 +964,17 @@ void BMonkeyApp::draw(void)
 	}
 	if (movie1)
 	{
+		movie1->update();
+		if (movie1->getStatus() == sfe::Status::Stopped)
+		{
+			movie1->play();
+		}
+		movie2->update();
+		if (movie2->getStatus() == sfe::Status::Stopped)
+		{
+			movie2->play();
+		}
+
 		m_window.draw(*movie1);
 		m_window.draw(*movie2);
 	}

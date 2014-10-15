@@ -180,6 +180,11 @@ private:
 	void screenSwitchRotation(void);
 
 	/**
+	 * Obtiene una captura de pantalla y la guarda en disco
+	 */
+	void screenCapture(void);
+
+	/**
 	 * Inicializa los volumenes del sistema
 	 */
 	void volumeInit(void);

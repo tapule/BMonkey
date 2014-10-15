@@ -402,6 +402,7 @@ void ControlManager::registerDefaultControls(void)
 	registerEvent(GAME_MENU, 0, "Key " + m_sfml_key_str[sf::Keyboard::G]);
 	registerEvent(CONTROLS_MENU, 0, "Key " + m_sfml_key_str[sf::Keyboard::C]);
 	registerEvent(SWITCH_ROTATION, 0, "Key " + m_sfml_key_str[sf::Keyboard::R]);
+	registerEvent(TAKE_SCREENSHOT, 0, "Key " + m_sfml_key_str[sf::Keyboard::F5]);
 }
 
 std::string ControlManager::sfmlEventToStr(const sf::Event& event)
