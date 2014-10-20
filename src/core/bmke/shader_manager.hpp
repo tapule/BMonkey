@@ -79,7 +79,7 @@ public:
 
 	/**
 	 * Indica si la tarjeta gráfica soporta shaders
-	 * @return
+	 * @return true si la tarjeta soporta shaders, false en otro caso
 	 */
 	bool isAvailable(void);
 
