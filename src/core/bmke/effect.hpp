@@ -58,20 +58,20 @@ public:
 	 * Inicializa el efecto asignando sus parámetros de procesado
 	 * @param entity Entidad sobre la que actuará el efecto
 	 * @param delay Retraso en segundos antes de comenzar el procesado
-	 * @param speed Velocidad de procesado del efecto
+	 * @param duration Duración del efecto en segundos
 	 */
-	virtual void init(const Entity* entity, const float delay, const float speed);
+	virtual void init(Entity* entity, const float delay, const float duration);
 
 	/**
 	 * Actualiza el estado del efecto
 	 * @param delta_time Tiempo transcurrido desde la última actualización
 	 */
-	virtual void update(sf::Time delta_time) const = 0;
+	virtual void update(sf::Time delta_time) const;
 
 	/**
 	 * Reinicia el efecto para comenzar de nuevo su procesado
 	 */
-	virtual void reset(void) const = 0;
+	virtual void reset(void);
 
 	/**
 	 * Indica si el efecto ha terminado su procesamiento
@@ -95,7 +95,7 @@ private:
 	Entity* m_entity;		/**< Entidad sobre la que actua el efecto */
 	float m_delay;			/**< Delay en segundos antes de comenzar el efecto */
 	sf::Clock m_clock;		/**< Reloj para controlar el tiempo transcurrido */
-	float m_speed;			/**< Velocidad de procesado del efecto */
+	float m_duration;		/**< Duración del efecto en segundos */
 	bool m_finished;		/**< Indica si el efecto ha terminado */
 	sf::Shader* m_shader;	/**< Shader configurado por el efecto */
 	unsigned char m_opacity;/**< Transparencia procesada por el efecto */

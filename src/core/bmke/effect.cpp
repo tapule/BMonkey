@@ -27,7 +27,7 @@ namespace bmonkey{
 Effect::Effect(void):
 	m_entity(nullptr),
 	m_delay(0.f),
-	m_speed(0.f),
+	m_duration(0.f),
 	m_finished(true),
 	m_shader(nullptr),
 	m_opacity(0)
@@ -42,11 +42,17 @@ Effect::~Effect(void)
 	}
 }
 
-void Effect::init(const Entity* entity, const float delay, const float speed)
+void Effect::init(Entity* entity, const float delay, const float duration)
 {
 	m_entity = entity;
 	m_delay = delay;
-	m_speed = speed;
+	m_duration = duration;
+}
+
+void Effect::reset(void)
+{
+	m_finished = true;
+	init(m_entity, m_delay, m_duration);
 }
 
 } // namespace bmonkey
