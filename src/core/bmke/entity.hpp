@@ -22,9 +22,6 @@
 #ifndef _ENTITY_HPP_
 #define _ENTITY_HPP_
 
-#define BMONKEY_DESIGNER
-
-
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "../../defines.hpp"
@@ -143,29 +140,62 @@ public:
 	bool getFlipY(void) const;
 
 	/**
-	 * Establece la anchura y altura de la entidad
-	 * @param width Nuevo ancho para la entidad
-	 * @param height Nuevo alto para la entidad
+	 * Establece el espejado horizontal de la entidad
+	 * @param x Nuevo espejado horizontal para la entidad
+	 */
+	void setFlipX(const bool x);
+
+	/**
+	 * Establece el espejado vertical de la entidad
+	 * @param y Nuevo espejado vertical para la entidad
+	 */
+	void setFlipY(const bool y);
+
+	/**
+	 * Establece el espejado horizontal y vertical de la entidad
+	 * @param x Nuevo espejado horizontal para la entidad
+	 * @param y Nuevo espejado vertical para la entidad
 	 */
 	void setFlip(const bool x, const bool y);
 
 	/**
-	 * Obtiene el color (tinte y opacidad) de la entidad
+	 * Obtiene el color de tinte y opacidad de la entidad
 	 * @return Color con el tinte y opacidad de la entidad
 	 */
-	sf::Color& getColor(void);
+	const sf::Color& getColor(void);
 
 	/**
-	 * Establece el color (tinte y opacidad) de la entidad
-	 * @param color Nuevos valores para el tiente y la opacidad
+	 * Establece el color de tinte y opacidad de la entidad
+	 * @param color Nuevos valores para el tiente y opacidad
 	 */
-	void setColor(const sf::Color& color);
+	virtual void setColor(const sf::Color& color);
+
+	/**
+	 * Establece únicamente el color de tinte de la entidad
+	 * @param color Nuevos valores para el tiente
+	 * @note el alpha se ignora
+	 */
+	void setTint(const sf::Color& color);
+
+	/**
+	 * Obtiene la opacidad definida en la entidad
+	 * @return Opacidad actual de la entidad
+	 */
+	unsigned char getOpacity(void) const;
+
+	/**
+	 * Establece la opacidad de la entidad
+	 * @param opacity Nueva opacidad para la entidad
+	 */
+	void setOpacity(const unsigned char opacity);
 
 	/**
 	 * Obtiene la opacidad actual (en tiempo real) de la entidad
 	 * @return Opacidad actual de la entidad
+	 * @note La opacidad actual hace referencia a la opacidad modificada por los
+	 * posibles efectos de la entidad.
 	 */
-	unsigned char getOpacity(void);
+	unsigned char getCurrentOpacity(void) const;
 
 	/**
 	 * Establece el efecto que usará la entidad para entrar en la escena

@@ -39,6 +39,8 @@
 // El modo de ejecución local implica que todo el procesamiento se realizará
 // desde el directorio donde reside el binario.
 #define ENABLE_LOCAL_MODE
+#define BMONKEY_DESIGNER
+
 
 // En win siempre se usará el modo local
 #ifdef OS_WIN

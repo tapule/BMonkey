@@ -725,19 +725,27 @@ void BMonkeyApp::screenInit(void)
 	{
 		m_fps_text.setFont(*(m_font_manager->getSystemFont(FontManager::DEFAULT)));
 		m_fps_text.setPosition(5.f, 15.f);
-		m_fps_text.setCharacterSize(30);
+		m_fps_text.setCharacterSize(15);
 	}
 
 	// Objetos temporales, solo para pruebas
 	back_texture.loadFromFile("h.png");
 	sprite_texture.loadFromFile("sprite.png");
 	back.setTexture(back_texture);
-	sprite.setTexture(sprite_texture);
-	movie1 = MovieManager::getInstance()->loadMovie("19xx.avi");
-	movie2= MovieManager::getInstance()->loadMovie("gng.avi");
-	movie2->setPosition(500,200);
-	movie1->play();
-	movie2->play();
+	original.setTexture(&sprite_texture);
+	original.setPosition(512.f, 200.f);
+	entity.setTexture(&sprite_texture);
+	entity.setPosition(512.f, 500.f);
+
+	m_original_text.setFont(*(m_font_manager->getSystemFont(FontManager::DEFAULT)));
+	m_original_text.setPosition(125.f, 200.f);
+	m_original_text.setCharacterSize(30);
+	m_original_text.setString("Original");
+
+	m_mod_text.setFont(*(m_font_manager->getSystemFont(FontManager::DEFAULT)));
+	m_mod_text.setPosition(125.f, 500.f);
+	m_mod_text.setCharacterSize(30);
+	m_mod_text.setString("Original");
 }
 
 void BMonkeyApp::screenRotate(const Rotation rotation)
@@ -852,6 +860,8 @@ void BMonkeyApp::processInput(void)
 {
 	ControlManager::Event event;
 
+	static int choice = 0;
+
 	while (m_control_manager->poolEvent(event))
 	{
 
@@ -866,21 +876,79 @@ void BMonkeyApp::processInput(void)
 			break;
 		case ControlManager::SWITCH_ROTATION:
 			screenSwitchRotation();
-			if (movie1)
-			{
-				MovieManager::getInstance()->deleteMovie(movie1);
-				movie1 = nullptr;
-				MovieManager::getInstance()->deleteMovie(movie2);
-				movie1 = nullptr;
-			}
 			break;
 		case ControlManager::TAKE_SCREENSHOT:
 			screenCapture();
 			break;
-/*
 		case ControlManager::SELECT:
-			sound_manager.playSound(SoundManager::SELECT);
+			switch (choice)
+			{
+			case 0:
+				m_mod_text.setString("Seleccionada");
+				entity.setSelected(true);
+				++choice;
+				break;
+			case 1:
+				m_mod_text.setString("Anchura");
+				entity.setSize(600.f, 143.f);
+				++choice;
+				break;
+			case 2:
+				m_mod_text.setString("Altura");
+				entity.setSize(400.f, 243.f);
+				++choice;
+				break;
+			case 3:
+				m_mod_text.setString("Rotacion");
+				entity.setSize(400.f, 143.f);
+				entity.setRotation(50);
+				++choice;
+				break;
+			case 4:
+				m_mod_text.setString("FlipX");
+				entity.setRotation(0);
+				entity.setFlipX(true);
+				++choice;
+				break;
+			case 5:
+				m_mod_text.setString("FlipY");
+				entity.setFlip(false, true);
+				++choice;
+				break;
+			case 6:
+				m_mod_text.setString("FlipXY");
+				entity.setFlip(true, true);
+				++choice;
+				break;
+			case 7:
+				m_mod_text.setString("Tinte");
+				entity.setFlip(false, false);
+				entity.setTint(sf::Color(200,100,50));
+				++choice;
+				break;
+			case 8:
+				m_mod_text.setString("Opacidad");
+				entity.setColor(sf::Color(255,255,255, 75));
+				++choice;
+				break;
+			case 9:
+				m_mod_text.setString("Tinte + Opacidad");
+				entity.setColor(sf::Color(200,100,50, 75));
+				++choice;
+				break;
+			case 10:
+				m_mod_text.setString("De todo");
+				entity.setSize(600.f, 243.f);
+				entity.setRotation(45);
+				entity.setFlip(true, true);
+				entity.setColor(sf::Color(50,100,200, 200));
+				++choice;
+				break;
+
+			}
 			break;
+
+			/*
 		case ControlManager::BACK:
 			sound_manager.playSound(static_cast<SoundManager::Effect>(rand() % 13));
 			break;
@@ -910,20 +978,8 @@ void BMonkeyApp::processInput(void)
 
 void BMonkeyApp::update(sf::Time delta_time)
 {
-/*	if (movie1)
-	{
-		movie1->update();
-		if (movie1->getStatus() == sfe::Status::Stopped)
-		{
-			movie1->play();
-		}
-		movie2->update();
-		if (movie2->getStatus() == sfe::Status::Stopped)
-		{
-			movie2->play();
-		}
-	}
-*/
+	//original.update(delta_time);
+	//entity.update(delta_time);
 }
 
 void BMonkeyApp::updateFps(sf::Time delta_time)
@@ -954,31 +1010,35 @@ void BMonkeyApp::draw(void)
 	m_window.clear();
 	m_window.draw(back);
 
-	for (int i = 0; i< 500; i++)
-	{
-		sprite.setPosition(rand() % 1024, rand() % 768);
-		scale = (rand() % 200) / 100;
-		sprite.setScale(scale, scale);
-		sprite.setRotation(rand() % 360);
-		m_window.draw(sprite);
-	}
-	if (movie1)
-	{
-		movie1->update();
-		if (movie1->getStatus() == sfe::Status::Stopped)
-		{
-			movie1->play();
-		}
-		movie2->update();
-		if (movie2->getStatus() == sfe::Status::Stopped)
-		{
-			movie2->play();
-		}
+	m_window.draw(original);
+	m_window.draw(entity);
+/*
+	entity.setSelected(true);
+	entity.setSize(600, 143);
+	entity.setRotation(45);
+	entity.setSize(600, 43);
+	entity.setOpacity(190);
+	entity.setTint(sf::Color(120,255,255));
+	m_window.draw(entity);
+*/
 
-		m_window.draw(*movie1);
-		m_window.draw(*movie2);
-	}
+	//entity.setRotation(45);
+	//entity.setFlip(true,false);
 
+
+/*	for (int i = 0; i< 10; i++)
+	{
+
+		entity.setPosition(rand() % 1024, rand() % 768);
+		//scale = (rand() % 200) / 100;
+		//sprite.setScale(scale, scale);
+		entity.setRotation(rand() % 360);
+		m_window.draw(entity);
+	}
+*/
+
+	m_window.draw(m_original_text);
+	m_window.draw(m_mod_text);
 
 	// Esto debe ser lo último
 	if (m_show_fps)

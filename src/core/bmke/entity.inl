@@ -76,7 +76,13 @@ inline bool Entity::getFlipY(void) const
 	return m_flipy;
 }
 
-inline sf::Color& Entity::getColor(void)
+inline void Entity::setFlip(const bool x, const bool y)
+{
+	setFlipX(x);
+	setFlipY(y);
+}
+
+inline const sf::Color& Entity::getColor(void)
 {
 	return m_color;
 }
@@ -84,6 +90,27 @@ inline sf::Color& Entity::getColor(void)
 inline void Entity::setColor(const sf::Color& color)
 {
 	m_color = color;
+}
+
+inline void Entity::setTint(const sf::Color& color)
+{
+	m_color.r = color.r;
+	m_color.g = color.g;
+	m_color.b = color.b;
+	// Forzamos el setColor para que actualice en la derivada
+	setColor(m_color);
+}
+
+inline unsigned char Entity::getOpacity(void) const
+{
+	return m_color.a;
+}
+
+inline void Entity::setOpacity(const unsigned char opacity)
+{
+	m_color.a = opacity;
+	// Forzamos el setColor para que actualice en la derivada
+	setColor(m_color);
 }
 
 inline void Entity::setParent(Entity* entity)
@@ -103,6 +130,8 @@ inline void Entity::addChild(Entity* entity)
 inline void Entity::updateGrid(const float width, const float height)
 {
 	m_grid_box.setSize(sf::Vector2f(m_width, m_height));
+	m_grid_box.setOrigin(width / 2.f, height / 2.f);
+	//m_grid_dot.setPosition(width / 2.f, height / 2.f);
 }
 #endif
 

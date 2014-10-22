@@ -31,6 +31,8 @@
 #include "../core/bmke/font_manager.hpp"
 #include "../core/bmke/movie_manager.hpp"
 
+#include "../core/bmke/texture_entity.hpp"
+
 namespace bmonkey{
 
 /**
@@ -242,10 +244,11 @@ private:
 	// Objetos temporales, solo para pruebas
 	sf::Texture back_texture;
 	sf::Texture sprite_texture;
+	TextureEntity original;
+	TextureEntity entity;
 	sf::Sprite back;
-	sf::Sprite sprite;
-	sfe::Movie* movie1;
-	sfe::Movie* movie2;
+	sf::Text m_original_text;
+	sf::Text m_mod_text;
 
 };
 

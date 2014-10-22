@@ -35,7 +35,7 @@ Entity::Entity(void):
 	m_height(0),
 	m_flipx(false),
 	m_flipy(false),
-	m_color(sf::Color::Transparent),
+	m_color(sf::Color::Black),
 	m_start_effect(nullptr),
 	m_place_effect(nullptr),
 	m_current_effect(nullptr),
@@ -49,8 +49,8 @@ Entity::Entity(void):
 
 	m_grid_dot.setOutlineThickness(0.f);
 	m_grid_dot.setFillColor(sf::Color::Yellow);
-	m_grid_dot.setSize(sf::Vector2f(5.f, 5.f));
-	m_grid_dot.setOrigin(2.5f, 2.5f);
+	m_grid_dot.setSize(sf::Vector2f(10.f, 10.f));
+	m_grid_dot.setOrigin(5.f, 5.f);
 #endif
 }
 
@@ -71,10 +71,12 @@ void Entity::setSize(const float width, const float height)
 {
 	m_width = width;
 	m_height = height;
+#ifdef BMONKEY_DESIGNER
 	updateGrid(m_width, m_height);
+#endif
 }
 
-void Entity::setFlip(const bool x, const bool y)
+void Entity::setFlipX(const bool x)
 {
 	sf::Vector2f scale;
 
@@ -84,19 +86,27 @@ void Entity::setFlip(const bool x, const bool y)
 	{
 		scale.x *= -1;
 	}
+	setScale(scale);
+
+	m_flipx = x;
+}
+
+void Entity::setFlipY(const bool y)
+{
+	sf::Vector2f scale;
+
+	scale = getScale();
 
 	if ((y && !m_flipy) || (!y && m_flipy))
 	{
 		scale.y *= -1;
 	}
-
 	setScale(scale);
 
-	m_flipx = x;
 	m_flipy = y;
 }
 
-unsigned char Entity::getOpacity(void)
+unsigned char Entity::getCurrentOpacity(void) const
 {
 	if (m_current_effect)
 	{
@@ -208,7 +218,8 @@ void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	}
 
 #ifdef BMONKEY_DESIGNER
-	if (m_selected)
+	// Solamente dibujamos el grid si está seleccionada y parada
+	if (m_selected && (m_status == STOPPED))
 	{
 		drawGrid(target, states);
 	}
@@ -218,8 +229,12 @@ void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 #ifdef BMONKEY_DESIGNER
 void Entity::drawGrid(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	sf::Transformable transformable;
 	// Para dibujar el grid, quitamos cualquier shader
-	states.shader = nullptr;
+	/* states.shader = nullptr;*/
+	transformable.setPosition(getPosition());
+	transformable.setRotation(getRotation());
+	states.transform = transformable.getTransform();
 	target.draw(m_grid_box, states);
 	target.draw(m_grid_dot, states);
 }
