@@ -746,6 +746,10 @@ void BMonkeyApp::screenInit(void)
 	m_mod_text.setPosition(125.f, 500.f);
 	m_mod_text.setCharacterSize(30);
 	m_mod_text.setString("Original");
+	//-------------------------------
+	fpos = 1.0f;
+	oTween.setEquation(&CDBTweener::TWEQ_ELASTIC, CDBTweener::TWEA_INOUT, 5.0f);
+	oTween.addValue(&fpos, 10.f);
 }
 
 void BMonkeyApp::screenRotate(const Rotation rotation)
@@ -980,6 +984,9 @@ void BMonkeyApp::update(sf::Time delta_time)
 {
 	//original.update(delta_time);
 	//entity.update(delta_time);
+
+	//LOG_DEBUG("POS: " << fpos);
+	//oTween.step(delta_time.asSeconds());
 }
 
 void BMonkeyApp::updateFps(sf::Time delta_time)

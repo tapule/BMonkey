@@ -32,6 +32,7 @@
 #include "../core/bmke/movie_manager.hpp"
 
 #include "../core/bmke/texture_entity.hpp"
+#include "../thirdparty/DBTweener/dbtweener.h"
 
 namespace bmonkey{
 
@@ -249,6 +250,9 @@ private:
 	sf::Sprite back;
 	sf::Text m_original_text;
 	sf::Text m_mod_text;
+
+	float fpos;
+	CDBTweener::CTween oTween;
 
 };
 
