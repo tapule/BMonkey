@@ -31,6 +31,7 @@
 #include "../core/bmke/volume_manager.hpp"
 #include "../core/bmke/sound_manager.hpp"
 
+
 namespace bmonkey{
 
 BMonkeyApp::BMonkeyApp(const Glib::ustring& working_dir):
@@ -732,24 +733,14 @@ void BMonkeyApp::screenInit(void)
 	back_texture.loadFromFile("h.png");
 	sprite_texture.loadFromFile("sprite.png");
 	back.setTexture(back_texture);
-	original.setTexture(&sprite_texture);
-	original.setPosition(512.f, 200.f);
 	entity.setTexture(&sprite_texture);
 	entity.setPosition(512.f, 500.f);
 
-	m_original_text.setFont(*(m_font_manager->getSystemFont(FontManager::DEFAULT)));
-	m_original_text.setPosition(125.f, 200.f);
-	m_original_text.setCharacterSize(30);
-	m_original_text.setString("Original");
-
 	m_mod_text.setFont(*(m_font_manager->getSystemFont(FontManager::DEFAULT)));
-	m_mod_text.setPosition(125.f, 500.f);
+	m_mod_text.setPosition(125.f, 200.f);
 	m_mod_text.setCharacterSize(30);
 	m_mod_text.setString("Original");
-	//-------------------------------
-	fpos = 1.0f;
-	oTween.setEquation(&CDBTweener::TWEQ_ELASTIC, CDBTweener::TWEA_INOUT, 5.0f);
-	oTween.addValue(&fpos, 10.f);
+
 }
 
 void BMonkeyApp::screenRotate(const Rotation rotation)
@@ -885,71 +876,7 @@ void BMonkeyApp::processInput(void)
 			screenCapture();
 			break;
 		case ControlManager::SELECT:
-			switch (choice)
-			{
-			case 0:
-				m_mod_text.setString("Seleccionada");
-				entity.setSelected(true);
-				++choice;
-				break;
-			case 1:
-				m_mod_text.setString("Anchura");
-				entity.setSize(600.f, 143.f);
-				++choice;
-				break;
-			case 2:
-				m_mod_text.setString("Altura");
-				entity.setSize(400.f, 243.f);
-				++choice;
-				break;
-			case 3:
-				m_mod_text.setString("Rotacion");
-				entity.setSize(400.f, 143.f);
-				entity.setRotation(50);
-				++choice;
-				break;
-			case 4:
-				m_mod_text.setString("FlipX");
-				entity.setRotation(0);
-				entity.setFlipX(true);
-				++choice;
-				break;
-			case 5:
-				m_mod_text.setString("FlipY");
-				entity.setFlip(false, true);
-				++choice;
-				break;
-			case 6:
-				m_mod_text.setString("FlipXY");
-				entity.setFlip(true, true);
-				++choice;
-				break;
-			case 7:
-				m_mod_text.setString("Tinte");
-				entity.setFlip(false, false);
-				entity.setTint(sf::Color(200,100,50));
-				++choice;
-				break;
-			case 8:
-				m_mod_text.setString("Opacidad");
-				entity.setColor(sf::Color(255,255,255, 75));
-				++choice;
-				break;
-			case 9:
-				m_mod_text.setString("Tinte + Opacidad");
-				entity.setColor(sf::Color(200,100,50, 75));
-				++choice;
-				break;
-			case 10:
-				m_mod_text.setString("De todo");
-				entity.setSize(600.f, 243.f);
-				entity.setRotation(45);
-				entity.setFlip(true, true);
-				entity.setColor(sf::Color(50,100,200, 200));
-				++choice;
-				break;
 
-			}
 			break;
 
 			/*
@@ -983,10 +910,7 @@ void BMonkeyApp::processInput(void)
 void BMonkeyApp::update(sf::Time delta_time)
 {
 	//original.update(delta_time);
-	//entity.update(delta_time);
-
-	//LOG_DEBUG("POS: " << fpos);
-	//oTween.step(delta_time.asSeconds());
+	entity.update(delta_time);
 }
 
 void BMonkeyApp::updateFps(sf::Time delta_time)
@@ -1017,8 +941,8 @@ void BMonkeyApp::draw(void)
 	m_window.clear();
 	m_window.draw(back);
 
-	m_window.draw(original);
 	m_window.draw(entity);
+	m_window.draw(m_mod_text);
 /*
 	entity.setSelected(true);
 	entity.setSize(600, 143);
@@ -1043,9 +967,6 @@ void BMonkeyApp::draw(void)
 		m_window.draw(entity);
 	}
 */
-
-	m_window.draw(m_original_text);
-	m_window.draw(m_mod_text);
 
 	// Esto debe ser lo último
 	if (m_show_fps)

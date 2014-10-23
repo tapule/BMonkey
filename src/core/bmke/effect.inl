@@ -19,7 +19,7 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-inline void Effect::update(sf::Time delta_time) const
+inline void Effect::update(sf::Time delta_time)
 {
 }
 

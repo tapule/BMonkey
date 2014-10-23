@@ -26,16 +26,16 @@ namespace bmonkey{
 
 Entity::Entity(void):
 #ifdef BMONKEY_DESIGNER
-	m_enabled(true),
-	m_blocked(false),
 	m_selected(false),
-#endif
 	m_status(STOPPED),
+#else
+	m_status(STARTED),
+#endif
 	m_width(0),
 	m_height(0),
 	m_flipx(false),
 	m_flipy(false),
-	m_color(sf::Color::Black),
+	m_color(sf::Color(255, 255, 255, 255)),
 	m_start_effect(nullptr),
 	m_place_effect(nullptr),
 	m_current_effect(nullptr),
@@ -150,51 +150,47 @@ void Entity::removeChild(Entity* entity)
 
 void Entity::update(sf::Time delta_time)
 {
-	switch (m_status)
+	// Si estaba entrando, comprobamos si ha terminado y pasamos a posicionado
+	if (m_status == STARTED && m_start_effect && m_start_effect->isFinished())
 	{
-	// Si estaba detenida, la ejecutamos de nuevo
-	case STOPPED:
-		// Comprobamos si tenemos efecto de entrada
-		if (m_start_effect)
-		{
-			m_status = STARTED;
-			m_current_effect = m_start_effect;
-		}
-		else
-		{
-			m_status = PLACED;
-			m_current_effect = m_place_effect;
-		}
-		break;
-	// Si estaba entrando, comprobamos si ha terminado
-	case STARTED:
-		if (m_start_effect && m_start_effect->isFinished())
-		{
-			m_status = PLACED;
-			m_current_effect = m_place_effect;
-		}
-		break;
+		m_status = PLACED;
+		m_current_effect = m_place_effect;
 	}
 	// Si tenemos algún efecto, lo actualizamos
 	if (m_current_effect)
 	{
 		m_current_effect->update(delta_time);
+		// Actualizamos el color y forzamos la actualización en derivadas
+		m_color.a = m_current_effect->getOpacity();
+		setColor(m_color);
 	}
 	updateCurrent(delta_time);
 	updateChildren(delta_time);
 }
 
-void Entity::reset(void)
+void Entity::run(void)
 {
-	// Si tenemos efectos, los reseteamos
-	if (m_start_effect)
-	{
-		m_start_effect->reset();
-	}
+	// Reseteamos el efecto de posición si hay
 	if (m_place_effect)
 	{
 		m_place_effect->reset();
 	}
+	// Reseteamos el efecto de entrada y actualizamos el estado de la entidad
+	if (m_start_effect)
+	{
+		m_start_effect->reset();
+		m_status = STARTED;
+		m_current_effect = m_start_effect;
+	}
+	else
+	{
+		m_status = PLACED;
+		m_current_effect = m_place_effect;
+	}
+}
+
+void Entity::stop(void)
+{
 	m_status = STOPPED;
 	m_current_effect = nullptr;
 }

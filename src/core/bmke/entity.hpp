@@ -66,30 +66,6 @@ public:
 
 #ifdef BMONKEY_DESIGNER
 	/**
-	 * Indica si la entidad está visible (habilitada)
-	 * @return true si la entidad está visible, false en otro caso
-	 */
-	bool isEnabled(void) const;
-
-	/**
-	 * Activa o desactiva la visibilidad de la entidad
-	 * @param enabled Nuevo valor para la visibilidad de la entidad
-	 */
-	void setEnabled(const bool enabled);
-
-	/**
-	 * Indica si la entidad está bloqueada
-	 * @return true si la entidad está bloqueada, false en otro caso
-	 */
-	bool isBlocked(void) const;
-
-	/**
-	 * Activa o desactiva el bloqueo de la entidad
-	 * @param blocked Nuevo valor para el bloqueo
-	 */
-	void setBlocked(const bool blocked);
-
-	/**
 	 * Indica si la entidad está seleccionada
 	 * @return true si la entidad está seleccionada, false en otro caso
 	 */
@@ -242,9 +218,17 @@ public:
 	void update(sf::Time delta_time);
 
 	/**
-	 * Resetea la entidad devolviendola a su posición, rotación, etc iniciales
+	 * Comienza la ejecución de la entidad desde su punto inicial, reiniciando
+	 * los efectos y cualquier dato interno
 	 */
-	virtual void reset(void);
+	virtual void run(void);
+
+#ifdef BMONKEY_DESIGNER
+	/**
+	 * Detiene la ejecución de la entidad, pasando esta a modo edición
+	 */
+	void stop(void);
+#endif
 
 private:
 	/**
@@ -291,9 +275,7 @@ private:
 
 
 #ifdef BMONKEY_DESIGNER
-	bool m_enabled;				/**< Indica si la entidad está visible */
-	bool m_blocked;				/**< Indica si la entidad recibe modificaciones con el ratón */
-	bool m_selected;			/**< Indica si la entidad está seleccionada */
+	bool m_selected;				/**< Indica si la entidad está seleccionada */
 	sf::RectangleShape m_grid_box;	/**< Rectángulo que hace de grid para selección */
 	sf::RectangleShape m_grid_dot;	/**< Marcador del origen en el grid */
 #endif

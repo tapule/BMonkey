@@ -20,26 +20,6 @@
  */
 
 #ifdef BMONKEY_DESIGNER
-inline bool Entity::isEnabled(void) const
-{
-	return m_enabled;
-}
-
-inline void Entity::setEnabled(const bool enabled)
-{
-	m_enabled = enabled;
-}
-
-inline bool Entity::isBlocked(void) const
-{
-	return m_blocked;
-}
-
-inline void Entity::setBlocked(const bool blocked)
-{
-	m_blocked = blocked;
-}
-
 inline bool Entity::isSelected(void) const
 {
 	return m_selected;

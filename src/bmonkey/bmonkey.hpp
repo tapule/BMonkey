@@ -245,15 +245,9 @@ private:
 	// Objetos temporales, solo para pruebas
 	sf::Texture back_texture;
 	sf::Texture sprite_texture;
-	TextureEntity original;
 	TextureEntity entity;
 	sf::Sprite back;
-	sf::Text m_original_text;
 	sf::Text m_mod_text;
-
-	float fpos;
-	CDBTweener::CTween oTween;
-
 };
 
 } // namespace bmonkey
