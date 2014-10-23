@@ -19,24 +19,24 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "bounce_enter_effect.hpp"
+#include "expo_enter_effect.hpp"
 #include <cassert>
-#include "entity.hpp"
+#include "../entity.hpp"
 
 namespace bmonkey{
 
-BounceEnterEffect::BounceEnterEffect(void):
+ExpoEnterEffect::ExpoEnterEffect(void):
 	Effect(),
 	m_tween(nullptr),
 	m_pos(0)
 {
 }
 
-BounceEnterEffect::~BounceEnterEffect(void)
+ExpoEnterEffect::~ExpoEnterEffect(void)
 {
 }
 
-void BounceEnterEffect::init(const sf::Vector2u& win_size, Entity* entity, const float delay, const float duration, const StartFrom from)
+void ExpoEnterEffect::init(const sf::Vector2u& win_size, Entity* entity, const float delay, const float duration, const StartFrom from)
 {
 	Effect::init(win_size, entity, delay, duration, from);
 	if (m_tween)
@@ -60,7 +60,7 @@ void BounceEnterEffect::init(const sf::Vector2u& win_size, Entity* entity, const
 	m_clock.restart();
 }
 
-void BounceEnterEffect::update(sf::Time delta_time)
+void ExpoEnterEffect::update(sf::Time delta_time)
 {
 	// Comprobamos si hemos sobrepasado el delay
 	if (!m_finished && m_clock.getElapsedTime().asSeconds() > m_delay)
@@ -88,7 +88,7 @@ void BounceEnterEffect::update(sf::Time delta_time)
 	}
 }
 
-void BounceEnterEffect::reset(void)
+void ExpoEnterEffect::reset(void)
 {
 	Effect::reset();
 }

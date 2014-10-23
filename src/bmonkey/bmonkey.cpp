@@ -31,7 +31,8 @@
 #include "../core/bmke/volume_manager.hpp"
 #include "../core/bmke/sound_manager.hpp"
 
-#include "../core/bmke/bounce_enter_effect.hpp"
+#include "../core/bmke/effects/bounce_enter_effect.hpp"
+#include "../core/bmke/effects/expo_enter_effect.hpp"
 
 namespace bmonkey{
 
@@ -856,7 +857,7 @@ void BMonkeyApp::processInput(void)
 	ControlManager::Event event;
 
 	static int choice = 0;
-	BounceEnterEffect* bounce;
+	Effect* effect;
 
 	while (m_control_manager->poolEvent(event))
 	{
@@ -881,35 +882,67 @@ void BMonkeyApp::processInput(void)
 			{
 			case 0:
 				m_mod_text.setString("Bounce Enter Left");
-				bounce = new BounceEnterEffect();
-				bounce->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::LEFT);
-				entity.setStartEffect(bounce);
+				effect = new BounceEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::LEFT);
+				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
 				break;
 			case 1:
 				m_mod_text.setString("Bounce Enter Right");
-				bounce = new BounceEnterEffect();
-				bounce->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::RIGHT);
-				entity.setStartEffect(bounce);
+				effect = new BounceEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::RIGHT);
+				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
 				break;
 			case 2:
 				m_mod_text.setString("Bounce Enter TOP");
-				bounce = new BounceEnterEffect();
-				bounce->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::TOP);
-				entity.setStartEffect(bounce);
+				effect = new BounceEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::TOP);
+				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
 				break;
 			case 3:
 				m_mod_text.setString("Bounce Enter BOTTOM");
-				bounce = new BounceEnterEffect();
-				bounce->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::BOTTOM);
-				entity.setStartEffect(bounce);
+				effect = new BounceEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::BOTTOM);
+				entity.setStartEffect(effect);
 				entity.run();
-				choice = 0;
+				++choice;
+				break;
+			case 4:
+				m_mod_text.setString("Expo Enter Left");
+				effect = new ExpoEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::LEFT);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 5:
+				m_mod_text.setString("Expo Enter Right");
+				effect = new ExpoEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::RIGHT);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 6:
+				m_mod_text.setString("Expo Enter TOP");
+				effect = new ExpoEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::TOP);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 7:
+				m_mod_text.setString("Expo Enter BOTTOM");
+				effect = new ExpoEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::BOTTOM);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
 				break;
 			}
 			break;

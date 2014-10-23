@@ -19,37 +19,37 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _BOUNCE_ENTER_EFFECT_HPP_
-#define _BOUNCE_ENTER_EFFECT_HPP_
+#ifndef _EXPO_ENTER_EFFECT_HPP_
+#define _EXPO_ENTER_EFFECT_HPP_
 
 #include <SFML/Graphics.hpp>
-#include "../../defines.hpp"
-#include "effect.hpp"
-#include "../../thirdparty/DBTweener/dbtweener.h"
+#include "../../../defines.hpp"
+#include "../effect.hpp"
+#include "../../../thirdparty/DBTweener/dbtweener.h"
 
 namespace bmonkey{
 
 /**
- * Efecto de entrada en escena usando la ecuación Bounce
+ * Efecto de entrada en escena usando la ecuación Expo
  *
  * Realiza un efecto de entrada en escena mediante la modificación de la
- * posición, usando para ello la ecuación del efecto especial Bounce de Robert
+ * posición, usando para ello la ecuación del efecto Expo de Robert
  * Penner.
  * El efecto se puede configurar para comenzar desde la izquierda, derecha,
  * arriba o abajo de una ventana indicada.
  */
-class BounceEnterEffect : public Effect
+class ExpoEnterEffect : public Effect
 {
 public:
 	/**
 	 * Constructor de la clase
 	 */
-	BounceEnterEffect(void);
+	ExpoEnterEffect(void);
 
 	/**
 	 * Destructor de la clase
 	 */
-	virtual ~BounceEnterEffect(void);
+	virtual ~ExpoEnterEffect(void);
 
 	/**
 	 * Inicializa el efecto asignando sus parámetros de procesado
@@ -79,4 +79,4 @@ private:
 
 } // namespace bmonkey
 
-#endif // _BOUNCE_ENTER_EFFECT_HPP_
+#endif // _EXPO_ENTER_EFFECT_HPP_
