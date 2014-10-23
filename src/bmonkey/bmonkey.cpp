@@ -31,6 +31,7 @@
 #include "../core/bmke/volume_manager.hpp"
 #include "../core/bmke/sound_manager.hpp"
 
+#include "../core/bmke/bounce_enter_effect.hpp"
 
 namespace bmonkey{
 
@@ -734,13 +735,12 @@ void BMonkeyApp::screenInit(void)
 	sprite_texture.loadFromFile("sprite.png");
 	back.setTexture(back_texture);
 	entity.setTexture(&sprite_texture);
-	entity.setPosition(512.f, 500.f);
+	entity.setPosition(512.f, 384.f);
 
 	m_mod_text.setFont(*(m_font_manager->getSystemFont(FontManager::DEFAULT)));
 	m_mod_text.setPosition(125.f, 200.f);
 	m_mod_text.setCharacterSize(30);
 	m_mod_text.setString("Original");
-
 }
 
 void BMonkeyApp::screenRotate(const Rotation rotation)
@@ -856,6 +856,7 @@ void BMonkeyApp::processInput(void)
 	ControlManager::Event event;
 
 	static int choice = 0;
+	BounceEnterEffect* bounce;
 
 	while (m_control_manager->poolEvent(event))
 	{
@@ -876,7 +877,41 @@ void BMonkeyApp::processInput(void)
 			screenCapture();
 			break;
 		case ControlManager::SELECT:
-
+			switch (choice)
+			{
+			case 0:
+				m_mod_text.setString("Bounce Enter Left");
+				bounce = new BounceEnterEffect();
+				bounce->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::LEFT);
+				entity.setStartEffect(bounce);
+				entity.run();
+				++choice;
+				break;
+			case 1:
+				m_mod_text.setString("Bounce Enter Right");
+				bounce = new BounceEnterEffect();
+				bounce->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::RIGHT);
+				entity.setStartEffect(bounce);
+				entity.run();
+				++choice;
+				break;
+			case 2:
+				m_mod_text.setString("Bounce Enter TOP");
+				bounce = new BounceEnterEffect();
+				bounce->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::TOP);
+				entity.setStartEffect(bounce);
+				entity.run();
+				++choice;
+				break;
+			case 3:
+				m_mod_text.setString("Bounce Enter BOTTOM");
+				bounce = new BounceEnterEffect();
+				bounce->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::BOTTOM);
+				entity.setStartEffect(bounce);
+				entity.run();
+				choice = 0;
+				break;
+			}
 			break;
 
 			/*

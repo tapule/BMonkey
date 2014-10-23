@@ -26,7 +26,6 @@
 namespace bmonkey{
 
 Effect::Effect(void):
-	m_window(nullptr),
 	m_entity(nullptr),
 	m_delay(0.f),
 	m_duration(0.f),
@@ -45,12 +44,12 @@ Effect::~Effect(void)
 	}
 }
 
-void Effect::init(sf::Window& window, Entity* entity, const float delay, const float duration, const StartFrom from)
+void Effect::init(const sf::Vector2u& win_size, Entity* entity, const float delay, const float duration, const StartFrom from)
 {
 	assert(entity);
 	sf::Vector2f position;
 
-	m_window = &window;
+	m_win_size = win_size;
 	m_entity = entity;
 	m_delay = delay;
 	m_duration = duration;
@@ -64,13 +63,13 @@ void Effect::init(sf::Window& window, Entity* entity, const float delay, const f
 		position.x = -1.f * ((entity->getWidth() / 2) + entity->getPosition().x);
 		break;
 	case RIGHT:
-		position.x = window.getSize().x - entity->getPosition().x + (entity->getWidth() / 2);
+		position.x = m_win_size.x - entity->getPosition().x + (entity->getWidth() / 2);
 		break;
 	case TOP:
 		position.y = -1.f * ((entity->getHeight() / 2) + entity->getPosition().y);
 		break;
 	case BOTTOM:
-		position.y = window.getSize().y - entity->getPosition().y + (entity->getHeight() / 2);
+		position.y = m_win_size.y - entity->getPosition().y + (entity->getHeight() / 2);
 		break;
 	case POSITION:
 		break;
@@ -82,7 +81,7 @@ void Effect::init(sf::Window& window, Entity* entity, const float delay, const f
 
 void Effect::reset(void)
 {
-	init(*m_window, m_entity, m_delay, m_duration, m_start_from);
+	init(m_win_size, m_entity, m_delay, m_duration, m_start_from);
 }
 
 } // namespace bmonkey

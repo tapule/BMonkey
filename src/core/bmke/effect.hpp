@@ -67,13 +67,13 @@ public:
 
 	/**
 	 * Inicializa el efecto asignando sus parámetros de procesado
-	 * @param window Ventana de referencia sobre la que se ejecuta el efecto
+	 * @param win_size Tamaño de la ventana de referencia sobre la que se ejecuta el efecto
 	 * @param entity Entidad sobre la que actuará el efecto
 	 * @param delay Retraso en segundos antes de comenzar el procesado
 	 * @param duration Duración del efecto en segundos
 	 * @param from Posición desde donde comienza el efecto
 	 */
-	virtual void init(sf::Window& window, Entity* entity, const float delay, const float duration, const StartFrom from);
+	virtual void init(const sf::Vector2u& win_size, Entity* entity, const float delay, const float duration, const StartFrom from);
 
 	/**
 	 * Actualiza el estado del efecto
@@ -105,7 +105,7 @@ public:
 	sf::Shader* getShader(void) const;
 
 protected:
-	sf::Window* m_window;	/**< Ventana de referencia para los efectos */
+	sf::Vector2u m_win_size;/**< Tamaño de la ventana de referencia para los efectos */
 	Entity* m_entity;		/**< Entidad sobre la que actua el efecto */
 	float m_delay;			/**< Delay en segundos antes de comenzar el efecto */
 	sf::Clock m_clock;		/**< Reloj para controlar el tiempo transcurrido */
