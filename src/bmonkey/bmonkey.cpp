@@ -33,6 +33,7 @@
 
 #include "../core/bmke/effects/bounce_enter_effect.hpp"
 #include "../core/bmke/effects/expo_enter_effect.hpp"
+#include "../core/bmke/effects/back_enter_effect.hpp"
 
 namespace bmonkey{
 
@@ -939,6 +940,38 @@ void BMonkeyApp::processInput(void)
 			case 7:
 				m_mod_text.setString("Expo Enter BOTTOM");
 				effect = new ExpoEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::BOTTOM);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 8:
+				m_mod_text.setString("Back Enter Left");
+				effect = new BackEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::LEFT);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 9:
+				m_mod_text.setString("Back Enter Right");
+				effect = new BackEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::RIGHT);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 10:
+				m_mod_text.setString("Back Enter TOP");
+				effect = new BackEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::TOP);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 11:
+				m_mod_text.setString("Back Enter BOTTOM");
+				effect = new BackEnterEffect();
 				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::BOTTOM);
 				entity.setStartEffect(effect);
 				entity.run();
