@@ -34,6 +34,7 @@
 #include "../core/bmke/effects/bounce_enter_effect.hpp"
 #include "../core/bmke/effects/expo_enter_effect.hpp"
 #include "../core/bmke/effects/back_enter_effect.hpp"
+#include "../core/bmke/effects/elastic_enter_effect.hpp"
 
 namespace bmonkey{
 
@@ -972,6 +973,38 @@ void BMonkeyApp::processInput(void)
 			case 11:
 				m_mod_text.setString("Back Enter BOTTOM");
 				effect = new BackEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::BOTTOM);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 12:
+				m_mod_text.setString("Elastic Enter Left");
+				effect = new ElasticEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::LEFT);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 13:
+				m_mod_text.setString("Elastic Enter Right");
+				effect = new ElasticEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::RIGHT);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 14:
+				m_mod_text.setString("Elastic Enter TOP");
+				effect = new ElasticEnterEffect();
+				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::TOP);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 15:
+				m_mod_text.setString("Elastic Enter BOTTOM");
+				effect = new ElasticEnterEffect();
 				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::BOTTOM);
 				entity.setStartEffect(effect);
 				entity.run();
