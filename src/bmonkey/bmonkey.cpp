@@ -35,6 +35,7 @@
 #include "../core/bmke/effects/expo_enter_effect.hpp"
 #include "../core/bmke/effects/back_enter_effect.hpp"
 #include "../core/bmke/effects/elastic_enter_effect.hpp"
+#include "../core/bmke/effects/fade_enter_effect.hpp"
 
 namespace bmonkey{
 
@@ -858,7 +859,10 @@ void BMonkeyApp::processInput(void)
 {
 	ControlManager::Event event;
 
-	static int choice = 0;
+	static int choice = 16;
+	float delay = 0.f;
+	float duration = 2.f;
+
 	Effect* effect;
 
 	while (m_control_manager->poolEvent(event))
@@ -885,7 +889,7 @@ void BMonkeyApp::processInput(void)
 			case 0:
 				m_mod_text.setString("Bounce Enter Left");
 				effect = new BounceEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::LEFT);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::LEFT);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -893,7 +897,7 @@ void BMonkeyApp::processInput(void)
 			case 1:
 				m_mod_text.setString("Bounce Enter Right");
 				effect = new BounceEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::RIGHT);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::RIGHT);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -901,7 +905,7 @@ void BMonkeyApp::processInput(void)
 			case 2:
 				m_mod_text.setString("Bounce Enter TOP");
 				effect = new BounceEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::TOP);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::TOP);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -909,7 +913,7 @@ void BMonkeyApp::processInput(void)
 			case 3:
 				m_mod_text.setString("Bounce Enter BOTTOM");
 				effect = new BounceEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::BOTTOM);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::BOTTOM);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -917,7 +921,7 @@ void BMonkeyApp::processInput(void)
 			case 4:
 				m_mod_text.setString("Expo Enter Left");
 				effect = new ExpoEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::LEFT);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::LEFT);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -925,7 +929,7 @@ void BMonkeyApp::processInput(void)
 			case 5:
 				m_mod_text.setString("Expo Enter Right");
 				effect = new ExpoEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::RIGHT);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::RIGHT);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -933,7 +937,7 @@ void BMonkeyApp::processInput(void)
 			case 6:
 				m_mod_text.setString("Expo Enter TOP");
 				effect = new ExpoEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::TOP);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::TOP);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -941,7 +945,7 @@ void BMonkeyApp::processInput(void)
 			case 7:
 				m_mod_text.setString("Expo Enter BOTTOM");
 				effect = new ExpoEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::BOTTOM);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::BOTTOM);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -949,7 +953,7 @@ void BMonkeyApp::processInput(void)
 			case 8:
 				m_mod_text.setString("Back Enter Left");
 				effect = new BackEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::LEFT);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::LEFT);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -957,7 +961,7 @@ void BMonkeyApp::processInput(void)
 			case 9:
 				m_mod_text.setString("Back Enter Right");
 				effect = new BackEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::RIGHT);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::RIGHT);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -965,7 +969,7 @@ void BMonkeyApp::processInput(void)
 			case 10:
 				m_mod_text.setString("Back Enter TOP");
 				effect = new BackEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::TOP);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::TOP);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -973,7 +977,7 @@ void BMonkeyApp::processInput(void)
 			case 11:
 				m_mod_text.setString("Back Enter BOTTOM");
 				effect = new BackEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::BOTTOM);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::BOTTOM);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -981,7 +985,7 @@ void BMonkeyApp::processInput(void)
 			case 12:
 				m_mod_text.setString("Elastic Enter Left");
 				effect = new ElasticEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::LEFT);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::LEFT);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -989,7 +993,7 @@ void BMonkeyApp::processInput(void)
 			case 13:
 				m_mod_text.setString("Elastic Enter Right");
 				effect = new ElasticEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::RIGHT);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::RIGHT);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -997,7 +1001,7 @@ void BMonkeyApp::processInput(void)
 			case 14:
 				m_mod_text.setString("Elastic Enter TOP");
 				effect = new ElasticEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::TOP);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::TOP);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
@@ -1005,10 +1009,18 @@ void BMonkeyApp::processInput(void)
 			case 15:
 				m_mod_text.setString("Elastic Enter BOTTOM");
 				effect = new ElasticEnterEffect();
-				effect->init(m_window.getSize(), &entity, 0.5f, 2.f, Effect::BOTTOM);
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::BOTTOM);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
+				break;
+			case 16:
+				m_mod_text.setString("Fade Enter");
+				effect = new FadeEnterEffect();
+				effect->init(m_window.getSize(), &entity, delay, duration, Effect::POSITION);
+				entity.setStartEffect(effect);
+				entity.run();
+				//++choice;
 				break;
 			}
 			break;
