@@ -19,8 +19,8 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _FADE_IN_EFFECT_HPP_
-#define _FADE_IN_EFFECT_HPP_
+#ifndef _POP_IN_EFFECT_HPP_
+#define _POP_IN_EFFECT_HPP_
 
 #include "../effect.hpp"
 #include "../../../thirdparty/DBTweener/dbtweener.h"
@@ -28,23 +28,23 @@
 namespace bmonkey{
 
 /**
- * Efecto fade de entrada en escena
+ * Efecto pop de entrada en escena
  *
- * Realiza un efecto fade de entrada en escena mediante la modificación de la
- * opacidad, usando para ello la ecuación del efecto Quad de Robert Penner.
+ * Realiza un efecto pop de entrada en escena mediante la modificación de la
+ * escala, usando para ello la ecuación del efecto Bounce de Robert Penner.
  */
-class FadeInEffect : public Effect
+class PopInEffect : public Effect
 {
 public:
 	/**
 	 * Constructor de la clase
 	 */
-	FadeInEffect(void);
+	PopInEffect(void);
 
 	/**
 	 * Destructor de la clase
 	 */
-	virtual ~FadeInEffect(void);
+	virtual ~PopInEffect(void);
 
 	/**
 	 * Inicializa el efecto asignando sus parámetros de procesado
@@ -62,9 +62,9 @@ public:
 
 private:
 	CDBTweener::CTween* m_tween;		/**< Tweener usado para el efecto */
-	float m_pos;						/**< Posición actual del efecto */
+	float m_scale;						/**< Escala actual del efecto */
 };
 
 } // namespace bmonkey
 
-#endif // _FADE_IN_EFFECT_HPP_
+#endif // _POP_IN_EFFECT_HPP_

@@ -28,7 +28,7 @@
 namespace bmonkey{
 
 /**
- * Efecto de entrada en escena usando la ecuación Expo
+ * Efecto ease de entrada en escena usando la ecuación Expo
  *
  * Realiza un efecto de entrada en escena mediante la modificación de la
  * posición, usando para ello la ecuación del efecto Expo de Robert

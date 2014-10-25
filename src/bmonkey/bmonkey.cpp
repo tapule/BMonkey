@@ -36,6 +36,7 @@
 #include "../core/bmke/effects/back_in_effect.hpp"
 #include "../core/bmke/effects/elastic_in_effect.hpp"
 #include "../core/bmke/effects/fade_in_effect.hpp"
+#include "../core/bmke/effects/pop_in_effect.hpp"
 
 namespace bmonkey{
 
@@ -859,7 +860,7 @@ void BMonkeyApp::processInput(void)
 {
 	ControlManager::Event event;
 
-	static int choice = 0;
+	static int choice = 17;
 	float delay = 0.f;
 	float duration = 1.5f;
 
@@ -1050,6 +1051,14 @@ void BMonkeyApp::processInput(void)
 			case 16:
 				m_mod_text.setString("Fade In");
 				effect = new FadeInEffect();
+				effect->init(&entity, delay, duration);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 17:
+				m_mod_text.setString("Pop In");
+				effect = new PopInEffect();
 				effect->init(&entity, delay, duration);
 				entity.setStartEffect(effect);
 				entity.run();
