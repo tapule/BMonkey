@@ -19,34 +19,42 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "fade_enter_effect.hpp"
+#include "ease_in_effect.hpp"
 #include <cassert>
 #include "../entity.hpp"
 
 namespace bmonkey{
 
-FadeEnterEffect::FadeEnterEffect(void):
-	Effect(),
+EaseInEffect::EaseInEffect(void):
+	InEffect(),
 	m_tween(nullptr),
 	m_pos(0)
 {
 }
 
-FadeEnterEffect::~FadeEnterEffect(void)
+EaseInEffect::~EaseInEffect(void)
 {
 }
 
-void FadeEnterEffect::init(const sf::Vector2u& win_size, Entity* entity, const float delay, const float duration, const StartFrom from)
+void EaseInEffect::init(Entity* entity, const float delay, const float duration)
 {
-	Effect::init(win_size, entity, delay, duration, from);
+	InEffect::init(entity, delay, duration);
 
-	m_pos = 0.f;
-	m_opacity = 0.f;
-	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_QUADRATIC, CDBTweener::TWEA_IN, duration, &m_pos, entity->getOpacity());
+	if ((m_in_from == LEFT) || (m_in_from == RIGHT))
+	{
+		m_pos = getPosition().x;
+	}
+	else
+	{
+		m_pos = getPosition().y;
+	}
+	// Borramos primero el tween.
+	delete m_tween;
+	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_EXPONENTIAL, CDBTweener::TWEA_OUT, duration, &m_pos, 0);
 	m_clock.restart();
 }
 
-void FadeEnterEffect::update(sf::Time delta_time)
+void EaseInEffect::update(sf::Time delta_time)
 {
 	// Comprobamos si hemos sobrepasado el delay
 	if (!m_finished && m_clock.getElapsedTime().asSeconds() > m_delay)
@@ -58,13 +66,15 @@ void FadeEnterEffect::update(sf::Time delta_time)
 			return;
 		}
 		m_tween->step(delta_time.asSeconds());
-		m_opacity = static_cast<unsigned char>(m_pos);
+		if ((m_in_from == LEFT) || (m_in_from == RIGHT))
+		{
+			setPosition(m_pos, getPosition().y);
+		}
+		else
+		{
+			setPosition(getPosition().x, m_pos);
+		}
 	}
-}
-
-void FadeEnterEffect::reset(void)
-{
-	Effect::reset();
 }
 
 } // namespace bmonkey

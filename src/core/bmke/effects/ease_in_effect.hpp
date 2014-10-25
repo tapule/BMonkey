@@ -19,12 +19,10 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _EXPO_ENTER_EFFECT_HPP_
-#define _EXPO_ENTER_EFFECT_HPP_
+#ifndef _EASE_IN_EFFECT_HPP_
+#define _EASE_IN_EFFECT_HPP_
 
-#include <SFML/Graphics.hpp>
-#include "../../../defines.hpp"
-#include "../effect.hpp"
+#include "in_effect.hpp"
 #include "../../../thirdparty/DBTweener/dbtweener.h"
 
 namespace bmonkey{
@@ -38,39 +36,32 @@ namespace bmonkey{
  * El efecto se puede configurar para comenzar desde la izquierda, derecha,
  * arriba o abajo de una ventana indicada.
  */
-class ExpoEnterEffect : public Effect
+class EaseInEffect : public InEffect
 {
 public:
 	/**
 	 * Constructor de la clase
 	 */
-	ExpoEnterEffect(void);
+	EaseInEffect(void);
 
 	/**
 	 * Destructor de la clase
 	 */
-	virtual ~ExpoEnterEffect(void);
+	virtual ~EaseInEffect(void);
 
 	/**
 	 * Inicializa el efecto asignando sus parámetros de procesado
-	 * @param win_size Tamaño de la ventana de referencia sobre la que se ejecuta el efecto
 	 * @param entity Entidad sobre la que actuará el efecto
 	 * @param delay Retraso en segundos antes de comenzar el procesado
 	 * @param duration Duración del efecto en segundos
-	 * @param from Posición desde donde comienza el efecto
 	 */
-	virtual void init(const sf::Vector2u& win_size, Entity* entity, const float delay, const float duration, const StartFrom from);
+	virtual void init(Entity* entity, const float delay, const float duration);
 
 	/**
 	 * Actualiza el estado del efecto
 	 * @param delta_time Tiempo transcurrido desde la última actualización
 	 */
 	virtual void update(sf::Time delta_time);
-
-	/**
-	 * Reinicia el efecto para comenzar de nuevo su procesado
-	 */
-	virtual void reset(void);
 
 private:
 	CDBTweener::CTween* m_tween;		/**< Tweener usado para el efecto */
@@ -79,4 +70,4 @@ private:
 
 } // namespace bmonkey
 
-#endif // _EXPO_ENTER_EFFECT_HPP_
+#endif // _EASE_IN_EFFECT_HPP_

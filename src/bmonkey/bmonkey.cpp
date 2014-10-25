@@ -31,11 +31,11 @@
 #include "../core/bmke/volume_manager.hpp"
 #include "../core/bmke/sound_manager.hpp"
 
-#include "../core/bmke/effects/bounce_enter_effect.hpp"
-#include "../core/bmke/effects/expo_enter_effect.hpp"
-#include "../core/bmke/effects/back_enter_effect.hpp"
-#include "../core/bmke/effects/elastic_enter_effect.hpp"
-#include "../core/bmke/effects/fade_enter_effect.hpp"
+#include "../core/bmke/effects/bounce_in_effect.hpp"
+#include "../core/bmke/effects/ease_in_effect.hpp"
+#include "../core/bmke/effects/back_in_effect.hpp"
+#include "../core/bmke/effects/elastic_in_effect.hpp"
+#include "../core/bmke/effects/fade_in_effect.hpp"
 
 namespace bmonkey{
 
@@ -859,10 +859,11 @@ void BMonkeyApp::processInput(void)
 {
 	ControlManager::Event event;
 
-	static int choice = 16;
+	static int choice = 0;
 	float delay = 0.f;
-	float duration = 2.f;
+	float duration = 1.5f;
 
+	InEffect* in_effect;
 	Effect* effect;
 
 	while (m_control_manager->poolEvent(event))
@@ -887,137 +888,169 @@ void BMonkeyApp::processInput(void)
 			switch (choice)
 			{
 			case 0:
-				m_mod_text.setString("Bounce Enter Left");
-				effect = new BounceEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::LEFT);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Bounce In Left");
+				in_effect = new BounceInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::LEFT);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 1:
-				m_mod_text.setString("Bounce Enter Right");
-				effect = new BounceEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::RIGHT);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Bounce In Right");
+				in_effect = new BounceInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::RIGHT);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 2:
-				m_mod_text.setString("Bounce Enter TOP");
-				effect = new BounceEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::TOP);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Bounce In Top");
+				in_effect = new BounceInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::TOP);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 3:
-				m_mod_text.setString("Bounce Enter BOTTOM");
-				effect = new BounceEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::BOTTOM);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Bounce In Bottom");
+				in_effect = new BounceInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::BOTTOM);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 4:
-				m_mod_text.setString("Expo Enter Left");
-				effect = new ExpoEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::LEFT);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Ease In Left");
+				in_effect = new EaseInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::LEFT);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 5:
-				m_mod_text.setString("Expo Enter Right");
-				effect = new ExpoEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::RIGHT);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Ease In Right");
+				in_effect = new EaseInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::RIGHT);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 6:
-				m_mod_text.setString("Expo Enter TOP");
-				effect = new ExpoEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::TOP);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Ease In Top");
+				in_effect = new EaseInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::TOP);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 7:
-				m_mod_text.setString("Expo Enter BOTTOM");
-				effect = new ExpoEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::BOTTOM);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Ease In Bottom");
+				in_effect = new EaseInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::BOTTOM);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 8:
-				m_mod_text.setString("Back Enter Left");
-				effect = new BackEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::LEFT);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Back In Left");
+				in_effect = new BackInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::LEFT);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 9:
-				m_mod_text.setString("Back Enter Right");
-				effect = new BackEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::RIGHT);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Back In Right");
+				in_effect = new BackInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::RIGHT);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 10:
-				m_mod_text.setString("Back Enter TOP");
-				effect = new BackEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::TOP);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Back In Top");
+				in_effect = new BackInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::TOP);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 11:
-				m_mod_text.setString("Back Enter BOTTOM");
-				effect = new BackEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::BOTTOM);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Back In Bottom");
+				in_effect = new BackInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::BOTTOM);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 12:
-				m_mod_text.setString("Elastic Enter Left");
-				effect = new ElasticEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::LEFT);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Elastic In Left");
+				in_effect = new ElasticInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::LEFT);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 13:
-				m_mod_text.setString("Elastic Enter Right");
-				effect = new ElasticEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::RIGHT);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Elastic In Right");
+				in_effect = new ElasticInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::RIGHT);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 14:
-				m_mod_text.setString("Elastic Enter TOP");
-				effect = new ElasticEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::TOP);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Elastic In Top");
+				in_effect = new ElasticInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::TOP);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 15:
-				m_mod_text.setString("Elastic Enter BOTTOM");
-				effect = new ElasticEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::BOTTOM);
-				entity.setStartEffect(effect);
+				m_mod_text.setString("Elastic In Bottom");
+				in_effect = new ElasticInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::BOTTOM);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 16:
-				m_mod_text.setString("Fade Enter");
-				effect = new FadeEnterEffect();
-				effect->init(m_window.getSize(), &entity, delay, duration, Effect::POSITION);
+				m_mod_text.setString("Fade In");
+				effect = new FadeInEffect();
+				effect->init(&entity, delay, duration);
 				entity.setStartEffect(effect);
 				entity.run();
 				//++choice;

@@ -32,7 +32,6 @@
 #include "../core/bmke/movie_manager.hpp"
 
 #include "../core/bmke/texture_entity.hpp"
-#include "../thirdparty/DBTweener/dbtweener.h"
 
 namespace bmonkey{
 

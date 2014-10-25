@@ -19,48 +19,34 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "elastic_enter_effect.hpp"
+#include "fade_in_effect.hpp"
 #include <cassert>
 #include "../entity.hpp"
 
 namespace bmonkey{
 
-ElasticEnterEffect::ElasticEnterEffect(void):
+FadeInEffect::FadeInEffect(void):
 	Effect(),
 	m_tween(nullptr),
 	m_pos(0)
 {
 }
 
-ElasticEnterEffect::~ElasticEnterEffect(void)
+FadeInEffect::~FadeInEffect(void)
 {
 }
 
-void ElasticEnterEffect::init(const sf::Vector2u& win_size, Entity* entity, const float delay, const float duration, const StartFrom from)
+void FadeInEffect::init(Entity* entity, const float delay, const float duration)
 {
-	Effect::init(win_size, entity, delay, duration, from);
-	if (m_tween)
-	{
-		delete m_tween;
-	}
-	switch (from)
-	{
-	case LEFT:
-	case RIGHT:
-		m_pos = getPosition().x;
-		break;
-	case TOP:
-	case BOTTOM:
-		m_pos = getPosition().y;
-		break;
-	case POSITION:
-		break;
-	}
-	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_ELASTIC, CDBTweener::TWEA_OUT, duration, &m_pos, 0);
+	Effect::init(entity, delay, duration);
+
+	m_pos = 0.f;
+	m_opacity = 0.f;
+	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_QUADRATIC, CDBTweener::TWEA_IN, duration, &m_pos, entity->getOpacity());
 	m_clock.restart();
 }
 
-void ElasticEnterEffect::update(sf::Time delta_time)
+void FadeInEffect::update(sf::Time delta_time)
 {
 	// Comprobamos si hemos sobrepasado el delay
 	if (!m_finished && m_clock.getElapsedTime().asSeconds() > m_delay)
@@ -72,25 +58,8 @@ void ElasticEnterEffect::update(sf::Time delta_time)
 			return;
 		}
 		m_tween->step(delta_time.asSeconds());
-		switch (m_start_from)
-		{
-		case LEFT:
-		case RIGHT:
-			setPosition(m_pos, getPosition().y);
-			break;
-		case TOP:
-		case BOTTOM:
-			setPosition(getPosition().x, m_pos);
-			break;
-		case POSITION:
-			break;
-		}
+		m_opacity = static_cast<unsigned char>(m_pos);
 	}
-}
-
-void ElasticEnterEffect::reset(void)
-{
-	Effect::reset();
 }
 
 } // namespace bmonkey

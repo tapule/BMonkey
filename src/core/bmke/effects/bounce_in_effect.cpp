@@ -19,48 +19,43 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "bounce_enter_effect.hpp"
+#include "bounce_in_effect.hpp"
 #include <cassert>
 #include "../entity.hpp"
 
 namespace bmonkey{
 
-BounceEnterEffect::BounceEnterEffect(void):
-	Effect(),
+BounceInEffect::BounceInEffect(void):
+	InEffect(),
 	m_tween(nullptr),
 	m_pos(0)
 {
 }
 
-BounceEnterEffect::~BounceEnterEffect(void)
+BounceInEffect::~BounceInEffect(void)
 {
+	delete m_tween;
 }
 
-void BounceEnterEffect::init(const sf::Vector2u& win_size, Entity* entity, const float delay, const float duration, const StartFrom from)
+void BounceInEffect::init(Entity* entity, const float delay, const float duration)
 {
-	Effect::init(win_size, entity, delay, duration, from);
-	if (m_tween)
+	InEffect::init(entity, delay, duration);
+
+	if ((m_in_from == LEFT) || (m_in_from == RIGHT))
 	{
-		delete m_tween;
-	}
-	switch (from)
-	{
-	case LEFT:
-	case RIGHT:
 		m_pos = getPosition().x;
-		break;
-	case TOP:
-	case BOTTOM:
-		m_pos = getPosition().y;
-		break;
-	case POSITION:
-		break;
 	}
+	else
+	{
+		m_pos = getPosition().y;
+	}
+	// Borramos primero el tween.
+	delete m_tween;
 	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_BOUNCE, CDBTweener::TWEA_OUT, duration, &m_pos, 0);
 	m_clock.restart();
 }
 
-void BounceEnterEffect::update(sf::Time delta_time)
+void BounceInEffect::update(sf::Time delta_time)
 {
 	// Comprobamos si hemos sobrepasado el delay
 	if (!m_finished && m_clock.getElapsedTime().asSeconds() > m_delay)
@@ -72,25 +67,15 @@ void BounceEnterEffect::update(sf::Time delta_time)
 			return;
 		}
 		m_tween->step(delta_time.asSeconds());
-		switch (m_start_from)
+		if ((m_in_from == LEFT) || (m_in_from == RIGHT))
 		{
-		case LEFT:
-		case RIGHT:
 			setPosition(m_pos, getPosition().y);
-			break;
-		case TOP:
-		case BOTTOM:
+		}
+		else
+		{
 			setPosition(getPosition().x, m_pos);
-			break;
-		case POSITION:
-			break;
 		}
 	}
-}
-
-void BounceEnterEffect::reset(void)
-{
-	Effect::reset();
 }
 
 } // namespace bmonkey

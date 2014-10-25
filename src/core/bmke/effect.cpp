@@ -29,7 +29,6 @@ Effect::Effect(void):
 	m_entity(nullptr),
 	m_delay(0.f),
 	m_duration(0.f),
-	m_start_from(POSITION),
 	m_finished(true),
 	m_shader(nullptr),
 	m_opacity(255)
@@ -44,44 +43,20 @@ Effect::~Effect(void)
 	}
 }
 
-void Effect::init(const sf::Vector2u& win_size, Entity* entity, const float delay, const float duration, const StartFrom from)
+void Effect::init(Entity* entity, const float delay, const float duration)
 {
 	assert(entity);
-	sf::Vector2f position;
 
-	m_win_size = win_size;
 	m_entity = entity;
 	m_delay = delay;
 	m_duration = duration;
-	m_start_from = from;
 	m_opacity = entity->getOpacity();
-
-	// Establecemos la posición del efecto dependiendo del modo de entrada
-	switch (from)
-	{
-	case LEFT:
-		position.x = -1.f * ((entity->getWidth() / 2) + entity->getPosition().x);
-		break;
-	case RIGHT:
-		position.x = m_win_size.x - entity->getPosition().x + (entity->getWidth() / 2);
-		break;
-	case TOP:
-		position.y = -1.f * ((entity->getHeight() / 2) + entity->getPosition().y);
-		break;
-	case BOTTOM:
-		position.y = m_win_size.y - entity->getPosition().y + (entity->getHeight() / 2);
-		break;
-	case POSITION:
-		break;
-	}
-	setPosition(position);
 	m_finished = false;
-	m_clock.restart();
 }
 
 void Effect::reset(void)
 {
-	init(m_win_size, m_entity, m_delay, m_duration, m_start_from);
+	init(m_entity, m_delay, m_duration);
 }
 
 } // namespace bmonkey

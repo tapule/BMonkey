@@ -19,48 +19,42 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "back_enter_effect.hpp"
+#include "elastic_in_effect.hpp"
 #include <cassert>
 #include "../entity.hpp"
 
 namespace bmonkey{
 
-BackEnterEffect::BackEnterEffect(void):
-	Effect(),
+ElasticInEffect::ElasticInEffect(void):
+	InEffect(),
 	m_tween(nullptr),
 	m_pos(0)
 {
 }
 
-BackEnterEffect::~BackEnterEffect(void)
+ElasticInEffect::~ElasticInEffect(void)
 {
 }
 
-void BackEnterEffect::init(const sf::Vector2u& win_size, Entity* entity, const float delay, const float duration, const StartFrom from)
+void ElasticInEffect::init(Entity* entity, const float delay, const float duration)
 {
-	Effect::init(win_size, entity, delay, duration, from);
-	if (m_tween)
+	InEffect::init(entity, delay, duration);
+
+	if ((m_in_from == LEFT) || (m_in_from == RIGHT))
 	{
-		delete m_tween;
-	}
-	switch (from)
-	{
-	case LEFT:
-	case RIGHT:
 		m_pos = getPosition().x;
-		break;
-	case TOP:
-	case BOTTOM:
-		m_pos = getPosition().y;
-		break;
-	case POSITION:
-		break;
 	}
-	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_BACK, CDBTweener::TWEA_OUT, duration, &m_pos, 0);
+	else
+	{
+		m_pos = getPosition().y;
+	}
+	// Borramos primero el tween.
+	delete m_tween;
+	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_ELASTIC, CDBTweener::TWEA_OUT, duration, &m_pos, 0);
 	m_clock.restart();
 }
 
-void BackEnterEffect::update(sf::Time delta_time)
+void ElasticInEffect::update(sf::Time delta_time)
 {
 	// Comprobamos si hemos sobrepasado el delay
 	if (!m_finished && m_clock.getElapsedTime().asSeconds() > m_delay)
@@ -72,25 +66,15 @@ void BackEnterEffect::update(sf::Time delta_time)
 			return;
 		}
 		m_tween->step(delta_time.asSeconds());
-		switch (m_start_from)
+		if ((m_in_from == LEFT) || (m_in_from == RIGHT))
 		{
-		case LEFT:
-		case RIGHT:
 			setPosition(m_pos, getPosition().y);
-			break;
-		case TOP:
-		case BOTTOM:
+		}
+		else
+		{
 			setPosition(getPosition().x, m_pos);
-			break;
-		case POSITION:
-			break;
 		}
 	}
-}
-
-void BackEnterEffect::reset(void)
-{
-	Effect::reset();
 }
 
 } // namespace bmonkey

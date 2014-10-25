@@ -19,58 +19,49 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _ELASTIC_ENTER_EFFECT_HPP_
-#define _ELASTIC_ENTER_EFFECT_HPP_
+#ifndef _BACK_IN_EFFECT_HPP_
+#define _BACK_IN_EFFECT_HPP_
 
-#include <SFML/Graphics.hpp>
-#include "../../../defines.hpp"
-#include "../effect.hpp"
+#include "in_effect.hpp"
 #include "../../../thirdparty/DBTweener/dbtweener.h"
 
 namespace bmonkey{
 
 /**
- * Efecto de entrada en escena usando la ecuación Elastic
+ * Efecto de entrada en escena usando la ecuación Back
  *
  * Realiza un efecto de entrada en escena mediante la modificación de la
- * posición, usando para ello la ecuación del efecto especial Elastic de Robert
+ * posición, usando para ello la ecuación del efecto especial Back de Robert
  * Penner.
  * El efecto se puede configurar para comenzar desde la izquierda, derecha,
  * arriba o abajo de una ventana indicada.
  */
-class ElasticEnterEffect : public Effect
+class BackInEffect : public InEffect
 {
 public:
 	/**
 	 * Constructor de la clase
 	 */
-	ElasticEnterEffect(void);
+	BackInEffect(void);
 
 	/**
 	 * Destructor de la clase
 	 */
-	virtual ~ElasticEnterEffect(void);
+	virtual ~BackInEffect(void);
 
 	/**
 	 * Inicializa el efecto asignando sus parámetros de procesado
-	 * @param win_size Tamaño de la ventana de referencia sobre la que se ejecuta el efecto
 	 * @param entity Entidad sobre la que actuará el efecto
 	 * @param delay Retraso en segundos antes de comenzar el procesado
 	 * @param duration Duración del efecto en segundos
-	 * @param from Posición desde donde comienza el efecto
 	 */
-	virtual void init(const sf::Vector2u& win_size, Entity* entity, const float delay, const float duration, const StartFrom from);
+	virtual void init(Entity* entity, const float delay, const float duration);
 
 	/**
 	 * Actualiza el estado del efecto
 	 * @param delta_time Tiempo transcurrido desde la última actualización
 	 */
 	virtual void update(sf::Time delta_time);
-
-	/**
-	 * Reinicia el efecto para comenzar de nuevo su procesado
-	 */
-	virtual void reset(void);
 
 private:
 	CDBTweener::CTween* m_tween;		/**< Tweener usado para el efecto */
@@ -79,4 +70,4 @@ private:
 
 } // namespace bmonkey
 
-#endif // _ELASTIC_ENTER_EFFECT_HPP_
+#endif // _BACK_IN_EFFECT_HPP_
