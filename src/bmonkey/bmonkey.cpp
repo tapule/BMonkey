@@ -37,6 +37,9 @@
 #include "../core/bmke/effects/elastic_in_effect.hpp"
 #include "../core/bmke/effects/fade_in_effect.hpp"
 #include "../core/bmke/effects/pop_in_effect.hpp"
+#include "../core/bmke/effects/rotate_in_effect.hpp"
+#include "../core/bmke/effects/roll_in_effect.hpp"
+#include "../core/bmke/effects/hardroll_in_effect.hpp"
 
 namespace bmonkey{
 
@@ -860,7 +863,7 @@ void BMonkeyApp::processInput(void)
 {
 	ControlManager::Event event;
 
-	static int choice = 17;
+	static int choice = 0;
 	float delay = 0.f;
 	float duration = 1.5f;
 
@@ -1060,6 +1063,33 @@ void BMonkeyApp::processInput(void)
 				m_mod_text.setString("Pop In");
 				effect = new PopInEffect();
 				effect->init(&entity, delay, duration);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 18:
+				m_mod_text.setString("Rotate In");
+				effect = new RotateInEffect();
+				effect->init(&entity, delay, duration);
+				//entity.setRotation(30);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 19:
+				m_mod_text.setString("Roll In");
+				effect = new RollInEffect();
+				effect->init(&entity, delay, duration);
+				//entity.setRotation(30);
+				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 20:
+				m_mod_text.setString("Hard Roll In");
+				effect = new HardrollInEffect();
+				effect->init(&entity, delay, duration + 1.f);
+				//entity.setRotation(30);
 				entity.setStartEffect(effect);
 				entity.run();
 				//++choice;
