@@ -19,38 +19,47 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "rotate_in_effect.hpp"
+#include "ease_effect.hpp"
 #include <cassert>
 #include "../entity.hpp"
 
 namespace bmonkey{
 
-RotateInEffect::RotateInEffect(void):
+#define EASE_OFFSET 25.f
+
+EaseEffect::EaseEffect(void):
 	Effect(),
 	m_tween(nullptr),
-	m_scale(0),
-	m_rotation(0)
+	m_pos(0),
+	m_axis(X)
 {
 }
 
-RotateInEffect::~RotateInEffect(void)
+EaseEffect::~EaseEffect(void)
 {
 }
 
-void RotateInEffect::init(Entity* entity, const float delay, const float duration)
+void EaseEffect::init(Entity* entity, const float delay, const float duration)
 {
 	Effect::init(entity, delay, duration);
 
-	m_scale = 0.f;
-	m_rotation = 360.f;
+	if (m_axis == X)
+	{
+		setPosition(-EASE_OFFSET, 0.f);
+	}
+	else
+	{
+		setPosition(0.f, -EASE_OFFSET);
+	}
+	// Forzamos a que comience desde el centro
+	m_pos = 0;
 	// Borramos primero el tween.
 	delete m_tween;
-	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_EXPONENTIAL, CDBTweener::TWEA_OUT, duration, &m_scale, 1.f);
-	m_tween->addValue(&m_rotation, 0.f);
+	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_QUADRATIC, CDBTweener::TWEA_OUT, duration, &m_pos, EASE_OFFSET);
 	m_clock.restart();
 }
 
-void RotateInEffect::update(sf::Time delta_time)
+void EaseEffect::update(sf::Time delta_time)
 {
 	// Comprobamos si hemos sobrepasado el delay
 	if (!m_finished && m_clock.getElapsedTime().asSeconds() > m_delay)
@@ -58,13 +67,31 @@ void RotateInEffect::update(sf::Time delta_time)
 		// Comprobamos si en el último update se llegó al fin
 		if (m_tween->isFinished())
 		{
-			m_finished = true;
-			return;
+			if (m_pos == EASE_OFFSET)
+			{
+				(m_tween->getValues())[0]->m_fTarget = -EASE_OFFSET;
+			}
+			else
+			{
+				(m_tween->getValues())[0]->m_fTarget = EASE_OFFSET;
+			}
+			m_tween->setElapsedSec(0.f);
 		}
 		m_tween->step(delta_time.asSeconds());
-		setScale(m_scale, m_scale);
-		setRotation(m_rotation);
+		if (m_axis == X)
+		{
+			setPosition(m_pos, getPosition().y);
+		}
+		else
+		{
+			setPosition(getPosition().x, m_pos);
+		}
 	}
+}
+
+void EaseEffect::setAxis(const Axis axis)
+{
+	m_axis = axis;
 }
 
 } // namespace bmonkey

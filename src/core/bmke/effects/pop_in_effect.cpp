@@ -41,6 +41,8 @@ void PopInEffect::init(Entity* entity, const float delay, const float duration)
 	Effect::init(entity, delay, duration);
 
 	m_scale = 0.f;
+	// Borramos primero el tween.
+	delete m_tween;
 	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_BOUNCE, CDBTweener::TWEA_OUT, duration, &m_scale, 1);
 	m_clock.restart();
 }

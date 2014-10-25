@@ -43,6 +43,8 @@ void HardrollInEffect::init(Entity* entity, const float delay, const float durat
 
 	m_scale = 0.f;
 	m_rotation = 360.f;
+	// Borramos primero el tween.
+	delete m_tween;
 	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_ELASTIC, CDBTweener::TWEA_OUT, duration, &m_scale, 1.f);
 	m_tween->addValue(&m_rotation, 0.f);
 	m_clock.restart();

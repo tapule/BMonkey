@@ -42,6 +42,8 @@ void FadeInEffect::init(Entity* entity, const float delay, const float duration)
 
 	m_pos = 0.f;
 	m_opacity = 0.f;
+	// Borramos primero el tween.
+	delete m_tween;
 	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_QUADRATIC, CDBTweener::TWEA_IN, duration, &m_pos, entity->getOpacity());
 	m_clock.restart();
 }

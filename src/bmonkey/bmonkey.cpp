@@ -42,6 +42,7 @@
 #include "../core/bmke/effects/hardroll_in_effect.hpp"
 
 #include "../core/bmke/effects/fade_effect.hpp"
+#include "../core/bmke/effects/ease_effect.hpp"
 
 namespace bmonkey{
 
@@ -869,8 +870,9 @@ void BMonkeyApp::processInput(void)
 	float delay = 0.f;
 	float duration = 1.5f;
 
-	InEffect* in_effect;
 	Effect* effect;
+	InEffect* in_effect;
+	EaseEffect* e_effect;
 
 	while (m_control_manager->poolEvent(event))
 	{
@@ -1103,6 +1105,51 @@ void BMonkeyApp::processInput(void)
 				effect->init(&entity, delay, 1.f);
 				//entity.setRotation(30);
 				entity.setStartEffect(nullptr);
+				entity.setPlaceEffect(effect);
+				entity.run();
+				++choice;
+				break;
+			case 22:
+				m_mod_text.setString("Ease X");
+				e_effect = new EaseEffect();
+				e_effect->setAxis(EaseEffect::X);
+				e_effect->init(&entity, delay, 1.f);
+				entity.setStartEffect(nullptr);
+				entity.setPlaceEffect(e_effect);
+				entity.run();
+				++choice;
+				break;
+			case 23:
+				m_mod_text.setString("Ease Y");
+				e_effect = new EaseEffect();
+				e_effect->setAxis(EaseEffect::Y);
+				e_effect->init(&entity, delay, 1.f);
+				entity.setStartEffect(nullptr);
+				entity.setPlaceEffect(e_effect);
+				entity.run();
+				++choice;
+				break;
+			case 24:
+				m_mod_text.setString("Elastic In Left + Ease X");
+				in_effect = new ElasticInEffect();
+				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setInFrom(InEffect::LEFT);
+				in_effect->init(&entity, delay, duration);
+				entity.setStartEffect(in_effect);
+				e_effect = new EaseEffect();
+				e_effect->setAxis(EaseEffect::X);
+				e_effect->init(&entity, delay, 1.f);
+				entity.setPlaceEffect(e_effect);
+				entity.run();
+				++choice;
+				break;
+			case 25:
+				m_mod_text.setString("Hard Roll In + Fade");
+				effect = new HardrollInEffect();
+				effect->init(&entity, delay, duration + 1.f);
+				entity.setStartEffect(effect);
+				effect = new FadeEffect();
+				effect->init(&entity, delay, 1.f);
 				entity.setPlaceEffect(effect);
 				entity.run();
 				//++choice;
