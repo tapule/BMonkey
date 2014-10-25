@@ -160,9 +160,6 @@ void Entity::update(sf::Time delta_time)
 	if (m_current_effect)
 	{
 		m_current_effect->update(delta_time);
-		// Actualizamos el color y forzamos la actualización en derivadas
-		m_color.a = m_current_effect->getOpacity();
-		setColor(m_color);
 	}
 	updateCurrent(delta_time);
 	updateChildren(delta_time);

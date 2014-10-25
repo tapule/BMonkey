@@ -41,6 +41,8 @@
 #include "../core/bmke/effects/roll_in_effect.hpp"
 #include "../core/bmke/effects/hardroll_in_effect.hpp"
 
+#include "../core/bmke/effects/fade_effect.hpp"
+
 namespace bmonkey{
 
 BMonkeyApp::BMonkeyApp(const Glib::ustring& working_dir):
@@ -863,7 +865,7 @@ void BMonkeyApp::processInput(void)
 {
 	ControlManager::Event event;
 
-	static int choice = 0;
+	static int choice = 21;
 	float delay = 0.f;
 	float duration = 1.5f;
 
@@ -1091,6 +1093,17 @@ void BMonkeyApp::processInput(void)
 				effect->init(&entity, delay, duration + 1.f);
 				//entity.setRotation(30);
 				entity.setStartEffect(effect);
+				entity.run();
+				++choice;
+				break;
+				break;
+			case 21:
+				m_mod_text.setString("Fade");
+				effect = new FadeEffect();
+				effect->init(&entity, delay, 1.f);
+				//entity.setRotation(30);
+				entity.setStartEffect(nullptr);
+				entity.setPlaceEffect(effect);
 				entity.run();
 				//++choice;
 				break;

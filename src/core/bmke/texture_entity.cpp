@@ -77,7 +77,11 @@ void TextureEntity::drawCurrent(sf::RenderTarget& target, sf::RenderStates state
 
 void TextureEntity::updateCurrent(sf::Time delta_time)
 {
-	// No necesitamos actualizaciones adicionales
+	sf::Color color = getColor();
+
+	// Actualizamos el color del sprite
+	color.a = getCurrentOpacity();
+	m_sprite.setColor(color);
 }
 
 } // namespace bmonkey
