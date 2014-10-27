@@ -46,6 +46,8 @@
 
 #include "../core/bmke/effects/back_out_effect.hpp"
 
+#include "../core/bmke/effects/fade_out_effect.hpp"
+
 namespace bmonkey{
 
 BMonkeyApp::BMonkeyApp(const Glib::ustring& working_dir):
@@ -868,7 +870,7 @@ void BMonkeyApp::processInput(void)
 {
 	ControlManager::Event event;
 
-	static int choice = 26;
+	static int choice = 30;
 	float delay = 0.f;
 	float duration = 1.5f;
 
@@ -1197,7 +1199,14 @@ void BMonkeyApp::processInput(void)
 				entity.run();
 				++choice;
 				break;
-
+			case 30:
+				m_mod_text.setString("Fade Out");
+				effect = new FadeOutEffect();
+				effect->init(&entity, delay, duration);
+				entity.setPlaceEffect(effect);
+				entity.run();
+				//++choice;
+				break;
 			}
 			break;
 
