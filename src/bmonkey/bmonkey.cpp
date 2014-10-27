@@ -44,6 +44,8 @@
 #include "../core/bmke/effects/fade_effect.hpp"
 #include "../core/bmke/effects/ease_effect.hpp"
 
+#include "../core/bmke/effects/back_out_effect.hpp"
+
 namespace bmonkey{
 
 BMonkeyApp::BMonkeyApp(const Glib::ustring& working_dir):
@@ -866,12 +868,13 @@ void BMonkeyApp::processInput(void)
 {
 	ControlManager::Event event;
 
-	static int choice = 21;
+	static int choice = 26;
 	float delay = 0.f;
 	float duration = 1.5f;
 
 	Effect* effect;
 	InEffect* in_effect;
+	OutEffect* out_effect;
 	EaseEffect* e_effect;
 
 	while (m_control_manager->poolEvent(event))
@@ -1152,8 +1155,49 @@ void BMonkeyApp::processInput(void)
 				effect->init(&entity, delay, 1.f);
 				entity.setPlaceEffect(effect);
 				entity.run();
-				//++choice;
+				++choice;
 				break;
+			case 26:
+				m_mod_text.setString("Back Out Left");
+				out_effect = new BackOutEffect();
+				out_effect->setWindowSize(m_window.getSize());
+				out_effect->setOutTo(OutEffect::LEFT);
+				out_effect->init(&entity, delay, duration);
+				entity.setPlaceEffect(out_effect);
+				entity.run();
+				++choice;
+				break;
+			case 27:
+				m_mod_text.setString("Back Out Right");
+				out_effect = new BackOutEffect();
+				out_effect->setWindowSize(m_window.getSize());
+				out_effect->setOutTo(OutEffect::RIGHT);
+				out_effect->init(&entity, delay, duration);
+				entity.setPlaceEffect(out_effect);
+				entity.run();
+				++choice;
+				break;
+			case 28:
+				m_mod_text.setString("Back Out Top");
+				out_effect = new BackOutEffect();
+				out_effect->setWindowSize(m_window.getSize());
+				out_effect->setOutTo(OutEffect::TOP);
+				out_effect->init(&entity, delay, duration);
+				entity.setPlaceEffect(out_effect);
+				entity.run();
+				++choice;
+				break;
+			case 29:
+				m_mod_text.setString("Back Out Bottom");
+				out_effect = new BackOutEffect();
+				out_effect->setWindowSize(m_window.getSize());
+				out_effect->setOutTo(OutEffect::BOTTOM);
+				out_effect->init(&entity, delay, duration);
+				entity.setPlaceEffect(out_effect);
+				entity.run();
+				++choice;
+				break;
+
 			}
 			break;
 

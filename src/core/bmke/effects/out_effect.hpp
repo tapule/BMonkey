@@ -19,42 +19,42 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _IN_EFFECT_HPP_
-#define _IN_EFFECT_HPP_
+#ifndef _OUT_EFFECT_HPP_
+#define _OUT_EFFECT_HPP_
 
 #include "../effect.hpp"
 
 namespace bmonkey{
 
 /**
- * Efecto base para animaciones de entrada en escena
+ * Efecto base para animaciones de salida de escena
  *
- * Los efectos de entrada en escena posicionan la entidad fuera de la escena
- * como inicio del efecto y luego aplican su animación hasta que la entidad
- * queda en su posición final.
+ * Los efectos de salida de escena comienzan en la posición actual de la entidad
+ * como inicio del efecto y aplican su animación hasta que la entidad queda
+ * totalmente fuera de la escena.
  */
-class InEffect : public Effect
+class OutEffect : public Effect
 {
 public:
 
-	// Posibles posiciones de origen desde donde comenzar el efecto
-	enum InFrom
+	// Posibles posiciones de destino donde terminar el efecto
+	enum OutTo
 	{
-		LEFT,		/**< El efecto comienza desde la izquierda de la pantalla */
-		RIGHT,		/**< El efecto comienza desde la derecha de la pantalla */
-		TOP,		/**< El efecto comienza desde la parte superior de la pantalla */
-		BOTTOM		/**< El efecto comienza desde la parte inferior de la pantalla */
+		LEFT,		/**< El efecto terminará a la izquierda de la pantalla */
+		RIGHT,		/**< El efecto terminará a la derecha de la pantalla */
+		TOP,		/**< El efecto terminará sobre la parte superior de la pantalla */
+		BOTTOM		/**< El efecto terminará bajo la parte inferior de la pantalla */
 	};
 
 	/**
 	 * Constructor de la clase
 	 */
-	InEffect(void);
+	OutEffect(void);
 
 	/**
 	 * Destructor de la clase
 	 */
-	virtual ~InEffect(void);
+	virtual ~OutEffect(void);
 
 	/**
 	 * Inicializa el efecto asignando sus parámetros de procesado
@@ -71,17 +71,17 @@ public:
 	void setWindowSize(const sf::Vector2u& win_size);
 
 	/**
-	 * Establece la posición origen desde donde ejecutar el efecto
-	 * @param from Nueva posición origen desde donde comenzar el efecto.
+	 * Establece la posición final del efecto
+	 * @param to Nueva posición final para el efecto.
 	 */
-	void setInFrom(const InFrom from);
+	void setOutTo(const OutTo to);
 
 protected:
 	sf::Vector2u m_win_size;/**< Tamaño de la ventana de referencia para los efectos */
-	InFrom m_in_from;		/**< Posición desde donde comienza el efecto */
+	OutTo m_out_to;			/**< Posición final del efecto */
+	float m_final_pos;		/**< Coordenada final del efecto */
 };
-
 
 } // namespace bmonkey
 
-#endif // _IN_EFFECT_HPP_
+#endif // _OUT_EFFECT_HPP_
