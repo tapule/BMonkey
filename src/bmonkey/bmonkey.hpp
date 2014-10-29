@@ -31,6 +31,7 @@
 #include "../core/bmke/font_manager.hpp"
 #include "../core/bmke/movie_manager.hpp"
 
+#include "../core/bmke/graphics.hpp"
 #include "../core/bmke/texture_entity.hpp"
 
 namespace bmonkey{
@@ -80,7 +81,8 @@ public:
 	 * Ejecuta el bucle principal de la aplicación
 	 * @param argc Contador de argumentos
 	 * @param argv Vector de argumentos
-	 * @return -1 en caso de error, distinto de -1 en otro caso
+	 * @return EXIT_SUCCESS si todo fue correcto, EXIT_FAILURE si se produjo
+	 * algún error.
 	 */
 	int run(int argc, char** argv);
 
@@ -165,28 +167,6 @@ private:
 	int gamelistAdd(const Glib::ustring& platform, const Glib::ustring& name);
 
 	/**
-	 * Inicializa la ventana y el sistema de renderizado
-	 */
-	void screenInit(void);
-
-	/**
-	 * Establece una rotación determinada en la ventana
-	 * @param rotation Nueva rotación para la ventana
-	 */
-	void screenRotate(const Rotation rotation);
-
-	/**
-	 * Cambia a la siguiente rotación de la pantalla
-	 * @note El cambio de rotación se hace girandola a la derecha
-	 */
-	void screenSwitchRotation(void);
-
-	/**
-	 * Obtiene una captura de pantalla y la guarda en disco
-	 */
-	void screenCapture(void);
-
-	/**
 	 * Inicializa los volumenes del sistema
 	 */
 	void volumeInit(void);
@@ -230,8 +210,6 @@ private:
 	Glib::ustring m_param1;			/**< Primer parámetro para el comando */
 	Glib::ustring m_param2;			/**< Segundo parámetro para el comando */
 
-	sf::RenderWindow m_window;		/**< Ventana principal de la apliación */
-	Rotation m_rotation;			/**< Rotación actual de la pantalla */
 	bool m_show_fps;
 	ControlManager* m_control_manager; /**< Gestor de eventos del usuario */
 	FontManager* m_font_manager;	/**< Gestor de fuentes para el fe */
@@ -242,11 +220,17 @@ private:
 	std::size_t m_fps_num_frames;
 
 	// Objetos temporales, solo para pruebas
+
+	Graphics* m_graphics;
+	sf::RenderWindow* m_window;
+
 	sf::Texture back_texture;
 	sf::Texture sprite_texture;
 	TextureEntity entity;
 	sf::Sprite back;
 	sf::Text m_mod_text;
+
+	void screenInit(void);
 };
 
 } // namespace bmonkey

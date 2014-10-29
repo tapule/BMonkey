@@ -61,12 +61,14 @@ BMonkeyApp::BMonkeyApp(const Glib::ustring& working_dir):
 	m_first_run(true),
 	m_working_dir(working_dir),
 	m_command(COMMAND_NONE),
-	m_rotation(NONE),
 	m_show_fps(false),
 	m_control_manager(ControlManager::getInstance()),
 	m_font_manager(FontManager::getInstance()),
 	m_fps_update_time(sf::Time::Zero),
-	m_fps_num_frames(0)
+	m_fps_num_frames(0),
+
+	m_graphics(nullptr),
+	m_window(nullptr)
 {
 	assert(!m_working_dir.empty());
 }
@@ -195,9 +197,13 @@ int BMonkeyApp::run(int argc, char** argv)
 	}
 
     LOG_INFO("BMonkey: Initializing renderer...");
+    m_graphics = new Graphics(m_config);
+ 	m_graphics->init();
+ 	m_window = m_graphics->getRenderWindow();
  	screenInit();
+
  	LOG_INFO("BMonkey: Loading keymap...");
- 	m_control_manager->setWindow(m_window);
+ 	m_control_manager->setWindow(*m_window);
  	if (!m_control_manager->load(Glib::build_filename(m_working_dir, BMONKEY_KEYMAP_FILE)))
  	{
  		m_control_manager->registerDefaultControls();
@@ -235,7 +241,7 @@ int BMonkeyApp::run(int argc, char** argv)
 	}
 	fixed_fps_time = sf::seconds(1.f/fixed_fps);
 
-    while (m_window.isOpen())
+    while (m_window->isOpen())
     {
     	delta_time = clock.restart();
     	time_since_last_update += delta_time;
@@ -638,100 +644,6 @@ int BMonkeyApp::gamelistAdd(const Glib::ustring& platform, const Glib::ustring& 
 
 void BMonkeyApp::screenInit(void)
 {
-	bool fullscreen = false;
-	unsigned int width = 800;
-	unsigned int height = 600;
-	unsigned int bpp = 32;
-	Glib::ustring rotation_txt = "none";
-	Rotation rotation = NONE;
-	sf::ContextSettings ctx_settings;
-	unsigned int antialiasing_level = 0;
-	bool vsync = false;
-	unsigned int fps_limit = 0;
-	float joystick_threshold = 75.f;
-	//float mouse_threshold;
-	unsigned int style;
-	sf::View view;
-
-	// Comprobamos las variables de configuración y fijamos valores por defecto
-	if (!m_config->getKey(BMONKEY_CFG_SCREEN, "fullscreen", fullscreen))
-	{
-		m_config->setKey(BMONKEY_CFG_SCREEN, "fullscreen", fullscreen);
-	}
-	if (!m_config->getKey(BMONKEY_CFG_SCREEN, "width", width))
-	{
-		m_config->setKey(BMONKEY_CFG_SCREEN, "width", width);
-		m_config->setKey(BMONKEY_CFG_SCREEN, "heigth", height);
-	}
-	else
-	{
-		if (!m_config->getKey(BMONKEY_CFG_SCREEN, "heigth", height))
-		{
-			m_config->setKey(BMONKEY_CFG_SCREEN, "heigth", height);
-		}
-	}
-	if (!m_config->getKey(BMONKEY_CFG_SCREEN, "bpp", bpp))
-	{
-		m_config->setKey(BMONKEY_CFG_SCREEN, "bpp", bpp);
-	}
-	if (!m_config->getKey(BMONKEY_CFG_SCREEN, "rotation", rotation_txt))
-	{
-		m_config->setKey(BMONKEY_CFG_SCREEN, "rotation", rotation_txt);
-	}
-	else
-	{
-		rotation_txt = rotation_txt.lowercase();
-		if (rotation_txt == "left")
-		{
-			rotation = LEFT;
-		}
-		else if (rotation_txt == "right")
-		{
-			rotation = RIGHT;
-		}
-		else if (rotation_txt == "inverted")
-		{
-			rotation = INVERTED;
-		}
-	}
-	if (!m_config->getKey(BMONKEY_CFG_CORE, "antialiasing_level", antialiasing_level))
-	{
-		m_config->setKey(BMONKEY_CFG_CORE, "antialiasing_level", antialiasing_level);
-	}
-	if (!m_config->getKey(BMONKEY_CFG_CORE, "vertical_sync", vsync))
-	{
-		m_config->setKey(BMONKEY_CFG_CORE, "vertical_sync", vsync);
-	}
-	if (!m_config->getKey(BMONKEY_CFG_CORE, "framerate_limit", fps_limit))
-	{
-		m_config->setKey(BMONKEY_CFG_CORE, "framerate_limit", fps_limit);
-	}
-	if (!m_config->getKey(BMONKEY_CFG_CORE, "joystick_threshold", joystick_threshold))
-	{
-		m_config->setKey(BMONKEY_CFG_CORE, "joystick_threshold", joystick_threshold);
-	}
-
-	if (fullscreen)
-	{
-		style = sf::Style::Fullscreen;
-	}
-	else
-	{
-		style = sf::Style::Titlebar | sf::Style::Close;
-	}
-
-	ctx_settings.antialiasingLevel = antialiasing_level;
-	m_window.create(sf::VideoMode(width, height, bpp), "BMonkey 0.1", style, ctx_settings);
-	m_window.setVerticalSyncEnabled(vsync);
-	// Si vsync está habilitado, el limite fps puede dar problemas
-	m_window.setFramerateLimit(fps_limit);
-	screenRotate(rotation);
-
-	if (joystick_threshold != 0)
-	{
-		m_window.setJoystickThreshold(joystick_threshold);
-	}
-
 	// Inicialización del visor de fps's
 	if (!m_config->getKey(BMONKEY_CFG_SCREEN, "show_fps", m_show_fps))
 	{
@@ -756,86 +668,6 @@ void BMonkeyApp::screenInit(void)
 	m_mod_text.setPosition(125.f, 200.f);
 	m_mod_text.setCharacterSize(30);
 	m_mod_text.setString("Original");
-}
-
-void BMonkeyApp::screenRotate(const Rotation rotation)
-{
-	unsigned int width;
-	unsigned int height;
-	sf::View view;
-	std::string rotation_txt;
-
-	// Asumimos que previamente se etableción una resolución adecuada
-	m_config->getKey(BMONKEY_CFG_SCREEN, "width", width);
-	m_config->getKey(BMONKEY_CFG_SCREEN, "heigth", height);
-
-	view = m_window.getDefaultView();
-	switch(rotation)
-	{
-	case RIGHT:
-		view.setRotation(90.f);
-		view.setCenter(height/2.f, width/2.f);
-		rotation_txt = "right";
-		break;
-	case INVERTED:
-		view.setRotation(180.f);
-		view.setCenter(width/2.f, height/2.f);
-		rotation_txt = "inverted";
-		break;
-	case LEFT:
-		view.setRotation(-90.f);
-		view.setCenter(height/2.f, width/2.f);
-		rotation_txt = "left";
-		break;
-	default:
-		view.setRotation(0.f);
-		view.setCenter(width/2.f, height/2.f);
-		rotation_txt = "none";
-		break;
-	}
-	m_window.setView(view);
-	// Guardamos nueva configuración de rotación
-	m_rotation = rotation;
-	m_config->setKey(BMONKEY_CFG_SCREEN, "rotation", rotation_txt);
-}
-
-void BMonkeyApp::screenSwitchRotation(void)
-{
-	int rotation;
-
-	rotation = m_rotation;
-	if (rotation == LEFT)
-	{
-		rotation = NONE;
-	}
-	else
-	{
-		++rotation;
-	}
-	screenRotate(static_cast<Rotation>(rotation));
-}
-
-void BMonkeyApp::screenCapture(void)
-{
-	Glib::ustring screenshot_dir;
-	Glib::ustring screenshot_file;
-	int id = 0;
-
-	screenshot_dir = Glib::build_filename(m_working_dir, USER_SCREENSHOT_DIR);
-	do
-	{
-		screenshot_file = Glib::build_filename(screenshot_dir, "screenshot_" + utils::toStr(id) + ".png");
-		++id;
-	} while (Glib::file_test(screenshot_file, Glib::FILE_TEST_EXISTS));
-
-	if(!m_window.capture().saveToFile(screenshot_file))
-	{
-		LOG_ERROR("BMonkey: Can't create screenshot \"" << screenshot_file << "\"");
-	}
-	else
-	{
-		LOG_INFO("BMonkey: Screenshot taken to \"" << screenshot_file << "\"");
-	}
 }
 
 void BMonkeyApp::volumeInit(void)
@@ -885,17 +717,17 @@ void BMonkeyApp::processInput(void)
 		switch (event)
 		{
 		case ControlManager::EXIT:
-			m_window.close();
+			m_window->close();
 			break;
 		case ControlManager::UNFOCUSED:
 			break;
 		case ControlManager::FOCUSED:
 			break;
 		case ControlManager::SWITCH_ROTATION:
-			screenSwitchRotation();
+			m_graphics->switchRotation();
 			break;
 		case ControlManager::TAKE_SCREENSHOT:
-			screenCapture();
+			m_graphics->capture();
 			break;
 		case ControlManager::SELECT:
 			switch (choice)
@@ -903,7 +735,7 @@ void BMonkeyApp::processInput(void)
 			case 0:
 				m_mod_text.setString("Bounce In Left");
 				in_effect = new BounceInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -913,7 +745,7 @@ void BMonkeyApp::processInput(void)
 			case 1:
 				m_mod_text.setString("Bounce In Right");
 				in_effect = new BounceInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::RIGHT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -923,7 +755,7 @@ void BMonkeyApp::processInput(void)
 			case 2:
 				m_mod_text.setString("Bounce In Top");
 				in_effect = new BounceInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::TOP);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -933,7 +765,7 @@ void BMonkeyApp::processInput(void)
 			case 3:
 				m_mod_text.setString("Bounce In Bottom");
 				in_effect = new BounceInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::BOTTOM);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -943,7 +775,7 @@ void BMonkeyApp::processInput(void)
 			case 4:
 				m_mod_text.setString("Ease In Left");
 				in_effect = new EaseInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -953,7 +785,7 @@ void BMonkeyApp::processInput(void)
 			case 5:
 				m_mod_text.setString("Ease In Right");
 				in_effect = new EaseInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::RIGHT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -963,7 +795,7 @@ void BMonkeyApp::processInput(void)
 			case 6:
 				m_mod_text.setString("Ease In Top");
 				in_effect = new EaseInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::TOP);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -973,7 +805,7 @@ void BMonkeyApp::processInput(void)
 			case 7:
 				m_mod_text.setString("Ease In Bottom");
 				in_effect = new EaseInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::BOTTOM);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -983,7 +815,7 @@ void BMonkeyApp::processInput(void)
 			case 8:
 				m_mod_text.setString("Back In Left");
 				in_effect = new BackInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -993,7 +825,7 @@ void BMonkeyApp::processInput(void)
 			case 9:
 				m_mod_text.setString("Back In Right");
 				in_effect = new BackInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::RIGHT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -1003,7 +835,7 @@ void BMonkeyApp::processInput(void)
 			case 10:
 				m_mod_text.setString("Back In Top");
 				in_effect = new BackInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::TOP);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -1013,7 +845,7 @@ void BMonkeyApp::processInput(void)
 			case 11:
 				m_mod_text.setString("Back In Bottom");
 				in_effect = new BackInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::BOTTOM);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -1023,7 +855,7 @@ void BMonkeyApp::processInput(void)
 			case 12:
 				m_mod_text.setString("Elastic In Left");
 				in_effect = new ElasticInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -1033,7 +865,7 @@ void BMonkeyApp::processInput(void)
 			case 13:
 				m_mod_text.setString("Elastic In Right");
 				in_effect = new ElasticInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::RIGHT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -1043,7 +875,7 @@ void BMonkeyApp::processInput(void)
 			case 14:
 				m_mod_text.setString("Elastic In Top");
 				in_effect = new ElasticInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::TOP);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -1053,7 +885,7 @@ void BMonkeyApp::processInput(void)
 			case 15:
 				m_mod_text.setString("Elastic In Bottom");
 				in_effect = new ElasticInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::BOTTOM);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -1137,7 +969,7 @@ void BMonkeyApp::processInput(void)
 			case 24:
 				m_mod_text.setString("Elastic In Left + Ease X");
 				in_effect = new ElasticInEffect();
-				in_effect->setWindowSize(m_window.getSize());
+				in_effect->setWindowSize(m_window->getSize());
 				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -1162,7 +994,7 @@ void BMonkeyApp::processInput(void)
 			case 26:
 				m_mod_text.setString("Back Out Left");
 				out_effect = new BackOutEffect();
-				out_effect->setWindowSize(m_window.getSize());
+				out_effect->setWindowSize(m_window->getSize());
 				out_effect->setOutTo(OutEffect::LEFT);
 				out_effect->init(&entity, delay, duration);
 				entity.setPlaceEffect(out_effect);
@@ -1172,7 +1004,7 @@ void BMonkeyApp::processInput(void)
 			case 27:
 				m_mod_text.setString("Back Out Right");
 				out_effect = new BackOutEffect();
-				out_effect->setWindowSize(m_window.getSize());
+				out_effect->setWindowSize(m_window->getSize());
 				out_effect->setOutTo(OutEffect::RIGHT);
 				out_effect->init(&entity, delay, duration);
 				entity.setPlaceEffect(out_effect);
@@ -1182,7 +1014,7 @@ void BMonkeyApp::processInput(void)
 			case 28:
 				m_mod_text.setString("Back Out Top");
 				out_effect = new BackOutEffect();
-				out_effect->setWindowSize(m_window.getSize());
+				out_effect->setWindowSize(m_window->getSize());
 				out_effect->setOutTo(OutEffect::TOP);
 				out_effect->init(&entity, delay, duration);
 				entity.setPlaceEffect(out_effect);
@@ -1192,7 +1024,7 @@ void BMonkeyApp::processInput(void)
 			case 29:
 				m_mod_text.setString("Back Out Bottom");
 				out_effect = new BackOutEffect();
-				out_effect->setWindowSize(m_window.getSize());
+				out_effect->setWindowSize(m_window->getSize());
 				out_effect->setOutTo(OutEffect::BOTTOM);
 				out_effect->init(&entity, delay, duration);
 				entity.setPlaceEffect(out_effect);
@@ -1232,7 +1064,7 @@ void BMonkeyApp::processInput(void)
 			break;
 */
 		case ControlManager::EXIT_MENU:
-			m_window.close();
+			m_window->close();
 			break;
 		}
 	}
@@ -1269,11 +1101,11 @@ void BMonkeyApp::draw(void)
 {
 	float scale;
 
-	m_window.clear();
-	m_window.draw(back);
+	m_window->clear();
+	m_window->draw(back);
 
-	m_window.draw(entity);
-	m_window.draw(m_mod_text);
+	m_window->draw(entity);
+	m_window->draw(m_mod_text);
 /*
 	entity.setSelected(true);
 	entity.setSize(600, 143);
@@ -1302,9 +1134,9 @@ void BMonkeyApp::draw(void)
 	// Esto debe ser lo último
 	if (m_show_fps)
 	{
-		m_window.draw(m_fps_text);
+		m_window->draw(m_fps_text);
 	}
-	m_window.display();
+	m_window->display();
 }
 
 void BMonkeyApp::clean(void)
