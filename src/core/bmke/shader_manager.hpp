@@ -35,6 +35,7 @@ namespace bmonkey{
  * Mantiene un almacen con los shaders, estos se pueden cargar y descargar bajo
  * demanda.
  * La lista de posibles shaders es fija, no permite cargar desde fichero.
+ * Únicamente permite una instancia de la clase al mismo tiempo.
  */
 class ShaderManager
 {
@@ -47,8 +48,6 @@ public:
 		COUNT			/**< Contador de shaders */
 	};
 
-protected:
-
 	/**
 	 * Constructor de la clase
 	 */
@@ -58,24 +57,6 @@ protected:
 	 * Destructor de la clase
 	 */
 	virtual ~ShaderManager(void);
-
-	/**
-	 * Constructor de copia anulado para reforzar el singleton
-	 */
-	ShaderManager(ShaderManager const&);
-
-	/**
-	 * Operador de copia anulado para reforzar el singleton
-	 */
-	ShaderManager& operator=(ShaderManager const&);
-
-public:
-
-	/**
-	 * Obtiene la instancia única del manager
-	 * @return Instancia única del manager
-	 */
-	static ShaderManager* getInstance(void);
 
 	/**
 	 * Indica si la tarjeta gráfica soporta shaders
@@ -106,14 +87,12 @@ public:
 	/**
 	 * Limpia el ShaderManager liberando todos los shaders cargados
 	 */
-	void clear(void);
+	void clean(void);
 
 private:
+	static bool m_instantiated;				/**< Indica si ya hay una instancia de la clase */
 
 	std::vector<sf::Shader* > m_shaders;	/**< Vector almacen de shaders */
-
-	static ShaderManager* m_shader_manager;	/**< Instancia única del manager */
-
 	static const std::vector<std::vector<std::string> > m_shaders_src; /**< Código fuente de los shaders soportados */
 };
 

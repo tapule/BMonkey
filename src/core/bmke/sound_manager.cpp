@@ -24,7 +24,7 @@
 
 namespace bmonkey{
 
-SoundManager* SoundManager::m_sound_manager = nullptr;
+bool SoundManager::m_instantiated = false;
 
 SoundManager::SoundManager(void):
 	m_special_buffer(nullptr),
@@ -33,11 +33,16 @@ SoundManager::SoundManager(void):
 	m_sound_volume(100.f),
 	m_music_volume(100.f)
 {
+	// Con este assert forzamos una instancia única de la clase
+	assert(!m_instantiated);
+	m_instantiated = true;
 }
 
 SoundManager::~SoundManager(void)
 {
-	clear();
+	clean();
+	// Si se destruye la instancia, permitimos que se cree de nuevo
+	m_instantiated = false;
 }
 
 bool SoundManager::loadSound(const Effect effect, const Glib::ustring& file)
@@ -153,7 +158,7 @@ bool SoundManager::openMusic(const Glib::ustring& file)
 	return true;
 }
 
-void SoundManager::clear(void)
+void SoundManager::clean(void)
 {
 	std::unordered_map<std::string, sf::SoundBuffer* >::iterator buff_iter;
 	std::vector<sf::Sound* >::iterator snd_iter;

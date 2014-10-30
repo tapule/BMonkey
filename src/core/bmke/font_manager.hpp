@@ -38,8 +38,7 @@ namespace bmonkey{
  * Proporciona unas fuentes del sistema que siempre están activas y que se
  * pueden usar en cualquier momento y otras fuentes cargadas y descargadas por
  * el usuario.
- * Se define como singleton, de forma que solamente tendrémos una instancia
- * durante toda la ejecución.
+ * Únicamente permite una instancia de la clase al mismo tiempo.
  */
 class FontManager
 {
@@ -53,7 +52,6 @@ public:
 		COUNT			/**< Contador de fuentes del sistema */
 	};
 
-protected:
 	/**
 	 * Constructor de la clase
 	 */
@@ -63,23 +61,6 @@ protected:
 	 * Destructor de la clase
 	 */
 	virtual ~FontManager(void);
-
-	/**
-	 * Constructor de copia anulado para reforzar el singleton
-	 */
-	FontManager(FontManager const&);
-
-	/**
-	 * Operador de copia anulado para reforzar el singleton
-	 */
-	FontManager& operator=(FontManager const&);
-
-public:
-	/**
-	 * Obtiene la instancia única del manager
-	 * @return Instancia única del manager
-	 */
-	static FontManager* getInstance(void);
 
 	/**
 	 * Carga una fuente en el manager y la devuelve
@@ -116,7 +97,7 @@ public:
 	 * Limpia FontManager liberando todas las fuentes cargadas
 	 * @note Las fuentes del sistema nunca se descargan
 	 */
-	void clear(void);
+	void clean(void);
 
 private:
 
@@ -127,10 +108,10 @@ private:
 		sf::Font* font;
 	};
 
+	static bool m_instantiated;		/**< Indica si ya hay una instancia de la clase */
+
 	std::vector<sf::Font> m_system_fonts;				/**< Almacen de fuentes del sistema */
 	std::unordered_map<std::string, Resource > m_fonts; /**< Almacen de fuentes del usuario */
-
-	static FontManager* m_font_manager; 				/**< Instancia única del manager */
 };
 
 } // namespace bmonkey

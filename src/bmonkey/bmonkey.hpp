@@ -22,17 +22,11 @@
 #ifndef _BMONKEY_HPP_
 #define _BMONKEY_HPP_
 
-#include <SFML/Graphics.hpp>
 #include <glibmm/ustring.h>
 #include "../defines.hpp"
 #include "../utils/config.hpp"
 #include "../core/collection/collection.hpp"
-#include "../core/bmke/control_manager.hpp"
-#include "../core/bmke/font_manager.hpp"
-#include "../core/bmke/movie_manager.hpp"
-
-#include "../core/bmke/graphics.hpp"
-#include "../core/bmke/texture_entity.hpp"
+#include "../core/bmke/director.hpp"
 
 namespace bmonkey{
 
@@ -55,15 +49,6 @@ public:
 		COMMAND_PLATFORM_ADD,		/**< Añade una nueva plataforma a la colección */
 		COMMAND_PLATFORM_IMPORT,	/**< Importa una plataforma desde un dat */
 		COMMAND_GAMELIST_ADD		/**< Añade una lista de jeugos nueva a una plataforma */
-	};
-
-	// Posibles rotaciones de la pantalla
-	enum Rotation
-	{
-		NONE = 0,
-		RIGHT,
-		INVERTED,
-		LEFT
 	};
 
 	/**
@@ -200,6 +185,7 @@ private:
 
 	Config* m_config;				/**< Sistema de configuración para la app */
 	Collection* m_collection;		/**< Colección de juegos del usuario */
+	Director* m_director;			/**< Director del frontend */
 
 	bool m_log_enabled;				/**< Indica si el log está hablitado */
 	bool m_first_run;				/**< Indica si se trata del primer arranque */
@@ -209,28 +195,6 @@ private:
 	Command m_command;				/**< Comando a ejecutar */
 	Glib::ustring m_param1;			/**< Primer parámetro para el comando */
 	Glib::ustring m_param2;			/**< Segundo parámetro para el comando */
-
-	bool m_show_fps;
-	ControlManager* m_control_manager; /**< Gestor de eventos del usuario */
-	FontManager* m_font_manager;	/**< Gestor de fuentes para el fe */
-
-	// Contador de frames del libro SFML Game Development
-	sf::Text m_fps_text;
-	sf::Time m_fps_update_time;
-	std::size_t m_fps_num_frames;
-
-	// Objetos temporales, solo para pruebas
-
-	Graphics* m_graphics;
-	sf::RenderWindow* m_window;
-
-	sf::Texture back_texture;
-	sf::Texture sprite_texture;
-	TextureEntity entity;
-	sf::Sprite back;
-	sf::Text m_mod_text;
-
-	void screenInit(void);
 };
 
 } // namespace bmonkey

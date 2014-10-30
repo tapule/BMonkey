@@ -42,8 +42,7 @@ namespace bmonkey{
  * reproducciones múltiples de sonidos sin necesidad de limpiar el resto de
  * efectos de sonido.
  * La música de fondo se reproducirá en loop.
- * Se define como singleton, de forma que solamente tendrémos una instancia
- * durante toda la ejecución.
+ * Únicamente permite una instancia de la clase al mismo tiempo.
  */
 class SoundManager
 {
@@ -68,8 +67,6 @@ public:
 		COUNT			/**< Contador de sonidos */
 	};
 
-protected:
-
 	/**
 	 * Constructor de la clase
 	 */
@@ -79,24 +76,6 @@ protected:
 	 * Destructor de la clase
 	 */
 	virtual ~SoundManager(void);
-
-	/**
-	 * Constructor de copia anulado para reforzar el singleton
-	 */
-	SoundManager(SoundManager const&);
-
-	/**
-	 * Operador de copia anulado para reforzar el singleton
-	 */
-	SoundManager& operator=(SoundManager const&);
-
-public:
-
-	/**
-	 * Obtiene la instancia única del manager
-	 * @return Instancia única del manager
-	 */
-	static SoundManager* getInstance(void);
 
 	/**
 	 * Carga un audio para un efecto determinado
@@ -178,9 +157,11 @@ public:
 	/**
 	 * Limpia el SoundManager liberando todos los audios cargados
 	 */
-	void clear(void);
+	void clean(void);
 
 private:
+
+	static bool m_instantiated;		/**< Indica si ya hay una instancia de la clase */
 
 	std::unordered_map<std::string, sf::SoundBuffer* > m_buffers_map;	/**< Indexa los buffers de los sonidos */
 	sf::SoundBuffer* m_special_buffer;		/**< Buffer para el sonido especial */
@@ -188,8 +169,6 @@ private:
 	sf::Music* m_music;						/**< Música del sound manager */
 	float m_sound_volume;					/**< Volumen para los sonidos */
 	float m_music_volume;					/**< Volumen para la música */
-
-	static SoundManager* m_sound_manager;	/**< Instancia única del manager */
 };
 
 // Inclusión de los métodos inline

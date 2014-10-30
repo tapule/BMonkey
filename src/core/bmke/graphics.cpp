@@ -130,6 +130,8 @@ void Graphics::init(void)
 		m_config->setKey(BMONKEY_CFG_CORE, "joystick_threshold", joystick_threshold);
 	}
 
+	LOG_INFO("Graphics: Antialiasing level " << antialiasing_level << ", VSync " << vsync << ", Fps Limit " << fps_limit);
+
 	if (fullscreen)
 	{
 		style = sf::Style::Fullscreen;

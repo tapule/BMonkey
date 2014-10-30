@@ -24,7 +24,7 @@
 
 namespace bmonkey{
 
-ShaderManager* ShaderManager::m_shader_manager = nullptr;
+bool ShaderManager::m_instantiated = false;
 
 // Utilizamos un vector estático ya que usaremos pocos shaders y serán pequeños
 const std::vector<std::vector<std::string> > ShaderManager::m_shaders_src =
@@ -47,20 +47,16 @@ const std::vector<std::vector<std::string> > ShaderManager::m_shaders_src =
 ShaderManager::ShaderManager(void):
 	m_shaders(COUNT, nullptr)
 {
+	// Con este assert forzamos una instancia única de la clase
+	assert(!m_instantiated);
+	m_instantiated = true;
 }
 
 ShaderManager::~ShaderManager(void)
 {
-	clear();
-}
-
-ShaderManager* ShaderManager::getInstance(void)
-{
-	if (!m_shader_manager)
-	{
-		m_shader_manager = new ShaderManager();
-	}
-	return m_shader_manager;
+	clean();
+	// Si se destruye la instancia, permitimos que se cree de nuevo
+	m_instantiated = false;
 }
 
 bool ShaderManager::isAvailable(void)
@@ -138,7 +134,7 @@ void ShaderManager::deleteShader(const Type type)
 	m_shaders[type] = nullptr;
 }
 
-void ShaderManager::clear(void)
+void ShaderManager::clean(void)
 {
 	std::vector<sf::Shader* >::iterator iter;
 

@@ -32,43 +32,26 @@ namespace bmonkey{
  * Gestiona los volumenes de sonido, música y videos de forma centralizada.
  *
  * Se encarga de mantener y gestionar los niveles de sonido para los diferentes
- * elementos que pueden reproducirlos. Para ello accede directamente al
- * SoundManager y al VideoManager para mantener sincronizados los volumenes
+ * elementos que pueden reproducirlos. Para ello, se le indica sobre que
+ * SoundManager y VideoManager actúa para mantener sincronizados los volumenes
  * actuales.
- * Se define como singleton, de forma que solamente tendrémos una instancia
- * durante toda la ejecución.
+ * Únicamente permite una instancia de la clase al mismo tiempo.
  */
 class VolumeManager
 {
-protected:
+public:
 
 	/**
-	 * Constructor de la clase
+	 * Constuctor de la clase
+	 * @param sound_manager SoundManager sobre el que actúa
+	 * @param movie_manager MovieManager sobre el que actúa
 	 */
-	VolumeManager(void);
+	VolumeManager(SoundManager* sound_manager, MovieManager* movie_manager);
 
 	/**
 	 * Destructor de la clase
 	 */
 	virtual ~VolumeManager(void);
-
-	/**
-	 * Constructor de copia anulado para reforzar el singleton
-	 */
-	VolumeManager(VolumeManager const&);
-
-	/**
-	 * Operador de copia anulado para reforzar el singleton
-	 */
-	VolumeManager& operator=(VolumeManager const&);
-
-public:
-
-	/**
-	 * Obtiene la instancia única del manager
-	 * @return Instancia única del manager
-	 */
-	static VolumeManager* getInstance(void);
 
 	/**
 	 * Establece los volúmenes del sonido
@@ -129,15 +112,15 @@ public:
 
 private:
 
-	SoundManager* m_sound_manager;
-	MovieManager* m_movie_manager;
+	static bool m_instantiated;		/**< Indica si ya hay una instancia de la clase */
 
-	float m_master_volume;					/**< Volumen para los sonidos */
-	float m_sound_volume;					/**< Volumen para los sonidos */
-	float m_music_volume;					/**< Volumen para la música */
-	float m_movie_volume;					/**< Volumen para los sonidos */
+	SoundManager* m_sound_manager;	/**< SoundManager que gestiona */
+	MovieManager* m_movie_manager;	/**< MovieManager que gestiona */
 
-	static VolumeManager* m_volume_manager;	/**< Instancia única del manager */
+	float m_master_volume;			/**< Volumen para los sonidos */
+	float m_sound_volume;			/**< Volumen para los sonidos */
+	float m_music_volume;			/**< Volumen para la música */
+	float m_movie_volume;			/**< Volumen para los sonidos */
 };
 
 } // namespace bmonkey

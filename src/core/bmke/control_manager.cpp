@@ -33,7 +33,7 @@ namespace bmonkey{
 
 const unsigned char ControlManager::MAX_CONTROL_SETS = 2;
 
-ControlManager* ControlManager::m_control_manager = nullptr;
+bool ControlManager::m_instantiated = false;
 
 const std::vector<std::string> ControlManager::m_sfml_key_str =
 {
@@ -140,8 +140,8 @@ const std::vector<std::string> ControlManager::m_sfml_key_str =
 	"Pause"
 };
 
-ControlManager::ControlManager():
-	m_window(nullptr),
+ControlManager::ControlManager(sf::Window* window):
+	m_window(window),
 	m_mouse_pos(sf::Mouse::getPosition()),
 	m_ignore_alt_key(false),
 	m_alt_keys(MAX_CONTROL_SETS, ""),
@@ -149,10 +149,15 @@ ControlManager::ControlManager():
 	m_control_sets(MAX_CONTROL_SETS, std::vector<std::string>(OTHER)),
 	m_events_status(OTHER, false)
 {
+	// Con este assert forzamos una instancia única de la clase
+	assert(!m_instantiated);
+	m_instantiated = true;
 }
 
 ControlManager::~ControlManager(void)
 {
+	// Si se destruye la instancia, permitimos que se cree de nuevo
+	m_instantiated = false;
 }
 
 bool ControlManager::load(const Glib::ustring& file)

@@ -27,11 +27,15 @@
 namespace bmonkey{
 
 
-FontManager* FontManager::m_font_manager = nullptr;
+bool FontManager::m_instantiated = false;
 
 FontManager::FontManager(void):
 	m_system_fonts(COUNT)
 {
+	// Con este assert forzamos una instancia única de la clase
+	assert(!m_instantiated);
+	m_instantiated = true;
+
 	LOG_INFO("FontManager: Loading default fonts...");
 	if (!m_system_fonts[0].loadFromFile(Glib::build_filename(BMONKEY_FONTS_DIR, BMONKEY_DEFAULT_FONT_FILE)))
 	{
@@ -42,16 +46,10 @@ FontManager::FontManager(void):
 
 FontManager::~FontManager(void)
 {
-	clear();
-}
+	clean();
 
-FontManager* FontManager::getInstance(void)
-{
-	if (!m_font_manager)
-	{
-		m_font_manager = new FontManager();
-	}
-	return m_font_manager;
+	// Si se destruye la instancia, permitimos que se cree de nuevo
+	m_instantiated = false;
 }
 
 sf::Font* FontManager::loadFont(const Glib::ustring& file)
@@ -142,7 +140,7 @@ void FontManager::deleteFont(const Glib::ustring& file)
 	}
 }
 
-void FontManager::clear(void)
+void FontManager::clean(void)
 {
 	std::unordered_map<std::string, Resource >::iterator iter;
 

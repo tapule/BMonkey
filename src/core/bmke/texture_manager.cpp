@@ -24,25 +24,21 @@
 
 namespace bmonkey{
 
-TextureManager* TextureManager::m_texture_manager = nullptr;
+bool TextureManager::m_instantiated = false;
 
 TextureManager::TextureManager(void):
 	m_smooth(false)
 {
+	// Con este assert forzamos una instancia única de la clase
+	assert(!m_instantiated);
+	m_instantiated = true;
 }
 
 TextureManager::~TextureManager(void)
 {
-	clear();
-}
-
-TextureManager* TextureManager::getInstance(void)
-{
-	if (!m_texture_manager)
-	{
-		m_texture_manager = new TextureManager();
-	}
-	return m_texture_manager;
+	clean();
+	// Si se destruye la instancia, permitimos que se cree de nuevo
+	m_instantiated = false;
 }
 
 sf::Texture* TextureManager::loadTexture(const Glib::ustring& file, const bool repeated)
@@ -140,7 +136,7 @@ void TextureManager::setSmooth(const bool smooth)
 	m_smooth = smooth;
 }
 
-void TextureManager::clear(void)
+void TextureManager::clean(void)
 {
 	std::unordered_map<std::string, Resource >::iterator iter;
 

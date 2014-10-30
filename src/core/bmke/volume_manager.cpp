@@ -24,16 +24,23 @@
 
 namespace bmonkey{
 
-VolumeManager* VolumeManager::m_volume_manager = nullptr;
+bool VolumeManager::m_instantiated = false;
 
-VolumeManager::VolumeManager(void):
-	m_sound_manager(SoundManager::getInstance()),
-	m_movie_manager(MovieManager::getInstance()),
+VolumeManager::VolumeManager(SoundManager* sound_manager, MovieManager* movie_manager):
+	m_sound_manager(sound_manager),
+	m_movie_manager(movie_manager),
 	m_master_volume(100.f),
 	m_sound_volume(100.f),
 	m_music_volume(100.f),
 	m_movie_volume(100.f)
 {
+	// Con este assert forzamos una instancia única de la clase
+	assert(!m_instantiated);
+	m_instantiated = true;
+
+	assert(sound_manager);
+	assert(movie_manager);
+
 	m_sound_manager->setSoundVolume(m_sound_volume);
 	m_sound_manager->setMusicVolume(m_music_volume);
 	m_movie_manager->setVolume(m_movie_volume);
@@ -41,15 +48,8 @@ VolumeManager::VolumeManager(void):
 
 VolumeManager::~VolumeManager(void)
 {
-}
-
-VolumeManager* VolumeManager::getInstance(void)
-{
-	if (!m_volume_manager)
-	{
-		m_volume_manager = new VolumeManager();
-	}
-	return m_volume_manager;
+	// Si se destruye la instancia, permitimos que se cree de nuevo
+	m_instantiated = false;
 }
 
 void VolumeManager::setVolume(const float master, const float sound, const float music, const float movie)

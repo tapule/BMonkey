@@ -26,25 +26,21 @@
 
 namespace bmonkey{
 
-MovieManager* MovieManager::m_movie_manager = nullptr;
+bool MovieManager::m_instantiated = false;
 
 MovieManager::MovieManager(void):
 	m_volume(100.f)
 {
+	// Con este assert forzamos una instancia única de la clase
+	assert(!m_instantiated);
+	m_instantiated = true;
 }
 
 MovieManager::~MovieManager(void)
 {
-	clear();
-}
-
-MovieManager* MovieManager::getInstance(void)
-{
-	if (!m_movie_manager)
-	{
-		m_movie_manager = new MovieManager();
-	}
-	return m_movie_manager;
+	clean();
+	// Si se destruye la instancia, permitimos que se cree de nuevo
+	m_instantiated = false;
 }
 
 sfe::Movie* MovieManager::loadMovie(const Glib::ustring& file)
@@ -118,7 +114,7 @@ void MovieManager::setVolume(const float volume)
 }
 
 // CHECKME: Parece que falla si se llama desde el destructor ????
-void MovieManager::clear(void)
+void MovieManager::clean(void)
 {
 	std::vector<sfe::Movie* >::iterator iter;
 

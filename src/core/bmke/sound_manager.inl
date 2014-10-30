@@ -19,15 +19,6 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-inline SoundManager* SoundManager::getInstance(void)
-{
-	if (!m_sound_manager)
-	{
-		m_sound_manager = new SoundManager();
-	}
-	return m_sound_manager;
-}
-
 inline void SoundManager::playSound(const Effect effect)
 {
 	assert(effect < COUNT);

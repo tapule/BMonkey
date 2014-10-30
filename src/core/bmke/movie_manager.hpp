@@ -36,12 +36,11 @@ namespace bmonkey{
  * frontend.
  * Actua como una especie de almacén para los videos que se van cargando desde
  * fichero, proporcionando métodos para su carga y descarga.
- * Se define como singleton, de forma que solamente tendrémos una instancia
- * durante toda la ejecución.
+ * Únicamente permite una instancia de la clase al mismo tiempo.
  */
 class MovieManager
 {
-protected:
+public:
 
 	/**
 	 * Constructor de la clase
@@ -52,24 +51,6 @@ protected:
 	 * Destructor de la clase
 	 */
 	virtual ~MovieManager(void);
-
-	/**
-	 * Constructor de copia anulado para reforzar el singleton
-	 */
-	MovieManager(MovieManager const&);
-
-	/**
-	 * Operador de copia anulado para reforzar el singleton
-	 */
-	MovieManager& operator=(MovieManager const&);
-
-public:
-
-	/**
-	 * Obtiene la instancia única del manager
-	 * @return Instancia única del manager
-	 */
-	static MovieManager* getInstance(void);
 
 	/**
 	 * Carga un nuevo video en el manager y lo devuelve
@@ -106,14 +87,14 @@ public:
 	/**
 	 * Limpia MovieManager liberando todos los videos cargados
 	 */
-	void clear(void);
+	void clean(void);
 
 private:
 
+	static bool m_instantiated;		/**< Indica si ya hay una instancia de la clase */
+
 	std::vector<sfe::Movie* > m_movies;		/**< Almacen de vídeos */
 	float m_volume;							/**< Volumen para los vídeos */
-
-	static MovieManager* m_movie_manager;	/**< Instancia única del manager */
 };
 
 } // namespace bmonkey
