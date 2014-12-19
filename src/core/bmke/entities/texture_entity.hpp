@@ -24,8 +24,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include "../../defines.hpp"
-#include "entity.hpp"
+#include "../../../defines.hpp"
+#include "../entity.hpp"
 
 namespace bmonkey{
 

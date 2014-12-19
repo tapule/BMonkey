@@ -25,9 +25,11 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "../../defines.hpp"
-#include "effect.hpp"
 
 namespace bmonkey{
+
+// Definición de un vector de dos posiciones booleanas
+typedef sf::Vector2<bool> Vector2b;
 
 /**
  * Entidad base para los elementos del frontend
@@ -36,23 +38,10 @@ namespace bmonkey{
  * los objetos que se pueden dibujar en pantalla.
  * Una entidad puede estar formada por varias entidades, teniendo sus hijos
  * propiedades relativas al padre.
- * Tienen un estado determina en que fase de ejecución se encuentran:
- * - Stopped: Se encuentra en su estado inicial, no ha comenzado su ejecución.
- * - Started: Ha comenzado su ejecución y está entrando en la escena.
- * - Placed: Se encuentra en ejecución y posicionada en su lugar, está en su
- *   bucle principal de ejecución.
  */
 class Entity : public sf::Drawable, public sf::Transformable
 {
 public:
-
-	// Posibles estados en los que se puede encontrar la entidad
-	enum Status
-	{
-		STOPPED = 0,	/**< Está parada en su estado inicial, no ha comenzado su ejecución */
-		STARTED,		/**< Ha comenzado su ejecución y está entrando en la escena */
-		PLACED			/**< Se encuentra en ejecución y posicionada en su lugar */
-	};
 
 	/**
 	 * Constructor de la clase
@@ -63,6 +52,14 @@ public:
 	 * Destructor de la clase
 	 */
 	virtual ~Entity(void);
+
+	/**
+	 * Nueva versión de Transformable::setScale para que soporte el grid de
+	 * selección
+	 * @param factorX Nuevo factor de escala horizontal
+	 * @param factorY Nuevo factor de escala vertical
+	 */
+	void setScale(float factorX, float factorY);
 
 #ifdef BMONKEY_DESIGNER
 	/**
@@ -79,53 +76,10 @@ public:
 #endif
 
 	/**
-	 * Obtiene el estado actual de la entidad
-	 * @return Estado de la entidad
+	 * Obtiene el valor del espejado actual de la entidad
+	 * @return Valor actuala del espejado
 	 */
-	Status getStatus(void) const;
-
-	/**
-	 * Obtiene la anchura de la entidad
-	 * @return Anchura de la entidad
-	 */
-	float getWidth(void) const;
-
-	/**
-	 * Obtiene la altura de la entidad
-	 * @return Altura de la entidad
-	 */
-	float getHeight(void) const;
-
-	/**
-	 * Establece la anchura y altura de la entidad
-	 * @param width Nuevo ancho para la entidad
-	 * @param height Nuevo alto para la entidad
-	 */
-	virtual void setSize(const float width, const float height);
-
-	/**
-	 * Indica si la entidad tiene el espejado horizontal activado
-	 * @return true si el espejado horizontal está activado, falso en otro caso
-	 */
-	bool getFlipX(void) const;
-
-	/**
-	 * Indica si la entidad tiene el espejado vertical activado
-	 * @return true si el espejado vertical está activado, falso en otro caso
-	 */
-	bool getFlipY(void) const;
-
-	/**
-	 * Establece el espejado horizontal de la entidad
-	 * @param x Nuevo espejado horizontal para la entidad
-	 */
-	void setFlipX(const bool x);
-
-	/**
-	 * Establece el espejado vertical de la entidad
-	 * @param y Nuevo espejado vertical para la entidad
-	 */
-	void setFlipY(const bool y);
+	const Vector2b& getFlip(void) const;
 
 	/**
 	 * Establece el espejado horizontal y vertical de la entidad
@@ -133,6 +87,12 @@ public:
 	 * @param y Nuevo espejado vertical para la entidad
 	 */
 	void setFlip(const bool x, const bool y);
+
+	/**
+	 * Establece el espejado horizontal y vertical de la entidad
+	 * @param flip Nuevo espejado para la entidad
+	 */
+	void setFlip(const Vector2b& flip);
 
 	/**
 	 * Obtiene el color de tinte y opacidad de la entidad
@@ -147,13 +107,6 @@ public:
 	virtual void setColor(const sf::Color& color);
 
 	/**
-	 * Establece únicamente el color de tinte de la entidad
-	 * @param color Nuevos valores para el tiente
-	 * @note el alpha se ignora
-	 */
-	void setTint(const sf::Color& color);
-
-	/**
 	 * Obtiene la opacidad definida en la entidad
 	 * @return Opacidad actual de la entidad
 	 */
@@ -164,32 +117,6 @@ public:
 	 * @param opacity Nueva opacidad para la entidad
 	 */
 	void setOpacity(const unsigned char opacity);
-
-	/**
-	 * Obtiene la opacidad actual (en tiempo real) de la entidad
-	 * @return Opacidad actual de la entidad
-	 * @note La opacidad actual hace referencia a la opacidad modificada por los
-	 * posibles efectos de la entidad.
-	 */
-	unsigned char getCurrentOpacity(void) const;
-
-	/**
-	 * Establece el efecto que usará la entidad para entrar en la escena
-	 * @param effect Nuevo efecto que se usará para entrar en la escena
-	 * @note El efecto debe estar inicializado
-	 * @note La entidad se convierte en responsable del efecto y lo liberará
-	 * cuando estime oportuno
-	 */
-	void setStartEffect(Effect* effect);
-
-	/**
-	 * Establece el efecto que usará la entidad durante la escena
-	 * @param effect Nuevo efecto que se usará durante la escena
-	 * @note El efecto debe estar inicializado
-	 * @note La entidad se convierte en responsable del efecto y lo liberará
-	 * cuando estime oportuno
-	 */
-	void setPlaceEffect(Effect* effect);
 
 	/**
 	 * Establece la entidad padre
@@ -212,14 +139,25 @@ public:
 	void removeChild(Entity* entity);
 
 	/**
+	 * Obtiene la primera entidad hija
+	 * @return Primera entidad hija
+	 */
+	Entity* getFirstChild(void);
+
+	/**
+	 * Obtiene la última entidad hija
+	 * @return Última entidad hija
+	 */
+	Entity* getLastChild(void);
+
+	/**
 	 * Actualiza el estado de la entidad
 	 * @param delta_time Tiempo transcurrido desde la última actualización
 	 */
-	void update(sf::Time delta_time);
+	virtual void update(sf::Time delta_time);
 
 	/**
-	 * Comienza la ejecución de la entidad desde su punto inicial, reiniciando
-	 * los efectos y cualquier dato interno
+	 * Comienza la ejecución de la entidad desde su punto inicial
 	 */
 	virtual void run(void);
 
@@ -227,10 +165,10 @@ public:
 	/**
 	 * Detiene la ejecución de la entidad, pasando esta a modo edición
 	 */
-	void stop(void);
+	virtual void stop(void);
 #endif
 
-private:
+protected:
 	/**
 	 * Implementación de drawable
 	 * @param target Target donde se dibujará la entidad
@@ -258,7 +196,7 @@ private:
 	 * @param width Nueva anchura para el grid
 	 * @param height Nueva altura para el grid
 	 */
-	void updateGrid(const float width, const float height);
+	virtual void updateGrid(const float width, const float height) const = 0;
 #endif
 
 	/**
@@ -273,22 +211,14 @@ private:
 	 */
 	void updateChildren(sf::Time delta_time);
 
-
 #ifdef BMONKEY_DESIGNER
 	bool m_selected;				/**< Indica si la entidad está seleccionada */
 	sf::RectangleShape m_grid_box;	/**< Rectángulo que hace de grid para selección */
 	sf::RectangleShape m_grid_dot;	/**< Marcador del origen en el grid */
 #endif
 
-	Status m_status;			/**< Estado en el que se encuentra */
-	float m_width;				/**< Anchura de la entidad */
-	float m_height;				/**< Altura de la entidad */
-	bool m_flipx;				/**< Indica si se hace el flip en x */
-	bool m_flipy;				/**< Indica si se hace el flip en y */
+	Vector2b m_flip;			/**< Valores del espejado */
 	sf::Color m_color;			/**< Tinte y opacidad de la entidad */
-	Effect* m_start_effect;		/**< Efecto de entrada a la escena */
-	Effect* m_place_effect;		/**< Efecto de posición en la escena */
-	Effect* m_current_effect;	/**< Efecto en ejecución */
 
 	Entity* m_parent;			/**< Padre de la entidad en una cadena */
 	std::vector<Entity* > m_children; /**< Hijos de la entidad */

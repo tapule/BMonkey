@@ -34,35 +34,14 @@ inline void Entity::setSelected(const bool selected)
 }
 #endif
 
-inline Entity::Status Entity::getStatus(void) const
+inline const Vector2b& Entity::getFlip(void) const
 {
-	return m_status;
+	return m_flip;
 }
 
-inline float Entity::getWidth(void) const
+inline void Entity::setFlip(const Vector2b& flip)
 {
-	return m_width;
-}
-
-inline float Entity::getHeight(void) const
-{
-	return m_height;
-}
-
-inline bool Entity::getFlipX(void) const
-{
-	return m_flipx;
-}
-
-inline bool Entity::getFlipY(void) const
-{
-	return m_flipy;
-}
-
-inline void Entity::setFlip(const bool x, const bool y)
-{
-	setFlipX(x);
-	setFlipY(y);
+	m_flip = flip;
 }
 
 inline const sf::Color& Entity::getColor(void)
@@ -75,15 +54,6 @@ inline void Entity::setColor(const sf::Color& color)
 	m_color = color;
 }
 
-inline void Entity::setTint(const sf::Color& color)
-{
-	m_color.r = color.r;
-	m_color.g = color.g;
-	m_color.b = color.b;
-	// Forzamos el setColor para que actualice en la derivada
-	setColor(m_color);
-}
-
 inline unsigned char Entity::getOpacity(void) const
 {
 	return m_color.a;
@@ -92,6 +62,7 @@ inline unsigned char Entity::getOpacity(void) const
 inline void Entity::setOpacity(const unsigned char opacity)
 {
 	m_color.a = opacity;
+	//CHECKME: No se si esta llamada a setColor es necesaria
 	// Forzamos el setColor para que actualice en la derivada
 	setColor(m_color);
 }
@@ -109,12 +80,13 @@ inline void Entity::addChild(Entity* entity)
 	}
 }
 
-#ifdef BMONKEY_DESIGNER
-inline void Entity::updateGrid(const float width, const float height)
+void Entity::run(void)
 {
-	m_grid_box.setSize(sf::Vector2f(m_width, m_height));
-	m_grid_box.setOrigin(width / 2.f, height / 2.f);
-	//m_grid_dot.setPosition(width / 2.f, height / 2.f);
+}
+
+#ifdef BMONKEY_DESIGNER
+void Entity::stop(void)
+{
 }
 #endif
 

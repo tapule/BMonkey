@@ -27,18 +27,9 @@ namespace bmonkey{
 Entity::Entity(void):
 #ifdef BMONKEY_DESIGNER
 	m_selected(false),
-	m_status(STOPPED),
-#else
-	m_status(STARTED),
 #endif
-	m_width(0),
-	m_height(0),
-	m_flipx(false),
-	m_flipy(false),
+	m_flip(Vector2b(false, false)),
 	m_color(sf::Color(255, 255, 255, 255)),
-	m_start_effect(nullptr),
-	m_place_effect(nullptr),
-	m_current_effect(nullptr),
 	m_parent(nullptr)
 {
 #ifdef BMONKEY_DESIGNER
@@ -67,67 +58,32 @@ Entity::~Entity(void)
 	}
 }
 
-void Entity::setSize(const float width, const float height)
+void Entity::setScale(float factorX, float factorY)
 {
-	m_width = width;
-	m_height = height;
+	Transformable::setScale(factorX, factorY);
 #ifdef BMONKEY_DESIGNER
 	updateGrid(m_width, m_height);
 #endif
 }
 
-void Entity::setFlipX(const bool x)
+inline void Entity::setFlip(const bool x, const bool y)
 {
 	sf::Vector2f scale;
 
 	scale = getScale();
 
-	if ((x && !m_flipx) || (!x && m_flipx))
+	if ((x && !m_flip.x) || (!x && m_flip.x))
 	{
 		scale.x *= -1;
 	}
-	setScale(scale);
-
-	m_flipx = x;
-}
-
-void Entity::setFlipY(const bool y)
-{
-	sf::Vector2f scale;
-
-	scale = getScale();
-
-	if ((y && !m_flipy) || (!y && m_flipy))
+	if ((y && !m_flip.y) || (!y && m_flip.y))
 	{
 		scale.y *= -1;
 	}
-	setScale(scale);
+	Transformable::setScale(scale);
 
-	m_flipy = y;
-}
-
-unsigned char Entity::getCurrentOpacity(void) const
-{
-	if (m_current_effect)
-	{
-		return m_current_effect->getOpacity();
-	}
-	else
-	{
-		return m_color.a;
-	}
-}
-
-void Entity::setStartEffect(Effect* effect)
-{
-	delete m_start_effect;
-	m_start_effect = effect;
-}
-
-void Entity::setPlaceEffect(Effect* effect)
-{
-	delete m_place_effect;
-	m_place_effect = effect;
+	m_flip.x = x;
+	m_flip.y = y;
 }
 
 void Entity::removeChild(Entity* entity)
@@ -148,48 +104,34 @@ void Entity::removeChild(Entity* entity)
 	}
 }
 
-void Entity::update(sf::Time delta_time)
+Entity* Entity::getFirstChild(void)
 {
-	// Si estaba entrando, comprobamos si ha terminado y pasamos a posicionado
-	if (m_status == STARTED && m_start_effect && m_start_effect->isFinished())
+	if (!m_children.empty())
 	{
-		m_status = PLACED;
-		m_current_effect = m_place_effect;
-	}
-	// Si tenemos algún efecto, lo actualizamos
-	if (m_current_effect)
-	{
-		m_current_effect->update(delta_time);
-	}
-	updateCurrent(delta_time);
-	updateChildren(delta_time);
-}
-
-void Entity::run(void)
-{
-	// Reseteamos el efecto de posición si hay
-	if (m_place_effect)
-	{
-		m_place_effect->reset();
-	}
-	// Reseteamos el efecto de entrada y actualizamos el estado de la entidad
-	if (m_start_effect)
-	{
-		m_start_effect->reset();
-		m_status = STARTED;
-		m_current_effect = m_start_effect;
+		return m_children.front();
 	}
 	else
 	{
-		m_status = PLACED;
-		m_current_effect = m_place_effect;
+		return nullptr;
 	}
 }
 
-void Entity::stop(void)
+Entity* Entity::getLastChild(void)
 {
-	m_status = STOPPED;
-	m_current_effect = nullptr;
+	if (!m_children.empty())
+	{
+		return m_children.back();
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+void Entity::update(sf::Time delta_time)
+{
+	updateCurrent(delta_time);
+	updateChildren(delta_time);
 }
 
 void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -197,12 +139,6 @@ void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	std::vector<Entity* >::const_iterator iter;
 
 	states.transform *= getTransform();
-	if (m_current_effect)
-	{
-		states.transform *= m_current_effect->getTransform();
-		states.shader = m_current_effect->getShader();
-	}
-
 	drawCurrent(target, states);
 
 	for (iter = m_children.begin(); iter != m_children.end(); ++iter)
@@ -237,12 +173,9 @@ void Entity::updateChildren(sf::Time delta_time)
 {
 	std::vector<Entity* >::iterator iter;
 
-	if (m_status != STOPPED)
+	for (iter = m_children.begin(); iter != m_children.end(); ++iter)
 	{
-		for (iter = m_children.begin(); iter != m_children.end(); ++iter)
-		{
-			(*iter)->update(delta_time);
-		}
+		(*iter)->update(delta_time);
 	}
 }
 
