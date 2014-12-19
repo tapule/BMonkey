@@ -19,26 +19,22 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _EFFECT_INL_
-#define _EFFECT_INL_
+#ifndef _COLLECTION_INL_
+#define _COLLECTION_INL_
 
-inline void Effect::update(sf::Time delta_time)
+inline std::vector<Glib::ustring>& Collection::getManufacturers(void)
 {
+	return m_manufactureres;
 }
 
-inline bool Effect::isFinished(void) const
+inline std::vector<Glib::ustring>& Collection::getGenres(void)
 {
-	return m_finished;
+	return m_genres;
 }
 
-inline unsigned char Effect::getOpacity(void) const
+inline int Collection::platformCount(void)
 {
-	return m_opacity;
+	return m_size;
 }
 
-inline sf::Shader* Effect::getShader(void) const
-{
-	return m_shader;
-}
-
-#endif // _EFFECT_INL_
+#endif // _COLLECTION_INL_

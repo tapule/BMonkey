@@ -19,6 +19,9 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
+#ifndef _CONTROL_MANAGER_INL_
+#define _CONTROL_MANAGER_INL_
+
 inline bool ControlManager::save(void)
 {
 	if (!m_file.empty())
@@ -83,3 +86,5 @@ inline std::vector<std::string> ControlManager::getControlSet(const unsigned cha
 
 	return m_control_sets[set];
 }
+
+#endif // _CONTROL_MANAGER_INL_

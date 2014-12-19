@@ -80,19 +80,13 @@ public:
 	 * Obtiene la lista de fabricantes de los juegos
 	 * @return Vector de fabricantes de los juegos
 	 */
-	std::vector<Glib::ustring>& getManufacturers(void)
-	{
-		return m_manufactureres;
-	}
+	std::vector<Glib::ustring>& getManufacturers(void);
 
 	/**
 	 * Obtiene la lista de géneros de los juegos
 	 * @return Vector de géneros de los juegos
 	 */
-	std::vector<Glib::ustring>& getGenres(void)
-	{
-		return m_genres;
-	}
+	std::vector<Glib::ustring>& getGenres(void);
 
 	/**
 	 * Obtiene una plataforma a partir de un item
@@ -119,10 +113,7 @@ public:
 	 * Obtiene el número de plataformas disponibles en la colección
 	 * @return Número de plataformas en la colección
 	 */
-	int platformCount(void)
-	{
-		return m_size;
-	}
+	int platformCount(void);
 
 	// Implementación de Iterable
 	/**
@@ -216,6 +207,9 @@ private:
 	std::vector<Glib::ustring> m_genres;			/**< Tabla de géneros */
 	std::unordered_map<std::string, Platform* > m_platforms_map;	/**< Mapa de plataformas para acceso rápido por nombre */
 };
+
+// Inclusión de los métodos inline
+#include "collection.inl"
 
 } // namespace bmonkey
 

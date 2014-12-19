@@ -59,118 +59,79 @@ public:
 	 * Obtiene el directorio de trabajo o directorio base de la Plataforma
 	 * @return Referencia al directorio de trabajo de la plataforma
 	 */
-	Glib::ustring& getDir(void)
-	{
-		return m_dir;
-	}
+	Glib::ustring& getDir(void);
 
 	/**
 	 * Obtiene la siguiente plataforma enlazado
 	 * @return Siguiente plataforma enlazada
 	 */
-	Platform* getNext(void)
-	{
-		return m_next;
-	}
+	Platform* getNext(void);
 
 	/**
 	 * Establece la siguiente plataforma enlazado
 	 * @param next Siguiente plataforma a enlazar
 	 */
-	void setNext(Platform* next)
-	{
-		m_next = next;
-	}
+	void setNext(Platform* next);
 
 	/**
 	 * Obtiene la plataforma previa enlazada
 	 * @return Plataforma previa
 	 */
-	Platform* getPrev(void)
-	{
-		return m_prev;
-	}
+	Platform* getPrev(void);
 
 	/**
 	 * Establece la plataforma previa enlazada
 	 * @param prev Plataforma previa a enlazar
 	 */
-	void setPrev(Platform* prev)
-	{
-		m_prev = prev;
-	}
+	void setPrev(Platform* prev);
 
 	/**
 	 * Obtiene el nombre de la plataforma
 	 * @return Nombre de la plataforma
 	 */
-	Glib::ustring getName(void)
-	{
-		return m_name;
-	}
+	Glib::ustring getName(void);
 
 	/**
 	 * Obtiene el título de la plataforma
 	 * @return Título de la plataforma
 	 */
-	Glib::ustring getTitle(void)
-	{
-		return m_title;
-	}
+	Glib::ustring getTitle(void);
 
 	/**
 	 * Estable el título de la plataforma
 	 * @param title Título nombre para la plataforma
 	 */
-	void setTitle(const Glib::ustring& title)
-	{
-		m_title = title;
-	}
+	void setTitle(const Glib::ustring& title);
 
 	/**
 	 * Obtiene el fabricante de la plataforma
 	 * @return Fabricante de la plataforma
 	 */
-	Glib::ustring getManufacturer(void)
-	{
-		return m_manufacturer;
-	}
+	Glib::ustring getManufacturer(void);
 
 	/**
 	 * Estable fabricante de la plataforma
 	 * @param manufacturer Nuevo fabricante de la plataforma
 	 */
-	void setManufacturer(const Glib::ustring& manufacturer)
-	{
-		m_manufacturer = manufacturer;
-	}
+	void setManufacturer(const Glib::ustring& manufacturer);
 
 	/**
 	 * Obtiene el año de lanzamiento de la plataforma
 	 * @return Año de lanzamiento de la plataforma
 	 */
-	Glib::ustring getYear(void)
-	{
-		return m_year;
-	}
+	Glib::ustring getYear(void);
 
 	/**
 	 * Estable año de lanzamiento de la plataforma
 	 * @param year Nuevo año de lanzamiento de la plataforma
 	 */
-	void setYear(const Glib::ustring& year)
-	{
-		m_year = year;
-	}
+	void setYear(const Glib::ustring& year);
 
 	/**
 	 * Obtiene el directorio de roms de la plataforma
 	 * @return Directorio de roms de la plataforma
 	 */
-	Glib::ustring getRomsDir(void)
-	{
-		return m_roms_dir;
-	}
+	Glib::ustring getRomsDir(void);
 
 	/**
 	 * Establece el directorio de roms de la plataforma
@@ -182,109 +143,73 @@ public:
 	 * Obtiene la extensión reconocible para las roms de la plataforma
 	 * @return Extensión de las roms de la plataforma
 	 */
-	Glib::ustring getRomsExtension(void)
-	{
-		return m_roms_extension;
-	}
+	Glib::ustring getRomsExtension(void);
 
 	/**
 	 * Estable la extensión reconocible para las roms de la plataforma
 	 * @param extension Nueva extensión para las roms de la plataforma
 	 */
-	void setRomExtension(const Glib::ustring& extension)
-	{
-		m_roms_extension = extension;
-	}
+	void setRomExtension(const Glib::ustring& extension);
 
 	/**
 	 * Obtiene el path del binario del emulador para la plataforma
 	 * @return Path del binario de la plataforma
 	 */
-	Glib::ustring getEmulatorBinary(void)
-	{
-		return m_emu_binary;
-	}
+	Glib::ustring getEmulatorBinary(void);
 
 	/**
 	 * Estable el path del binario del emulador de la plataforma
 	 * @param binary Path del binario del emulador
 	 */
-	void setEmulatorBinary(const Glib::ustring& binary)
-	{
-		m_emu_binary = binary;
-	}
+	void setEmulatorBinary(const Glib::ustring& binary);
 
 	/**
 	 * Obtiene los parámetros que se pasarán al emulador
 	 * @return Parámetros para el emulador
 	 */
-	Glib::ustring getEmulatorParams(void)
-	{
-		return m_emu_params;
-	}
+	Glib::ustring getEmulatorParams(void);
 
 	/**
 	 * Estable los parámetros que se pasarán al emulador
 	 * @param params Parámetros para la emulación
 	 */
-	void setEmulatorParams(const Glib::ustring& params)
-	{
-		m_emu_params = params;
-	}
+	void setEmulatorParams(const Glib::ustring& params);
 
 	/**
 	 * Obtiene el comando a ejecutar antes que la emulación
 	 * @return Comando a ejecutar antes de la emulación
 	 */
-	Glib::ustring getPreCommand(void)
-	{
-		return m_pre_command;
-	}
+	Glib::ustring getPreCommand(void);
 
 	/**
 	 * Estable el comando a ejecutar antes que la emulación
 	 * @param command Comando a ejecutar antes de la emulación
 	 */
-	void setPreCommand(const Glib::ustring& command)
-	{
-		m_pre_command = command;
-	}
+	void setPreCommand(const Glib::ustring& command);
 
 	/**
 	 * Obtiene el comando a ejecutar despues de la emulación
 	 * @return Comando a ejecutar despues de la emulación
 	 */
-	Glib::ustring getPostCommand(void)
-	{
-		return m_post_command;
-	}
+	Glib::ustring getPostCommand(void);
 
 	/**
 	 * Estable el comando a ejecutar despues de la emulación
 	 * @param command Comando a ejecutar despues de la emulación
 	 */
-	void setPostCommand(const Glib::ustring& command)
-	{
-		m_post_command = command;
-	}
+	void setPostCommand(const Glib::ustring& command);
 
 	/**
 	 * Obtiene el directorio desde el que se lanzará la emulación
 	 * @return Path del directorio desde el que lanzar la emulación
 	 */
-	Glib::ustring getRunDir(void)
-	{
-		return m_run_dir;
-	}
+	Glib::ustring getRunDir(void);
 
 	/**
 	 * Estable el directorio desde el que lanzar la emulación
 	 * @param dir Path del directorio desde el que lanzar la emulación
 	 */
-	void setRunDir(const Glib::ustring& dir)
-	{
-		m_run_dir = dir;
-	}
+	void setRunDir(const Glib::ustring& dir);
 
 	/**
 	 * Carga el fichero de configuración de la plataforma
@@ -340,19 +265,13 @@ public:
 	 * @return Vector de nombres de las listas de juegos
 	 * @note Este vector no incluye información sobre la lista master
 	 */
-	std::vector<Glib::ustring>& getGamelists(void)
-	{
-		return m_lists_names;
-	}
+	std::vector<Glib::ustring>& getGamelists(void);
 
 	/**
 	 * Obtiene la lista master de la plataforma.
 	 * @return Lista master de la plataforma
 	 */
-	Gamelist* gamelistGet(void)
-	{
-		return m_master;
-	}
+	Gamelist* gamelistGet(void);
 
 	/**
 	 * Obtiene una lista de juegos mediante su nombre
@@ -374,38 +293,26 @@ public:
 	 * @return Número de listas de juegos de la plataforma
 	 * @note No se cuenta la lista master, sino las listas del usuario
 	 */
-	int gamelistCount(void)
-	{
-		return m_lists_names.size();
-	}
+	int gamelistCount(void);
 
 	// Implementación de Item
 	/**
 	 * Obtiene el nombre de la plataforma
 	 * @return Cadena de texto con el nombre de la plataforma
 	 */
-	Glib::ustring itemName(void)
-	{
-		return m_name;
-	}
+	Glib::ustring itemName(void);
 
 	/**
 	 * Obtiene el titulo de la plataforma
 	 * @return Cadena de texto con el titulo de la plataforma
 	 */
-	Glib::ustring itemTitle(void)
-	{
-		return m_title;
-	}
+	Glib::ustring itemTitle(void);
 
 	/**
 	 * Obtiene el directorio donde se almacenan los recursos de la plataforma
 	 * @return Directorio de recursos de la plataforma
 	 */
-	Glib::ustring itemResourcesDir(void)
-	{
-		return m_resources_dir;
-	}
+	Glib::ustring itemResourcesDir(void);
 
 private:
 	/**
@@ -438,6 +345,9 @@ private:
 	std::unordered_map<std::string, Gamelist* > m_lists_map;	/**< Mapa de listas para acceso rápido por nombre */
 	std::vector<Glib::ustring> m_lists_names;	/**< Vector con los nombres de las listas */
 };
+
+// Inclusión de los métodos inline
+#include "platform.inl"
 
 } // namespace bmonkey
 

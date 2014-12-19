@@ -19,6 +19,9 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
+#ifndef _ENTITY_INL_
+#define _ENTITY_INL_
+
 #ifdef BMONKEY_DESIGNER
 inline bool Entity::isSelected(void) const
 {
@@ -118,3 +121,5 @@ inline void Entity::updateGrid(const float width, const float height)
 inline void Entity::updateCurrent(sf::Time delta_time)
 {
 }
+
+#endif // _ENTITY_INL_

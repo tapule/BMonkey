@@ -59,10 +59,7 @@ public:
 	 * @param size Tamaño total del buffer
 	 * @return true si se pudo cargar el dat, false en otro caso
 	 */
-	virtual bool load(const char* buffer, const unsigned int size)
-	{
-		return false;
-	}
+	virtual bool load(const char* buffer, const unsigned int size);
 
 	/**
 	 * Obtiene los datos de los sets contenidos en el dat
@@ -71,10 +68,7 @@ public:
 	 * @return true si se realizó la lectura correctamente, false en otro caso
 	 * @note El mapa será vaciado previamente
 	 */
-	virtual bool read(std::map<Glib::ustring, DatSet>& set_collection)
-	{
-		return false;
-	}
+	virtual bool read(std::map<Glib::ustring, DatSet>& set_collection);
 
 	/**
 	 * Obtiene los datos de los sets contenidos en el dat
@@ -82,33 +76,27 @@ public:
 	 * @return true si se realizó la lectura correctamente, false en otro caso
 	 * @note el vector será vaciado previamente
 	 */
-	virtual bool read(std::vector<DatSet>& set_collection)
-	{
-		return false;
-	}
+	virtual bool read(std::vector<DatSet>& set_collection);
 
 	/**
 	 * Indica si el lector tiene un dat cargado y está listo para su lectura
 	 * @return true si el lector está listo, false en otro caso
 	 */
-	bool isLoaded(void)
-	{
-		return m_loaded;
-	}
+	bool isLoaded(void);
 
 	/**
 	 * Obtiene una cadena identificativa del formato soportado por el lector
 	 * @return Cadena descriptiva del tipo de dat soportado
 	 */
-	virtual Glib::ustring getType(void)
-	{
-		return "";
-	}
+	virtual Glib::ustring getType(void);
 
 protected:
 	bool m_loaded;	/**< Indica si se cargó el dat correctamente */
 };
 
+// Inclusión de los métodos inline
+#include "dat_reader.inl"
+
 } // namespace bmonkey
 
-#endif // _DAT_PARSER_HPP_
+#endif // _DAT_READER_HPP_

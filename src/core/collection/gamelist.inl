@@ -19,26 +19,37 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _EFFECT_INL_
-#define _EFFECT_INL_
+#ifndef _GAMELIST_INL_
+#define _GAMELIST_INL_
 
-inline void Effect::update(sf::Time delta_time)
+inline Glib::ustring Gamelist::getName(void)
 {
+	return m_name;
 }
 
-inline bool Effect::isFinished(void) const
+inline bool Gamelist::isMaster(void)
 {
-	return m_finished;
+	return m_is_master;
 }
 
-inline unsigned char Effect::getOpacity(void) const
+inline void Gamelist::setMaster(const bool is_master)
 {
-	return m_opacity;
+	m_is_master = is_master;
 }
 
-inline sf::Shader* Effect::getShader(void) const
+inline bool Gamelist::isFiltered(void)
 {
-	return m_shader;
+	return m_is_filtered;
 }
 
-#endif // _EFFECT_INL_
+inline int Gamelist::gameCount(void)
+{
+	return m_size;
+}
+
+inline int Gamelist::gameCountFiltered(void)
+{
+	return m_size_filtered;
+}
+
+#endif // _GAMELIST_INL_

@@ -19,26 +19,32 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _EFFECT_INL_
-#define _EFFECT_INL_
+#ifndef _DAT_READER_INL_
+#define _DAT_READER_INL_
 
-inline void Effect::update(sf::Time delta_time)
+inline bool DatReader::load(const char* buffer, const unsigned int size)
 {
+	return false;
 }
 
-inline bool Effect::isFinished(void) const
+inline bool DatReader::read(std::map<Glib::ustring, DatSet>& set_collection)
 {
-	return m_finished;
+	return false;
 }
 
-inline unsigned char Effect::getOpacity(void) const
+inline bool DatReader::read(std::vector<DatSet>& set_collection)
 {
-	return m_opacity;
+	return false;
 }
 
-inline sf::Shader* Effect::getShader(void) const
+inline bool DatReader::isLoaded(void)
 {
-	return m_shader;
+	return m_loaded;
 }
 
-#endif // _EFFECT_INL_
+inline Glib::ustring DatReader::getType(void)
+{
+	return "";
+}
+
+#endif // _DAT_PARSER_INL_

@@ -19,6 +19,9 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
+#ifndef _SOUND_MANAGER_INL_
+#define _SOUND_MANAGER_INL_
+
 inline void SoundManager::playSound(const Effect effect)
 {
 	assert(effect < COUNT);
@@ -83,3 +86,5 @@ inline void SoundManager::setMusicVolume(const float volume)
 		m_music->setVolume(m_music_volume);
 	}
 }
+
+#endif // _SOUND_MANAGER_INL

@@ -62,28 +62,19 @@ public:
 	 * Obtiene el nombre de la lista
 	 * @return Cadena de texto con el nombre de la lista
 	 */
-	Glib::ustring getName(void)
-	{
-		return m_name;
-	}
+	Glib::ustring getName(void);
 
 	/**
 	 * Indica si la lista es una lista Master
 	 * @return true si es una lista master, false en otro caso
 	 */
-	bool isMaster(void)
-	{
-		return m_is_master;
-	}
+	bool isMaster(void);
 
 	/**
 	 * Establece si la lista es una lista Master o no
 	 * @param is_master Nuevo valor para indicar el tipo de lista
 	 */
-	void setMaster(const bool is_master)
-	{
-		m_is_master = is_master;
-	}
+	void setMaster(const bool is_master);
 
 	/**
 	 * Carga los juegos de la lista desde su fichero
@@ -109,10 +100,7 @@ public:
 	 * Indica si la lista está filtrada
 	 * @return true si la lista está filtrada, false en otro caso
 	 */
-	bool isFiltered(void)
-	{
-		return m_is_filtered;
-	}
+	bool isFiltered(void);
 
 	/**
 	 * Establece todos los juegos como visibles
@@ -151,19 +139,13 @@ public:
 	 * Obtiene el número de juegos disponibles en la lista
 	 * @return Número de juegos de la lista
 	 */
-	int gameCount(void)
-	{
-		return m_size;
-	}
+	int gameCount(void);
 
 	/**
 	 * Obtiene el número de juegos disponibles en la lista filtrada
 	 * @return Número de juegos de la lista filtrada
 	 */
-	int gameCountFiltered(void)
-	{
-		return m_size_filtered;
-	}
+	int gameCountFiltered(void);
 
 	// Implementación de Iterable
 	/**
@@ -269,6 +251,9 @@ private:
 
 	Glib::RefPtr<Glib::Regex> m_regex;	/**< Expresión regular para el filtrado por nombre */
 };
+
+// Inclusión de los métodos inline
+#include "gamelist.inl"
 
 } // namespace bmonkey
 
