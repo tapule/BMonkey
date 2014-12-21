@@ -35,13 +35,21 @@ typedef sf::Vector2<bool> Vector2b;
  * Entidad base para los elementos del frontend
  *
  * Las entidades son los elementos fundamentales del frontend, son cada uno de
- * los objetos que se pueden dibujar en pantalla.
- * Una entidad puede estar formada por varias entidades, teniendo sus hijos
- * propiedades relativas al padre.
+ * los objetos que se podrán mostrar en pantalla.
+ * Una entidad puede estar formada por varias entidades, es decir, actuar como
+ * un contenedor de entidades, teniendo sus hijos propiedades que serán
+ * relativas al padre.
  */
 class Entity : public sf::Drawable, public sf::Transformable
 {
 public:
+
+	// Posibles estados en los que se puede encontrar la entidad
+	enum Status
+	{
+		STOPPED = 0,	/**< Está parada en su estado inicial, no ha comenzado su ejecución */
+		STARTED			/**< Ha comenzado su ejecución */
+	};
 
 	/**
 	 * Constructor de la clase
@@ -74,6 +82,12 @@ public:
 	 */
 	void setSelected(const bool selected);
 #endif
+
+	/**
+	 * Obtiene el estado actual de la entidad
+	 * @return Estado de la entidad
+	 */
+	Status getStatus(void) const;
 
 	/**
 	 * Obtiene el valor del espejado actual de la entidad
@@ -116,7 +130,7 @@ public:
 	 * Establece la opacidad de la entidad
 	 * @param opacity Nueva opacidad para la entidad
 	 */
-	void setOpacity(const unsigned char opacity);
+	virtual void setOpacity(const unsigned char opacity);
 
 	/**
 	 * Establece la entidad padre
@@ -180,6 +194,7 @@ protected:
 	 * Realiza el dibujado real de esta entidad
 	 * @param target Target donde se dibujará la entidad
 	 * @param states States para dibujar la entidad
+	 * @param color Color a aplicar en el proceso de dibujado
 	 */
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const = 0;
 
@@ -196,20 +211,29 @@ protected:
 	 * @param width Nueva anchura para el grid
 	 * @param height Nueva altura para el grid
 	 */
-	virtual void updateGrid(const float width, const float height) const = 0;
+	virtual void updateGrid(void) const = 0;
 #endif
+
+	/**
+	 * Actualiza el estado de la entidad incluyendo un color de referencia
+	 * @param delta_time Tiempo transcurrido desde la última actualización
+	 * @param color Color de referencia para actualizar la entidad
+	 */
+	virtual void update(sf::Time delta_time, const sf::Color& color);
 
 	/**
 	 * Realiza la actualización real de la entidad
 	 * @param delta_time Tiempo transcurrido desde la última actualización
+	 * @param color Color de referencia para actualizar la entidad
 	 */
-	virtual void updateCurrent(sf::Time delta_time);
+	virtual void updateCurrent(sf::Time delta_time, const sf::Color& color) = 0;
 
 	/**
 	 * Actualiza las entidades hijas de la actual
 	 * @param delta_time Tiempo transcurrido desde la última actualización
+	 * @param color Color de referencia para actualizar las entidades
 	 */
-	void updateChildren(sf::Time delta_time);
+	void updateChildren(sf::Time delta_time, const sf::Color& color);
 
 #ifdef BMONKEY_DESIGNER
 	bool m_selected;				/**< Indica si la entidad está seleccionada */
@@ -217,8 +241,10 @@ protected:
 	sf::RectangleShape m_grid_dot;	/**< Marcador del origen en el grid */
 #endif
 
+	Status m_status;			/**< Estado en el que se encuentra */
 	Vector2b m_flip;			/**< Valores del espejado */
 	sf::Color m_color;			/**< Tinte y opacidad de la entidad */
+	sf::Color m_current_color;	/**< Tinte y opacidad actual de la entidad */
 
 	Entity* m_parent;			/**< Padre de la entidad en una cadena */
 	std::vector<Entity* > m_children; /**< Hijos de la entidad */

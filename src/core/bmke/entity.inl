@@ -34,6 +34,11 @@ inline void Entity::setSelected(const bool selected)
 }
 #endif
 
+inline Entity::Status Entity::getStatus(void) const
+{
+	return m_status;
+}
+
 inline const Vector2b& Entity::getFlip(void) const
 {
 	return m_flip;
@@ -52,6 +57,7 @@ inline const sf::Color& Entity::getColor(void)
 inline void Entity::setColor(const sf::Color& color)
 {
 	m_color = color;
+	m_current_color = color;
 }
 
 inline unsigned char Entity::getOpacity(void) const
@@ -62,9 +68,6 @@ inline unsigned char Entity::getOpacity(void) const
 inline void Entity::setOpacity(const unsigned char opacity)
 {
 	m_color.a = opacity;
-	//CHECKME: No se si esta llamada a setColor es necesaria
-	// Forzamos el setColor para que actualice en la derivada
-	setColor(m_color);
 }
 
 inline void Entity::setParent(Entity* entity)
@@ -74,24 +77,21 @@ inline void Entity::setParent(Entity* entity)
 
 inline void Entity::addChild(Entity* entity)
 {
-	if (entity)
-	{
-		m_children.push_back(entity);
-	}
+	assert(entity);
+
+	m_children.push_back(entity);
 }
 
 void Entity::run(void)
 {
+	m_status = STARTED;
 }
 
 #ifdef BMONKEY_DESIGNER
 void Entity::stop(void)
 {
+	m_status = STOPPED;
 }
 #endif
-
-inline void Entity::updateCurrent(sf::Time delta_time)
-{
-}
 
 #endif // _ENTITY_INL_

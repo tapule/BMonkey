@@ -27,6 +27,9 @@ namespace bmonkey{
 Entity::Entity(void):
 #ifdef BMONKEY_DESIGNER
 	m_selected(false),
+	m_status(STOPPED),
+#else
+	m_status(STARTED),
 #endif
 	m_flip(Vector2b(false, false)),
 	m_color(sf::Color(255, 255, 255, 255)),
@@ -49,9 +52,6 @@ Entity::~Entity(void)
 {
 	std::vector<Entity* >::iterator iter;
 
-	delete m_start_effect;
-	delete m_place_effect;
-
 	for (iter = m_children.begin(); iter != m_children.end(); ++iter)
 	{
 		delete (*iter);
@@ -62,7 +62,7 @@ void Entity::setScale(float factorX, float factorY)
 {
 	Transformable::setScale(factorX, factorY);
 #ifdef BMONKEY_DESIGNER
-	updateGrid(m_width, m_height);
+	updateGrid();
 #endif
 }
 
@@ -90,16 +90,15 @@ void Entity::removeChild(Entity* entity)
 {
 	std::vector<Entity* >::iterator iter;
 
-	if (entity)
+	assert(entity);
+
+	for (iter = m_children.begin(); iter != m_children.end(); ++iter)
 	{
-		for (iter = m_children.begin(); iter != m_children.end(); ++iter)
+		if ((*iter) == entity)
 		{
-			if ((*iter) == entity)
-			{
-				delete (*iter);
-				m_children.erase(iter);
-				return;
-			}
+			delete (*iter);
+			m_children.erase(iter);
+			return;
 		}
 	}
 }
@@ -130,8 +129,12 @@ Entity* Entity::getLastChild(void)
 
 void Entity::update(sf::Time delta_time)
 {
-	updateCurrent(delta_time);
-	updateChildren(delta_time);
+	// Solo actualizamos si la entidad está en ejecución
+	if (m_status == STARTED)
+	{
+		updateCurrent(delta_time, m_current_color);
+		updateChildren(delta_time, m_current_color);
+	}
 }
 
 void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -169,13 +172,23 @@ void Entity::drawGrid(sf::RenderTarget& target, sf::RenderStates states) const
 }
 #endif
 
-void Entity::updateChildren(sf::Time delta_time)
+void Entity::update(sf::Time delta_time, const sf::Color& color)
+{
+	// Solo actualizamos si la entidad está en ejecución
+	if (m_status == STARTED)
+	{
+		updateCurrent(delta_time, color);
+		updateChildren(delta_time, color);
+	}
+}
+
+void Entity::updateChildren(sf::Time delta_time, const sf::Color& color)
 {
 	std::vector<Entity* >::iterator iter;
 
 	for (iter = m_children.begin(); iter != m_children.end(); ++iter)
 	{
-		(*iter)->update(delta_time);
+		(*iter)->update(delta_time, color);
 	}
 }
 
