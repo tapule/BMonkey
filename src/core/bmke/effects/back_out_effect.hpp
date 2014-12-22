@@ -22,7 +22,7 @@
 #ifndef _BACK_OUT_EFFECT_HPP_
 #define _BACK_OUT_EFFECT_HPP_
 
-#include "out_effect.hpp"
+#include "move_out_effect.hpp"
 #include "../../../thirdparty/DBTweener/dbtweener.h"
 
 namespace bmonkey{
@@ -35,7 +35,7 @@ namespace bmonkey{
  * El efecto se puede configurar para finalizar en la izquierda, derecha, arriba
  * o abajo de una ventana indicada.
  */
-class BackOutEffect : public OutEffect
+class BackOutEffect : public MoveOutEffect
 {
 public:
 	/**

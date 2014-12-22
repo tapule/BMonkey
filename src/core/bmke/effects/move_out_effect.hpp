@@ -19,8 +19,8 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _OUT_EFFECT_HPP_
-#define _OUT_EFFECT_HPP_
+#ifndef _MOVE_OUT_EFFECT_HPP_
+#define _MOVE_OUT_EFFECT_HPP_
 
 #include "../effect.hpp"
 
@@ -29,16 +29,16 @@ namespace bmonkey{
 /**
  * Efecto base para animaciones de salida de escena
  *
- * Los efectos de salida de escena comienzan en la posición actual de la entidad
- * como inicio del efecto y aplican su animación hasta que la entidad queda
- * totalmente fuera de la escena.
+ * Los efectos de movimiento de salida de escena comienzan en la posición actual
+ * de la entidad como inicio del efecto y aplican su animación hasta que la
+ * entidad queda totalmente fuera de la escena.
  */
-class OutEffect : public Effect
+class MoveOutEffect : public Effect
 {
 public:
 
 	// Posibles posiciones de destino donde terminar el efecto
-	enum OutTo
+	enum Destination
 	{
 		LEFT,		/**< El efecto terminará a la izquierda de la pantalla */
 		RIGHT,		/**< El efecto terminará a la derecha de la pantalla */
@@ -49,12 +49,12 @@ public:
 	/**
 	 * Constructor de la clase
 	 */
-	OutEffect(void);
+	MoveOutEffect(void);
 
 	/**
 	 * Destructor de la clase
 	 */
-	virtual ~OutEffect(void);
+	virtual ~MoveOutEffect(void);
 
 	/**
 	 * Inicializa el efecto asignando sus parámetros de procesado
@@ -74,14 +74,14 @@ public:
 	 * Establece la posición final del efecto
 	 * @param to Nueva posición final para el efecto.
 	 */
-	void setOutTo(const OutTo to);
+	void setDestination(const Destination destination);
 
 protected:
-	sf::Vector2u m_win_size;/**< Tamaño de la ventana de referencia para los efectos */
-	OutTo m_out_to;			/**< Posición final del efecto */
-	float m_final_pos;		/**< Coordenada final del efecto */
+	sf::Vector2u m_win_size;	/**< Tamaño de la ventana de referencia para los efectos */
+	Destination m_destination;	/**< Posición final del efecto */
+	float m_final_pos;			/**< Coordenada final del efecto */
 };
 
 } // namespace bmonkey
 
-#endif // _OUT_EFFECT_HPP_
+#endif // _MOVE_OUT_EFFECT_HPP_

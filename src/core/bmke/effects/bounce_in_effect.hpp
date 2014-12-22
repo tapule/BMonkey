@@ -22,7 +22,7 @@
 #ifndef _BOUNCE_IN_EFFECT_HPP_
 #define _BOUNCE_IN_EFFECT_HPP_
 
-#include "in_effect.hpp"
+#include "move_in_effect.hpp"
 #include "../../../thirdparty/DBTweener/dbtweener.h"
 
 namespace bmonkey{
@@ -36,7 +36,7 @@ namespace bmonkey{
  * El efecto se puede configurar para comenzar desde la izquierda, derecha,
  * arriba o abajo de una ventana indicada.
  */
-class BounceInEffect : public InEffect
+class BounceInEffect : public MoveInEffect
 {
 public:
 	/**

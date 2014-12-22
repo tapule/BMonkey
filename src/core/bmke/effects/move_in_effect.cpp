@@ -19,57 +19,57 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "out_effect.hpp"
+#include "move_in_effect.hpp"
 #include <cassert>
 #include "../entity.hpp"
 
 namespace bmonkey{
 
-OutEffect::OutEffect(void):
+MoveInEffect::MoveInEffect(void):
 	Effect(),
-	m_out_to(LEFT),
-	m_final_pos(0)
+	m_origin(LEFT)
 {
 }
 
-OutEffect::~OutEffect(void)
+MoveInEffect::~MoveInEffect(void)
 {
 }
 
-void OutEffect::init(Entity* entity, const float delay, const float duration)
+void MoveInEffect::init(Entity* entity, const float delay, const float duration)
 {
 	assert(entity);
 	sf::Vector2f position;
 
 	Effect::init(entity, delay, duration);
 
-	// Establecemos la posición final del efecto dependiendo del modo de salida
-	switch (m_out_to)
+	// Establecemos la posición del efecto dependiendo del origen de entrada
+	switch (m_origin)
 	{
 	case LEFT:
-		m_final_pos = -1.f * ((entity->getWidth() / 2) + entity->getPosition().x);
+		position.x = -1.f * ((entity->getWidth() / 2) + entity->getPosition().x);
 		break;
 	case RIGHT:
-		m_final_pos = m_win_size.x - entity->getPosition().x + (entity->getWidth() / 2);
+		position.x = m_win_size.x - entity->getPosition().x + (entity->getWidth() / 2);
 		break;
 	case TOP:
-		m_final_pos = -1.f * ((entity->getHeight() / 2) + entity->getPosition().y);
+		position.y = -1.f * ((entity->getHeight() / 2) + entity->getPosition().y);
 		break;
 	case BOTTOM:
-		m_final_pos = m_win_size.y - entity->getPosition().y + (entity->getHeight() / 2);
+		position.y = m_win_size.y - entity->getPosition().y + (entity->getHeight() / 2);
 		break;
 	}
+	setPosition(position);
 	m_finished = false;
 }
 
-void OutEffect::setWindowSize(const sf::Vector2u& win_size)
+void MoveInEffect::setWindowSize(const sf::Vector2u& win_size)
 {
 	m_win_size = win_size;
 }
 
-void OutEffect::setOutTo(const OutTo to)
+void MoveInEffect::setOrigin(const Origin origin)
 {
-	m_out_to = to;
+	m_origin = origin;
 }
 
 } // namespace bmonkey

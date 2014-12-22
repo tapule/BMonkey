@@ -26,7 +26,7 @@
 namespace bmonkey{
 
 ElasticInEffect::ElasticInEffect(void):
-	InEffect(),
+	MoveInEffect(),
 	m_tween(nullptr),
 	m_pos(0)
 {
@@ -38,9 +38,9 @@ ElasticInEffect::~ElasticInEffect(void)
 
 void ElasticInEffect::init(Entity* entity, const float delay, const float duration)
 {
-	InEffect::init(entity, delay, duration);
+	MoveInEffect::init(entity, delay, duration);
 
-	if ((m_in_from == LEFT) || (m_in_from == RIGHT))
+	if ((m_origin == LEFT) || (m_origin == RIGHT))
 	{
 		m_pos = getPosition().x;
 	}
@@ -66,7 +66,7 @@ void ElasticInEffect::update(sf::Time delta_time)
 			return;
 		}
 		m_tween->step(delta_time.asSeconds());
-		if ((m_in_from == LEFT) || (m_in_from == RIGHT))
+		if ((m_origin == LEFT) || (m_origin == RIGHT))
 		{
 			setPosition(m_pos, getPosition().y);
 		}

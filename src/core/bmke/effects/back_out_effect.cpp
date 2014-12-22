@@ -26,7 +26,7 @@
 namespace bmonkey{
 
 BackOutEffect::BackOutEffect(void):
-	OutEffect(),
+	MoveOutEffect(),
 	m_tween(nullptr),
 	m_pos(0)
 {
@@ -39,7 +39,7 @@ BackOutEffect::~BackOutEffect(void)
 
 void BackOutEffect::init(Entity* entity, const float delay, const float duration)
 {
-	OutEffect::init(entity, delay, duration);
+	MoveOutEffect::init(entity, delay, duration);
 
 	// Iniciamos en la posición actual de la entidad
 	m_pos = 0;
@@ -61,7 +61,7 @@ void BackOutEffect::update(sf::Time delta_time)
 			return;
 		}
 		m_tween->step(delta_time.asSeconds());
-		if ((m_out_to == LEFT) || (m_out_to == RIGHT))
+		if ((m_destination == LEFT) || (m_destination == RIGHT))
 		{
 			setPosition(m_pos, getPosition().y);
 		}

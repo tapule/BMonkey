@@ -22,7 +22,7 @@
 #ifndef _EASE_IN_EFFECT_HPP_
 #define _EASE_IN_EFFECT_HPP_
 
-#include "in_effect.hpp"
+#include "move_in_effect.hpp"
 #include "../../../thirdparty/DBTweener/dbtweener.h"
 
 namespace bmonkey{
@@ -36,7 +36,7 @@ namespace bmonkey{
  * El efecto se puede configurar para comenzar desde la izquierda, derecha,
  * arriba o abajo de una ventana indicada.
  */
-class EaseInEffect : public InEffect
+class EaseInEffect : public MoveInEffect
 {
 public:
 	/**

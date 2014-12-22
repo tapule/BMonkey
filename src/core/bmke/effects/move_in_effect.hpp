@@ -19,8 +19,8 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _IN_EFFECT_HPP_
-#define _IN_EFFECT_HPP_
+#ifndef _MOVE_IN_EFFECT_HPP_
+#define _MOVE_IN_EFFECT_HPP_
 
 #include "../effect.hpp"
 
@@ -29,16 +29,16 @@ namespace bmonkey{
 /**
  * Efecto base para animaciones de entrada en escena
  *
- * Los efectos de entrada en escena posicionan la entidad fuera de la escena
- * como inicio del efecto y luego aplican su animación hasta que la entidad
- * queda en su posición final.
+ * Los efectos de movimeinto de entrada en escena posicionan la entidad fuera de
+ * la escena como inicio del efecto y luego aplican su animación hasta que la
+ * entidad queda en su posición final.
  */
-class InEffect : public Effect
+class MoveInEffect : public Effect
 {
 public:
 
 	// Posibles posiciones de origen desde donde comenzar el efecto
-	enum InFrom
+	enum Origin
 	{
 		LEFT,		/**< El efecto comienza desde la izquierda de la pantalla */
 		RIGHT,		/**< El efecto comienza desde la derecha de la pantalla */
@@ -49,12 +49,12 @@ public:
 	/**
 	 * Constructor de la clase
 	 */
-	InEffect(void);
+	MoveInEffect(void);
 
 	/**
 	 * Destructor de la clase
 	 */
-	virtual ~InEffect(void);
+	virtual ~MoveInEffect(void);
 
 	/**
 	 * Inicializa el efecto asignando sus parámetros de procesado
@@ -74,14 +74,13 @@ public:
 	 * Establece la posición origen desde donde ejecutar el efecto
 	 * @param from Nueva posición origen desde donde comenzar el efecto.
 	 */
-	void setInFrom(const InFrom from);
+	void setOrigin(const Origin origin);
 
 protected:
 	sf::Vector2u m_win_size;/**< Tamaño de la ventana de referencia para los efectos */
-	InFrom m_in_from;		/**< Posición desde donde comienza el efecto */
+	Origin m_origin;		/**< Posición origen desde donde comienza el efecto */
 };
-
 
 } // namespace bmonkey
 
-#endif // _IN_EFFECT_HPP_
+#endif // _MOVE_IN_EFFECT_HPP_
