@@ -60,19 +60,36 @@ public:
 	virtual ~Graphics(void);
 
 	/**
-	 * Inicializa los gráficos
+	 * Inicializa los gráficos y la ventana de renderizado
 	 */
 	virtual void init(void);
 
 	/**
-	 * Establece una rotación determinada en la ventana
+	 * Cierra la ventana de renderizado
+	 */
+	void close();
+
+	/**
+	 * Indica si la ventana de renderizado está abierta
+	 * @return True si la ventana de renderizado está abierta
+	 */
+	bool isOpen() const;
+
+	/**
+	 * Obtiene las dimensiones de la ventana de renderizado, es decir, resolución
+	 * @return Resolución de la ventana de renderizado
+	 */
+	sf::Vector2u getSize() const;
+
+	/**
+	 * Establece una rotación determinada en la ventana de renderizado
 	 * @param rotation Nueva rotación para la ventana
 	 */
 	void rotate(const Rotation rotation);
 
 	/**
-	 * Cambia a la siguiente rotación de la pantalla
-	 * @note El cambio de rotación se hace girandola a la derecha
+	 * Cambia a la siguiente rotación de la ventana de renderizado
+	 * @note El cambio de rotación se hace girandola a la derecha 90º
 	 */
 	void switchRotation(void);
 
@@ -82,20 +99,40 @@ public:
 	void capture(void);
 
 	/**
+	 * Limpia la ventana de renderizado con un color específico
+	 * @param color Color a usar para limpiar la ventana
+	 */
+	void clear(const sf::Color& color = sf::Color(0, 0, 0, 255));
+
+	/**
+	 * Dibuja un objeto Drawable en la ventana de renderizado
+	 * @param drawable Objeto a dibujar
+	 * @param states RenderStates a usar en el dibujado del objeto
+	 */
+	void draw(const sf::Drawable& drawable, const sf::RenderStates& states = sf::RenderStates::Default);
+
+	/**
+	 * Muestra en pantalla lo que se ha dibujado en la ventana de renderizado
+	 */
+	void display();
+
+	/**
 	 * Obtiene la ventana de renderizado usada
 	 * @return Ventana de renderizado usada
 	 */
-	sf::RenderWindow* getRenderWindow(void);
+	sf::RenderWindow* getRenderWindow(void) const;
 
 private:
 	static bool m_instantiated;		/**< Indica si ya hay una instancia de la clase */
 
-	bool m_init;					/**< Indica si se han inicializado los gráficos */
 	Config* m_config;				/**< Sistema de configuración */
 	Glib::ustring m_screenshot_dir;	/**< Path del directorio para guardar las capturas */
 	sf::RenderWindow m_window;		/**< Ventana de renderizado */
 	Rotation m_rotation;			/**< Rotación actual de la ventana */
 };
+
+// Inclusión de los métodos inline
+#include "graphics.inl"
 
 } // namespace bmonkey
 

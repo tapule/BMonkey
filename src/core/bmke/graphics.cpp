@@ -28,7 +28,6 @@ namespace bmonkey{
 bool Graphics::m_instantiated = false;
 
 Graphics::Graphics(Config* config):
-	m_init(false),
 	m_config(config),
 	m_rotation(NONE)
 {
@@ -63,7 +62,6 @@ void Graphics::init(void)
 	unsigned int style;
 
 	LOG_INFO("Graphics: Initializing...");
-	m_init = true;
 
 	// Montamos el directorio para las capturas de pantalla
 	m_config->getKey(BMONKEY_CFG_GLOBAL, "current_working_dir", working_dir);
@@ -161,7 +159,7 @@ void Graphics::rotate(const Rotation rotation)
 	sf::View view;
 	std::string rotation_txt;
 
-	assert(m_init);
+	assert(isOpen());
 
 	// Asumimos que previamente se etableción una resolución adecuada
 	m_config->getKey(BMONKEY_CFG_SCREEN, "width", width);
@@ -201,7 +199,7 @@ void Graphics::switchRotation(void)
 {
 	int rotation;
 
-	assert(m_init);
+	assert(isOpen());
 
 	rotation = m_rotation;
 	if (rotation == LEFT)
@@ -220,7 +218,7 @@ void Graphics::capture(void)
 	Glib::ustring screenshot_file;
 	int id = 0;
 
-	assert(m_init);
+	assert(isOpen());
 
 	do
 	{
@@ -236,11 +234,6 @@ void Graphics::capture(void)
 	{
 		LOG_INFO("Graphics: Screenshot taken to \"" << screenshot_file << "\"");
 	}
-}
-
-sf::RenderWindow* Graphics::getRenderWindow(void)
-{
-	return &m_window;
 }
 
 } // namespace bmonkey

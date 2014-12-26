@@ -117,7 +117,6 @@ private:
 	Config* m_config;				/**< Sistema de configuración */
 	Collection* m_collection;
 	Graphics m_graphics;
-	sf::RenderWindow* m_window;
 	ControlManager m_controls;
 	FontManager m_fonts;
 	SoundManager m_sounds;

@@ -61,14 +61,6 @@ public:
 	 */
 	virtual ~Entity(void);
 
-	/**
-	 * Nueva versión de Transformable::setScale para que soporte el grid de
-	 * selección
-	 * @param factorX Nuevo factor de escala horizontal
-	 * @param factorY Nuevo factor de escala vertical
-	 */
-	void setScale(float factorX, float factorY);
-
 #ifdef BMONKEY_DESIGNER
 	/**
 	 * Indica si la entidad está seleccionada
@@ -90,10 +82,29 @@ public:
 	Status getStatus(void) const;
 
 	/**
+	 * Obtiene las dimensiones de la entidad
+	 * @return Dimensiones de la entidad
+	 */
+	sf::Vector2f getSize(void) const;
+
+	/**
+	 * Establece las dimensiones de la entidad
+	 * @param width Nuevo ancho para la entidad
+	 * @param height Nuevo alto para la entidad
+	 */
+	virtual void setSize(const float width, const float height);
+
+	/**
+	 * Establece las dimensiones de la entidad
+	 * @param size Nuevas dimensiones para la entidad
+	 */
+	void setSize(const sf::Vector2f& size);
+
+	/**
 	 * Obtiene el valor del espejado actual de la entidad
 	 * @return Valor actuala del espejado
 	 */
-	const Vector2b& getFlip(void) const;
+	Vector2b getFlip(void) const;
 
 	/**
 	 * Establece el espejado horizontal y vertical de la entidad
@@ -205,13 +216,6 @@ protected:
 	 * @param states States para dibujar la entidad
 	 */
 	virtual void drawGrid(sf::RenderTarget& target, sf::RenderStates states) const;
-
-	/**
-	 * Actualiza el grid de selección de la entidad
-	 * @param width Nueva anchura para el grid
-	 * @param height Nueva altura para el grid
-	 */
-	virtual void updateGrid(void) const = 0;
 #endif
 
 	/**
@@ -236,12 +240,22 @@ protected:
 	void updateChildren(sf::Time delta_time, const sf::Color& color);
 
 #ifdef BMONKEY_DESIGNER
+	/**
+	 * Actualiza el grid de selección de la entidad
+	 * @param width Nueva anchura para el grid
+	 * @param height Nueva altura para el grid
+	 */
+	virtual void updateGrid(void) const = 0;
+#endif
+
+#ifdef BMONKEY_DESIGNER
 	bool m_selected;				/**< Indica si la entidad está seleccionada */
 	sf::RectangleShape m_grid_box;	/**< Rectángulo que hace de grid para selección */
 	sf::RectangleShape m_grid_dot;	/**< Marcador del origen en el grid */
 #endif
 
 	Status m_status;			/**< Estado en el que se encuentra */
+	sf::Vector2f m_size;		/**< Dimensiones de la entidad */
 	Vector2b m_flip;			/**< Valores del espejado */
 	sf::Color m_color;			/**< Tinte y opacidad de la entidad */
 	sf::Color m_current_color;	/**< Tinte y opacidad actual de la entidad */

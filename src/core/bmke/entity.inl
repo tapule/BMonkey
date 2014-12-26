@@ -39,14 +39,24 @@ inline Entity::Status Entity::getStatus(void) const
 	return m_status;
 }
 
-inline const Vector2b& Entity::getFlip(void) const
+inline sf::Vector2f Entity::getSize(void) const
+{
+	return m_size;
+}
+
+inline void Entity::setSize(const sf::Vector2f& size)
+{
+	setSize(size.x, size.y);
+}
+
+inline Vector2b Entity::getFlip(void) const
 {
 	return m_flip;
 }
 
 inline void Entity::setFlip(const Vector2b& flip)
 {
-	m_flip = flip;
+	setFlip(flip.x, flip.y);
 }
 
 inline const sf::Color& Entity::getColor(void)

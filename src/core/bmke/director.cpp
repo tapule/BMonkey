@@ -48,8 +48,7 @@ Director::Director(Config* config):
 	m_config(config),
 	m_collection(nullptr),
 	m_graphics(config),
-	m_window(m_graphics.getRenderWindow()),
-	m_controls(m_window),
+	m_controls(m_graphics.getRenderWindow()),
 	m_volumes(&m_sounds, &m_movies),
 	m_show_fps(false),
 	m_fps_update_time(sf::Time::Zero),
@@ -144,7 +143,7 @@ int Director::run(void)
 	}
 	fixed_fps_time = sf::seconds(1.f/fixed_fps);
 
-    while (m_window->isOpen())
+    while (m_graphics.isOpen())
     {
     	delta_time = clock.restart();
     	time_since_last_update += delta_time;
@@ -213,7 +212,7 @@ void Director::processInput(void)
 		switch (event)
 		{
 		case ControlManager::EXIT:
-			m_window->close();
+			m_graphics.close();
 			break;
 		case ControlManager::UNFOCUSED:
 			break;
@@ -231,7 +230,7 @@ void Director::processInput(void)
 			case 0:
 				m_mod_text.setString("Bounce In Left");
 				in_effect = new BounceInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -241,7 +240,7 @@ void Director::processInput(void)
 			case 1:
 				m_mod_text.setString("Bounce In Right");
 				in_effect = new BounceInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::RIGHT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -251,7 +250,7 @@ void Director::processInput(void)
 			case 2:
 				m_mod_text.setString("Bounce In Top");
 				in_effect = new BounceInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::TOP);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -261,7 +260,7 @@ void Director::processInput(void)
 			case 3:
 				m_mod_text.setString("Bounce In Bottom");
 				in_effect = new BounceInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::BOTTOM);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -271,7 +270,7 @@ void Director::processInput(void)
 			case 4:
 				m_mod_text.setString("Ease In Left");
 				in_effect = new EaseInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -281,7 +280,7 @@ void Director::processInput(void)
 			case 5:
 				m_mod_text.setString("Ease In Right");
 				in_effect = new EaseInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::RIGHT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -291,7 +290,7 @@ void Director::processInput(void)
 			case 6:
 				m_mod_text.setString("Ease In Top");
 				in_effect = new EaseInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::TOP);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -301,7 +300,7 @@ void Director::processInput(void)
 			case 7:
 				m_mod_text.setString("Ease In Bottom");
 				in_effect = new EaseInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::BOTTOM);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -311,7 +310,7 @@ void Director::processInput(void)
 			case 8:
 				m_mod_text.setString("Back In Left");
 				in_effect = new BackInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -321,7 +320,7 @@ void Director::processInput(void)
 			case 9:
 				m_mod_text.setString("Back In Right");
 				in_effect = new BackInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::RIGHT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -331,7 +330,7 @@ void Director::processInput(void)
 			case 10:
 				m_mod_text.setString("Back In Top");
 				in_effect = new BackInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::TOP);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -341,7 +340,7 @@ void Director::processInput(void)
 			case 11:
 				m_mod_text.setString("Back In Bottom");
 				in_effect = new BackInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::BOTTOM);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -351,7 +350,7 @@ void Director::processInput(void)
 			case 12:
 				m_mod_text.setString("Elastic In Left");
 				in_effect = new ElasticInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -361,7 +360,7 @@ void Director::processInput(void)
 			case 13:
 				m_mod_text.setString("Elastic In Right");
 				in_effect = new ElasticInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::RIGHT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -371,7 +370,7 @@ void Director::processInput(void)
 			case 14:
 				m_mod_text.setString("Elastic In Top");
 				in_effect = new ElasticInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::TOP);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -381,7 +380,7 @@ void Director::processInput(void)
 			case 15:
 				m_mod_text.setString("Elastic In Bottom");
 				in_effect = new ElasticInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::BOTTOM);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -465,7 +464,7 @@ void Director::processInput(void)
 			case 24:
 				m_mod_text.setString("Elastic In Left + Ease X");
 				in_effect = new ElasticInEffect();
-				in_effect->setWindowSize(m_window->getSize());
+				in_effect->setWindowSize(m_graphics.getSize());
 				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
@@ -490,7 +489,7 @@ void Director::processInput(void)
 			case 26:
 				m_mod_text.setString("Back Out Left");
 				out_effect = new BackOutEffect();
-				out_effect->setWindowSize(m_window->getSize());
+				out_effect->setWindowSize(m_graphics.getSize());
 				out_effect->setOutTo(OutEffect::LEFT);
 				out_effect->init(&entity, delay, duration);
 				entity.setStartEffect(nullptr);
@@ -501,7 +500,7 @@ void Director::processInput(void)
 			case 27:
 				m_mod_text.setString("Back Out Right");
 				out_effect = new BackOutEffect();
-				out_effect->setWindowSize(m_window->getSize());
+				out_effect->setWindowSize(m_graphics.getSize());
 				out_effect->setOutTo(OutEffect::RIGHT);
 				out_effect->init(&entity, delay, duration);
 				entity.setStartEffect(nullptr);
@@ -512,7 +511,7 @@ void Director::processInput(void)
 			case 28:
 				m_mod_text.setString("Back Out Top");
 				out_effect = new BackOutEffect();
-				out_effect->setWindowSize(m_window->getSize());
+				out_effect->setWindowSize(m_graphics.getSize());
 				out_effect->setOutTo(OutEffect::TOP);
 				out_effect->init(&entity, delay, duration);
 				entity.setStartEffect(nullptr);
@@ -523,7 +522,7 @@ void Director::processInput(void)
 			case 29:
 				m_mod_text.setString("Back Out Bottom");
 				out_effect = new BackOutEffect();
-				out_effect->setWindowSize(m_window->getSize());
+				out_effect->setWindowSize(m_graphics.getSize());
 				out_effect->setOutTo(OutEffect::BOTTOM);
 				out_effect->init(&entity, delay, duration);
 				entity.setStartEffect(nullptr);
@@ -565,7 +564,7 @@ void Director::processInput(void)
 			break;
 */
 		case ControlManager::EXIT_MENU:
-			m_window->close();
+			m_graphics.close();
 			break;
 		}
 	}
@@ -602,11 +601,11 @@ void Director::draw(void)
 {
 	float scale;
 
-	m_window->clear();
-	m_window->draw(back);
+	m_graphics.clear();
+	m_graphics.draw(back);
 
-	m_window->draw(entity);
-	m_window->draw(m_mod_text);
+	m_graphics.draw(entity);
+	m_graphics.draw(m_mod_text);
 /*
 	entity.setSelected(true);
 	entity.setSize(600, 143);
@@ -635,9 +634,9 @@ void Director::draw(void)
 	// Esto debe ser lo último
 	if (m_show_fps)
 	{
-		m_window->draw(m_fps_text);
+		m_graphics.draw(m_fps_text);
 	}
-	m_window->display();
+	m_graphics.display();
 }
 
 void Director::clean(void)

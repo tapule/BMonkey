@@ -31,6 +31,7 @@ Entity::Entity(void):
 #else
 	m_status(STARTED),
 #endif
+	m_size(sf::Vector2f(0.f, 0.f)),
 	m_flip(Vector2b(false, false)),
 	m_color(sf::Color(255, 255, 255, 255)),
 	m_parent(nullptr)
@@ -58,9 +59,10 @@ Entity::~Entity(void)
 	}
 }
 
-void Entity::setScale(float factorX, float factorY)
+void Entity::setSize(const float width, const float height)
 {
-	Transformable::setScale(factorX, factorY);
+	m_size.x = width;
+	m_size.y = height;
 #ifdef BMONKEY_DESIGNER
 	updateGrid();
 #endif
