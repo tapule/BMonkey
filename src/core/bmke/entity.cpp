@@ -26,14 +26,14 @@ namespace bmonkey{
 
 Entity::Entity(void):
 #ifdef BMONKEY_DESIGNER
-	m_selected(false),
 	m_status(STOPPED),
+	m_selected(false),
 #else
 	m_status(STARTED),
 #endif
-	m_size(sf::Vector2f(0.f, 0.f)),
-	m_flip(Vector2b(false, false)),
 	m_color(sf::Color(255, 255, 255, 255)),
+	m_current_color(m_color),
+	m_flip(Vector2b(false, false)),
 	m_parent(nullptr)
 {
 #ifdef BMONKEY_DESIGNER
@@ -59,30 +59,21 @@ Entity::~Entity(void)
 	}
 }
 
-void Entity::setSize(const float width, const float height)
-{
-	m_size.x = width;
-	m_size.y = height;
-#ifdef BMONKEY_DESIGNER
-	updateGrid();
-#endif
-}
-
-inline void Entity::setFlip(const bool x, const bool y)
+void Entity::setFlip(const bool x, const bool y)
 {
 	sf::Vector2f scale;
 
 	scale = getScale();
 
-	if ((x && !m_flip.x) || (!x && m_flip.x))
+	if (x == !m_flip.x)
 	{
 		scale.x *= -1;
 	}
-	if ((y && !m_flip.y) || (!y && m_flip.y))
+	if (y == !m_flip.y)
 	{
 		scale.y *= -1;
 	}
-	Transformable::setScale(scale);
+	setScale(scale);
 
 	m_flip.x = x;
 	m_flip.y = y;
@@ -105,37 +96,29 @@ void Entity::removeChild(Entity* entity)
 	}
 }
 
-Entity* Entity::getFirstChild(void)
-{
-	if (!m_children.empty())
-	{
-		return m_children.front();
-	}
-	else
-	{
-		return nullptr;
-	}
-}
-
-Entity* Entity::getLastChild(void)
-{
-	if (!m_children.empty())
-	{
-		return m_children.back();
-	}
-	else
-	{
-		return nullptr;
-	}
-}
-
-void Entity::update(sf::Time delta_time)
+void Entity::update(sf::Time delta_time, const sf::Color& color)
 {
 	// Solo actualizamos si la entidad está en ejecución
 	if (m_status == STARTED)
 	{
-		updateCurrent(delta_time, m_current_color);
-		updateChildren(delta_time, m_current_color);
+		updateCurrent(delta_time, color);
+		updateChildren(delta_time, color);
+	}
+#ifdef BMONKEY_DESIGNER
+	if (m_selected && (m_status == STOPPED))
+	{
+		updateGrid();
+	}
+#endif
+}
+
+void Entity::updateChildren(sf::Time delta_time, const sf::Color& color)
+{
+	std::vector<Entity* >::iterator iter;
+
+	for (iter = m_children.begin(); iter != m_children.end(); ++iter)
+	{
+		(*iter)->update(delta_time, color);
 	}
 }
 
@@ -174,24 +157,6 @@ void Entity::drawGrid(sf::RenderTarget& target, sf::RenderStates states) const
 }
 #endif
 
-void Entity::update(sf::Time delta_time, const sf::Color& color)
-{
-	// Solo actualizamos si la entidad está en ejecución
-	if (m_status == STARTED)
-	{
-		updateCurrent(delta_time, color);
-		updateChildren(delta_time, color);
-	}
-}
 
-void Entity::updateChildren(sf::Time delta_time, const sf::Color& color)
-{
-	std::vector<Entity* >::iterator iter;
-
-	for (iter = m_children.begin(); iter != m_children.end(); ++iter)
-	{
-		(*iter)->update(delta_time, color);
-	}
-}
 
 } // namespace bmonkey

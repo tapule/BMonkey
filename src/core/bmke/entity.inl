@@ -39,24 +39,9 @@ inline Entity::Status Entity::getStatus(void) const
 	return m_status;
 }
 
-inline sf::Vector2f Entity::getSize(void) const
-{
-	return m_size;
-}
-
-inline void Entity::setSize(const sf::Vector2f& size)
-{
-	setSize(size.x, size.y);
-}
-
 inline Vector2b Entity::getFlip(void) const
 {
 	return m_flip;
-}
-
-inline void Entity::setFlip(const Vector2b& flip)
-{
-	setFlip(flip.x, flip.y);
 }
 
 inline const sf::Color& Entity::getColor(void)
@@ -78,6 +63,7 @@ inline unsigned char Entity::getOpacity(void) const
 inline void Entity::setOpacity(const unsigned char opacity)
 {
 	m_color.a = opacity;
+	setColor(m_color);
 }
 
 inline void Entity::setParent(Entity* entity)
@@ -90,6 +76,16 @@ inline void Entity::addChild(Entity* entity)
 	assert(entity);
 
 	m_children.push_back(entity);
+}
+
+inline std::vector<Entity* >& Entity::getChildren(void)
+{
+	return m_children;
+}
+
+inline void Entity::update(sf::Time delta_time)
+{
+	update(delta_time, m_current_color);
 }
 
 void Entity::run(void)

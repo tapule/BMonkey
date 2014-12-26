@@ -85,20 +85,7 @@ public:
 	 * Obtiene las dimensiones de la entidad
 	 * @return Dimensiones de la entidad
 	 */
-	sf::Vector2f getSize(void) const;
-
-	/**
-	 * Establece las dimensiones de la entidad
-	 * @param width Nuevo ancho para la entidad
-	 * @param height Nuevo alto para la entidad
-	 */
-	virtual void setSize(const float width, const float height);
-
-	/**
-	 * Establece las dimensiones de la entidad
-	 * @param size Nuevas dimensiones para la entidad
-	 */
-	void setSize(const sf::Vector2f& size);
+	virtual sf::Vector2f getSize(void) const = 0;
 
 	/**
 	 * Obtiene el valor del espejado actual de la entidad
@@ -112,12 +99,6 @@ public:
 	 * @param y Nuevo espejado vertical para la entidad
 	 */
 	void setFlip(const bool x, const bool y);
-
-	/**
-	 * Establece el espejado horizontal y vertical de la entidad
-	 * @param flip Nuevo espejado para la entidad
-	 */
-	void setFlip(const Vector2b& flip);
 
 	/**
 	 * Obtiene el color de tinte y opacidad de la entidad
@@ -141,7 +122,7 @@ public:
 	 * Establece la opacidad de la entidad
 	 * @param opacity Nueva opacidad para la entidad
 	 */
-	virtual void setOpacity(const unsigned char opacity);
+	void setOpacity(const unsigned char opacity);
 
 	/**
 	 * Establece la entidad padre
@@ -164,22 +145,16 @@ public:
 	void removeChild(Entity* entity);
 
 	/**
-	 * Obtiene la primera entidad hija
-	 * @return Primera entidad hija
+	 * Obtiene una referencia al vector interno de entidades hijas
+	 * @return Referencia al vector interno de entidades hijas
 	 */
-	Entity* getFirstChild(void);
-
-	/**
-	 * Obtiene la última entidad hija
-	 * @return Última entidad hija
-	 */
-	Entity* getLastChild(void);
+	std::vector<Entity* >& getChildren(void);
 
 	/**
 	 * Actualiza el estado de la entidad
 	 * @param delta_time Tiempo transcurrido desde la última actualización
 	 */
-	virtual void update(sf::Time delta_time);
+	void update(sf::Time delta_time);
 
 	/**
 	 * Comienza la ejecución de la entidad desde su punto inicial
@@ -194,6 +169,35 @@ public:
 #endif
 
 protected:
+
+	/**
+	 * Actualiza el estado de la entidad incluyendo un color de referencia
+	 * @param delta_time Tiempo transcurrido desde la última actualización
+	 * @param color Color de referencia para actualizar la entidad
+	 */
+	void update(sf::Time delta_time, const sf::Color& color);
+
+	/**
+	 * Realiza la actualización real de la entidad
+	 * @param delta_time Tiempo transcurrido desde la última actualización
+	 * @param color Color de referencia para actualizar la entidad
+	 */
+	virtual void updateCurrent(sf::Time delta_time, const sf::Color& color) = 0;
+
+	/**
+	 * Actualiza las entidades hijas de la actual
+	 * @param delta_time Tiempo transcurrido desde la última actualización
+	 * @param color Color de referencia para actualizar las entidades
+	 */
+	void updateChildren(sf::Time delta_time, const sf::Color& color);
+
+#ifdef BMONKEY_DESIGNER
+	/**
+	 * Actualiza el grid de selección de la entidad
+	 */
+	virtual void updateGrid(void) const = 0;
+#endif
+
 	/**
 	 * Implementación de drawable
 	 * @param target Target donde se dibujará la entidad
@@ -218,48 +222,20 @@ protected:
 	virtual void drawGrid(sf::RenderTarget& target, sf::RenderStates states) const;
 #endif
 
-	/**
-	 * Actualiza el estado de la entidad incluyendo un color de referencia
-	 * @param delta_time Tiempo transcurrido desde la última actualización
-	 * @param color Color de referencia para actualizar la entidad
-	 */
-	virtual void update(sf::Time delta_time, const sf::Color& color);
-
-	/**
-	 * Realiza la actualización real de la entidad
-	 * @param delta_time Tiempo transcurrido desde la última actualización
-	 * @param color Color de referencia para actualizar la entidad
-	 */
-	virtual void updateCurrent(sf::Time delta_time, const sf::Color& color) = 0;
-
-	/**
-	 * Actualiza las entidades hijas de la actual
-	 * @param delta_time Tiempo transcurrido desde la última actualización
-	 * @param color Color de referencia para actualizar las entidades
-	 */
-	void updateChildren(sf::Time delta_time, const sf::Color& color);
-
 #ifdef BMONKEY_DESIGNER
-	/**
-	 * Actualiza el grid de selección de la entidad
-	 * @param width Nueva anchura para el grid
-	 * @param height Nueva altura para el grid
-	 */
-	virtual void updateGrid(void) const = 0;
-#endif
-
-#ifdef BMONKEY_DESIGNER
-	bool m_selected;				/**< Indica si la entidad está seleccionada */
 	sf::RectangleShape m_grid_box;	/**< Rectángulo que hace de grid para selección */
 	sf::RectangleShape m_grid_dot;	/**< Marcador del origen en el grid */
 #endif
+	Status m_status;				/**< Estado en el que se encuentra */
+	sf::Color m_current_color;		/**< Tinte y opacidad actual de la entidad */
 
-	Status m_status;			/**< Estado en el que se encuentra */
-	sf::Vector2f m_size;		/**< Dimensiones de la entidad */
+private:
+
+#ifdef BMONKEY_DESIGNER
+	bool m_selected;			/**< Indica si la entidad está seleccionada */
+#endif
 	Vector2b m_flip;			/**< Valores del espejado */
 	sf::Color m_color;			/**< Tinte y opacidad de la entidad */
-	sf::Color m_current_color;	/**< Tinte y opacidad actual de la entidad */
-
 	Entity* m_parent;			/**< Padre de la entidad en una cadena */
 	std::vector<Entity* > m_children; /**< Hijos de la entidad */
 };
