@@ -61,6 +61,7 @@ public:
 	virtual void update(sf::Time delta_time);
 
 private:
+	sf::Clock m_clock;				/**< Reloj para controlar el tiempo transcurrido */
 	CDBTweener::CTween* m_tween;		/**< Tweener usado para el efecto */
 	float m_scale;						/**< Escala actual del efecto */
 	float m_rotation;					/**< Rotación actual del efecto */

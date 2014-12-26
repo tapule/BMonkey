@@ -45,7 +45,7 @@ void BackOutEffect::init(Entity* entity, const float delay, const float duration
 	m_pos = 0;
 	// Borramos primero el tween.
 	delete m_tween;
-	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_BACK, CDBTweener::TWEA_IN, duration, &m_pos, m_final_pos);
+	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_BACK, CDBTweener::TWEA_IN, duration, &m_pos, getFinalPosition());
 	m_clock.restart();
 }
 
@@ -61,7 +61,7 @@ void BackOutEffect::update(sf::Time delta_time)
 			return;
 		}
 		m_tween->step(delta_time.asSeconds());
-		if ((m_destination == LEFT) || (m_destination == RIGHT))
+		if ((getDestination() == LEFT) || (getDestination() == RIGHT))
 		{
 			setPosition(m_pos, getPosition().y);
 		}

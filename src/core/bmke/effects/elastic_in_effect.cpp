@@ -40,7 +40,7 @@ void ElasticInEffect::init(Entity* entity, const float delay, const float durati
 {
 	MoveInEffect::init(entity, delay, duration);
 
-	if ((m_origin == LEFT) || (m_origin == RIGHT))
+	if ((getOrigin() == LEFT) || (getOrigin() == RIGHT))
 	{
 		m_pos = getPosition().x;
 	}
@@ -66,7 +66,7 @@ void ElasticInEffect::update(sf::Time delta_time)
 			return;
 		}
 		m_tween->step(delta_time.asSeconds());
-		if ((m_origin == LEFT) || (m_origin == RIGHT))
+		if ((getOrigin() == LEFT) || (getOrigin() == RIGHT))
 		{
 			setPosition(m_pos, getPosition().y);
 		}

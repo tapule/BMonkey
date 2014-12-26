@@ -57,7 +57,7 @@ public:
 	/**
 	 * Inicializa el efecto asignando sus parámetros de procesado
 	 * @param entity Entidad sobre la que actuará el efecto
-	 * @param delay Retraso en segundos antes de comenzar el procesado
+	 * @param delay Retardo en segundos antes de comenzar el procesado
 	 * @param duration Duración del efecto en segundos
 	 */
 	virtual void init(Entity* entity, const float delay, const float duration);
@@ -66,7 +66,7 @@ public:
 	 * Actualiza el estado del efecto
 	 * @param delta_time Tiempo transcurrido desde la última actualización
 	 */
-	virtual void update(sf::Time delta_time);
+	virtual void update(sf::Time delta_time) = 0;
 
 	/**
 	 * Reinicia el efecto para comenzar de nuevo su procesado
@@ -80,10 +80,34 @@ public:
 	bool isFinished(void) const;
 
 	/**
+	 * Obtiene el color actual procesado por el efecto
+	 * @return Color obtenido en el procesamiento del efecto
+	 */
+	sf::Color getColor(void) const;
+
+	/**
 	 * Obtiene la opacidad procesada por el efecto
 	 * @return Opacidad obtenida en el procesamiento del efecto
 	 */
 	unsigned char getOpacity(void) const;
+
+	/**
+	 * Obtiene la entidad sobre la que actua el efecto
+	 * @return Entidad sobre la que actua el efecto
+	 */
+	Entity* getEntity(void) const;
+
+	/**
+	 * Obtiene el retardo inicial que aplica el efecto
+	 * @return Retardo inicial
+	 */
+	float getDelay(void) const;
+
+	/**
+	 * Obtiene la duración del efecto
+	 * @return Duración del efecto en segundos
+	 */
+	float getDuration(void) const;
 
 	/**
 	 * Obtiene el shader, si lo hay, a aplicar por el efecto
@@ -92,13 +116,14 @@ public:
 	sf::Shader* getShader(void) const;
 
 protected:
+	bool m_finished;		/**< Indica si el efecto ha terminado */
+	sf::Color m_color;		/**< Color procesado por el efecto */
+
+private:
 	Entity* m_entity;		/**< Entidad sobre la que actua el efecto */
 	float m_delay;			/**< Delay en segundos antes de comenzar el efecto */
-	sf::Clock m_clock;		/**< Reloj para controlar el tiempo transcurrido */
 	float m_duration;		/**< Duración del efecto en segundos */
-	bool m_finished;		/**< Indica si el efecto ha terminado */
 	sf::Shader* m_shader;	/**< Shader configurado por el efecto */
-	unsigned char m_opacity;/**< Transparencia procesada por el efecto */
 };
 
 // Inclusión de los métodos inline

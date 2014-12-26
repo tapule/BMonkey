@@ -59,17 +59,6 @@ void MoveInEffect::init(Entity* entity, const float delay, const float duration)
 		break;
 	}
 	setPosition(position);
-	m_finished = false;
-}
-
-void MoveInEffect::setWindowSize(const sf::Vector2u& win_size)
-{
-	m_win_size = win_size;
-}
-
-void MoveInEffect::setOrigin(const Origin origin)
-{
-	m_origin = origin;
 }
 
 } // namespace bmonkey

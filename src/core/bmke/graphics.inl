@@ -19,6 +19,9 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
+#ifndef _GRAPHICS_INL_
+#define _GRAPHICS_INL_
+
 inline void Graphics::close()
 {
 	m_window.close();
@@ -54,3 +57,4 @@ inline sf::RenderWindow* Graphics::getRenderWindow(void)
 	return &m_window;
 }
 
+#endif // _GRAPHICS_INL_

@@ -71,16 +71,37 @@ public:
 	void setWindowSize(const sf::Vector2u& win_size);
 
 	/**
+	 * Obtiene las dimensiones de la ventana de referencia
+	 * @return Dimensiones de la ventana de referencia
+	 */
+	sf::Vector2u getWindowSize(void) const;
+
+	/**
 	 * Establece la posición final del efecto
 	 * @param to Nueva posición final para el efecto.
 	 */
 	void setDestination(const Destination destination);
 
-protected:
+	/**
+	 * Obtiene la posición final del efecto
+	 * @return Posición final donde quedará el efecto
+	 */
+	Destination getDestination(void) const;
+
+	/**
+	 * Obtiene la posición final calculada para el efecto
+	 * @return Posición final calculada para el efecto
+	 */
+	float getFinalPosition(void) const;
+
+private:
 	sf::Vector2u m_win_size;	/**< Tamaño de la ventana de referencia para los efectos */
 	Destination m_destination;	/**< Posición final del efecto */
 	float m_final_pos;			/**< Coordenada final del efecto */
 };
+
+// Inclusión de los métodos inline
+#include "move_out_effect.inl"
 
 } // namespace bmonkey
 

@@ -22,8 +22,9 @@
 #ifndef _EFFECT_INL_
 #define _EFFECT_INL_
 
-inline void Effect::update(sf::Time delta_time)
+inline void Effect::reset(void)
 {
+	init(m_entity, m_delay, m_duration);
 }
 
 inline bool Effect::isFinished(void) const
@@ -31,9 +32,29 @@ inline bool Effect::isFinished(void) const
 	return m_finished;
 }
 
+inline sf::Color Effect::getColor(void) const
+{
+	return m_color;
+}
+
 inline unsigned char Effect::getOpacity(void) const
 {
-	return m_opacity;
+	return m_color.a;
+}
+
+inline Entity* Effect::getEntity(void) const
+{
+	return m_entity;
+}
+
+inline float Effect::getDelay(void) const
+{
+	return m_delay;
+}
+
+inline float Effect::getDuration(void) const
+{
+	return m_duration;
 }
 
 inline sf::Shader* Effect::getShader(void) const

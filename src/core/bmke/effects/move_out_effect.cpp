@@ -59,17 +59,6 @@ void MoveOutEffect::init(Entity* entity, const float delay, const float duration
 		m_final_pos = m_win_size.y - entity->getPosition().y + (entity->getHeight() / 2);
 		break;
 	}
-	m_finished = false;
-}
-
-void MoveOutEffect::setWindowSize(const sf::Vector2u& win_size)
-{
-	m_win_size = win_size;
-}
-
-void MoveOutEffect::setDestination(const Destination destination)
-{
-	m_destination = destination;
 }
 
 } // namespace bmonkey

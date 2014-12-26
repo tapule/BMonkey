@@ -19,39 +19,32 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "effect.hpp"
-#include "entity.hpp"
-#include <cassert>
+#ifndef _MOVE_OUT_EFFECT_INL_
+#define _MOVE_OUT_EFFECT_INL_
 
-namespace bmonkey{
-
-Effect::Effect(void):
-	m_finished(true),
-	m_color(sf::Color(0, 0, 0, 255)),
-	m_entity(nullptr),
-	m_delay(0.f),
-	m_duration(0.f),
-	m_shader(nullptr)
+inline void MoveOutEffect::setWindowSize(const sf::Vector2u& win_size)
 {
+	m_win_size = win_size;
 }
 
-Effect::~Effect(void)
+inline sf::Vector2u MoveOutEffect::getWindowSize(void) const
 {
-	if (m_shader)
-	{
-		delete m_shader;
-	}
+	return m_win_size;
 }
 
-void Effect::init(Entity* entity, const float delay, const float duration)
+inline void MoveOutEffect::setDestination(const Destination destination)
 {
-	assert(entity);
-
-	m_finished = false;
-	m_entity = entity;
-	m_delay = delay;
-	m_duration = duration;
-	m_color.a = entity->getOpacity();
+	m_destination = destination;
 }
 
-} // namespace bmonkey
+inline MoveOutEffect::Destination MoveOutEffect::getDestination(void) const
+{
+	return m_destination;
+}
+
+inline float MoveOutEffect::getFinalPosition(void) const
+{
+	return m_final_pos;
+}
+
+#endif // _MOVE_OUT_EFFECT_HPP_

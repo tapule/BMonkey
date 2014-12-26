@@ -61,8 +61,9 @@ public:
 	virtual void update(sf::Time delta_time);
 
 private:
-	CDBTweener::CTween* m_tween;		/**< Tweener usado para el efecto */
-	float m_pos;						/**< Posición actual del efecto */
+	sf::Clock m_clock;				/**< Reloj para controlar el tiempo transcurrido */
+	CDBTweener::CTween* m_tween;	/**< Tweener usado para el efecto */
+	float m_pos;					/**< Posición actual del efecto */
 };
 
 } // namespace bmonkey

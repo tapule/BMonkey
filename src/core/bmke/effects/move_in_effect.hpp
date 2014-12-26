@@ -71,15 +71,30 @@ public:
 	void setWindowSize(const sf::Vector2u& win_size);
 
 	/**
+	 * Obtiene las dimensiones de la ventana de referencia
+	 * @return Dimensiones de la ventana de referencia
+	 */
+	sf::Vector2u getWindowSize(void) const;
+
+	/**
 	 * Establece la posición origen desde donde ejecutar el efecto
 	 * @param from Nueva posición origen desde donde comenzar el efecto.
 	 */
 	void setOrigin(const Origin origin);
 
-protected:
+	/**
+	 * Obtiene la posición origen desde donde ejecutar el efecto
+	 * @return Posición origen desde donde comenzar el efecto
+	 */
+	Origin getOrigin(void) const;
+
+private:
 	sf::Vector2u m_win_size;/**< Tamaño de la ventana de referencia para los efectos */
 	Origin m_origin;		/**< Posición origen desde donde comienza el efecto */
 };
+
+// Inclusión de los métodos inline
+#include "move_in_effect.inl"
 
 } // namespace bmonkey
 

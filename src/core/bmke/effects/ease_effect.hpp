@@ -75,9 +75,10 @@ public:
 	void setAxis(const Axis axis);
 
 private:
-	CDBTweener::CTween* m_tween;		/**< Tweener usado para el efecto */
-	float m_pos;						/**< Posición actual del efecto */
-	Axis m_axis;						/**< Eje sobre el que se aplica el efecto */
+	sf::Clock m_clock;				/**< Reloj para controlar el tiempo transcurrido */
+	CDBTweener::CTween* m_tween;	/**< Tweener usado para el efecto */
+	float m_pos;					/**< Posición actual del efecto */
+	Axis m_axis;					/**< Eje sobre el que se aplica el efecto */
 };
 
 } // namespace bmonkey
