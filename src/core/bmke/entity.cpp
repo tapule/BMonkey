@@ -157,6 +157,4 @@ void Entity::drawGrid(sf::RenderTarget& target, sf::RenderStates states) const
 }
 #endif
 
-
-
 } // namespace bmonkey

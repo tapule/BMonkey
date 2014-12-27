@@ -35,7 +35,7 @@
 #include "volume_manager.hpp"
 #include "shader_manager.hpp"
 
-#include "texture_entity.hpp"
+#include "entities/transition_entity.hpp"
 
 namespace bmonkey{
 
@@ -132,7 +132,7 @@ private:
 	// Objetos temporales, solo para pruebas
 	sf::Texture back_texture;
 	sf::Texture sprite_texture;
-	TextureEntity entity;
+	TransitionEntity entity;
 	sf::Sprite back;
 	sf::Text m_mod_text;
 };

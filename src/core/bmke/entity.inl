@@ -88,13 +88,13 @@ inline void Entity::update(sf::Time delta_time)
 	update(delta_time, m_current_color);
 }
 
-void Entity::run(void)
+inline void Entity::run(void)
 {
 	m_status = STARTED;
 }
 
 #ifdef BMONKEY_DESIGNER
-void Entity::stop(void)
+inline void Entity::stop(void)
 {
 	m_status = STOPPED;
 }

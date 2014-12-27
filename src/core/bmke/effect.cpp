@@ -51,7 +51,7 @@ void Effect::init(Entity* entity, const float delay, const float duration)
 	m_entity = entity;
 	m_delay = delay;
 	m_duration = duration;
-	m_color.a = entity->getOpacity();
+	m_color = entity->getColor();
 }
 
 } // namespace bmonkey

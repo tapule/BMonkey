@@ -39,23 +39,26 @@ void MoveInEffect::init(Entity* entity, const float delay, const float duration)
 {
 	assert(entity);
 	sf::Vector2f position;
+	sf::Vector2f size;
 
 	Effect::init(entity, delay, duration);
+
+	size = entity->getSize();
 
 	// Establecemos la posición del efecto dependiendo del origen de entrada
 	switch (m_origin)
 	{
 	case LEFT:
-		position.x = -1.f * ((entity->getWidth() / 2) + entity->getPosition().x);
+		position.x = -1.f * ((size.x / 2.f) + entity->getPosition().x);
 		break;
 	case RIGHT:
-		position.x = m_win_size.x - entity->getPosition().x + (entity->getWidth() / 2);
+		position.x = m_win_size.x - entity->getPosition().x + (size.x / 2.f);
 		break;
 	case TOP:
-		position.y = -1.f * ((entity->getHeight() / 2) + entity->getPosition().y);
+		position.y = -1.f * ((size.y / 2.f) + entity->getPosition().y);
 		break;
 	case BOTTOM:
-		position.y = m_win_size.y - entity->getPosition().y + (entity->getHeight() / 2);
+		position.y = m_win_size.y - entity->getPosition().y + (size.y / 2.f);
 		break;
 	}
 	setPosition(position);

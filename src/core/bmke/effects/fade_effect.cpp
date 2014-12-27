@@ -40,8 +40,7 @@ void FadeEffect::init(Entity* entity, const float delay, const float duration)
 {
 	Effect::init(entity, delay, duration);
 
-	m_pos = entity->getOpacity();
-	m_color.a = m_pos;
+	m_pos = m_color.a;
 	// Borramos primero el tween.
 	delete m_tween;
 	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_LINEAR, CDBTweener::TWEA_OUT, duration, &m_pos, 0.f);
@@ -51,14 +50,14 @@ void FadeEffect::init(Entity* entity, const float delay, const float duration)
 void FadeEffect::update(sf::Time delta_time)
 {
 	// Comprobamos si hemos sobrepasado el delay
-	if (!m_finished && m_clock.getElapsedTime().asSeconds() > m_delay)
+	if (!m_finished && m_clock.getElapsedTime().asSeconds() > getDelay())
 	{
 		// Comprobamos si en el último update se llegó al fin
 		if (m_tween->isFinished())
 		{
 			if (m_color.a == 0.f)
 			{
-				(m_tween->getValues())[0]->m_fTarget = m_entity->getOpacity();
+				(m_tween->getValues())[0]->m_fTarget = getEntity()->getOpacity();
 			}
 			else
 			{

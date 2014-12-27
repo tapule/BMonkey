@@ -120,7 +120,7 @@ public:
 	 * Obtiene la ventana de renderizado usada
 	 * @return Ventana de renderizado usada
 	 */
-	sf::RenderWindow* getRenderWindow(void) const;
+	sf::RenderWindow* getRenderWindow(void);
 
 private:
 	static bool m_instantiated;		/**< Indica si ya hay una instancia de la clase */

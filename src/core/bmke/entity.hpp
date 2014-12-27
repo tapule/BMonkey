@@ -39,6 +39,9 @@ typedef sf::Vector2<bool> Vector2b;
  * Una entidad puede estar formada por varias entidades, es decir, actuar como
  * un contenedor de entidades, teniendo sus hijos propiedades que serán
  * relativas al padre.
+ * Tienen un estado que determina en que fase de ejecución se encuentran:
+ * - Stopped: Se encuentra en su estado inicial, no ha comenzado su ejecución.
+ * - Started: Ha comenzado su ejecución.
  */
 class Entity : public sf::Drawable, public sf::Transformable
 {
@@ -195,7 +198,7 @@ protected:
 	/**
 	 * Actualiza el grid de selección de la entidad
 	 */
-	virtual void updateGrid(void) const = 0;
+	virtual void updateGrid(void) = 0;
 #endif
 
 	/**

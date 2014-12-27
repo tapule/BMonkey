@@ -52,7 +52,7 @@ void BackOutEffect::init(Entity* entity, const float delay, const float duration
 void BackOutEffect::update(sf::Time delta_time)
 {
 	// Comprobamos si hemos sobrepasado el delay
-	if (!m_finished && m_clock.getElapsedTime().asSeconds() > m_delay)
+	if (!m_finished && m_clock.getElapsedTime().asSeconds() > getDelay())
 	{
 		// Comprobamos si en el último update se llegó al fin
 		if (m_tween->isFinished())

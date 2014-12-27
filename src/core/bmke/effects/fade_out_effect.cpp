@@ -40,8 +40,7 @@ void FadeOutEffect::init(Entity* entity, const float delay, const float duration
 {
 	Effect::init(entity, delay, duration);
 
-	m_pos = entity->getOpacity();
-	m_color = entity->getOpacity();
+	m_pos = m_color.a;
 	// Borramos primero el tween.
 	delete m_tween;
 	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_QUADRATIC, CDBTweener::TWEA_OUT, duration, &m_pos, 0);
@@ -51,7 +50,7 @@ void FadeOutEffect::init(Entity* entity, const float delay, const float duration
 void FadeOutEffect::update(sf::Time delta_time)
 {
 	// Comprobamos si hemos sobrepasado el delay
-	if (!m_finished && m_clock.getElapsedTime().asSeconds() > m_delay)
+	if (!m_finished && m_clock.getElapsedTime().asSeconds() > getDelay())
 	{
 		// Comprobamos si en el último update se llegó al fin
 		if (m_tween->isFinished())
@@ -60,7 +59,7 @@ void FadeOutEffect::update(sf::Time delta_time)
 			return;
 		}
 		m_tween->step(delta_time.asSeconds());
-		m_color = static_cast<unsigned char>(m_pos);
+		m_color.a = static_cast<unsigned char>(m_pos);
 	}
 }
 

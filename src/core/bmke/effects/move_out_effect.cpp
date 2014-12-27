@@ -40,23 +40,26 @@ void MoveOutEffect::init(Entity* entity, const float delay, const float duration
 {
 	assert(entity);
 	sf::Vector2f position;
+	sf::Vector2f size;
 
 	Effect::init(entity, delay, duration);
+
+	size = entity->getSize();
 
 	// Establecemos la posición final del efecto dependiendo del modo de salida
 	switch (m_destination)
 	{
 	case LEFT:
-		m_final_pos = -1.f * ((entity->getWidth() / 2) + entity->getPosition().x);
+		m_final_pos = -1.f * ((size.x / 2.f) + entity->getPosition().x);
 		break;
 	case RIGHT:
-		m_final_pos = m_win_size.x - entity->getPosition().x + (entity->getWidth() / 2);
+		m_final_pos = m_win_size.x - entity->getPosition().x + (size.x / 2.f);
 		break;
 	case TOP:
-		m_final_pos = -1.f * ((entity->getHeight() / 2) + entity->getPosition().y);
+		m_final_pos = -1.f * ((size.y / 2.f) + entity->getPosition().y);
 		break;
 	case BOTTOM:
-		m_final_pos = m_win_size.y - entity->getPosition().y + (entity->getHeight() / 2);
+		m_final_pos = m_win_size.y - entity->getPosition().y + (size.y / 2.f);
 		break;
 	}
 }

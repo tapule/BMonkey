@@ -21,23 +21,11 @@
 
 #include "director.hpp"
 #include <cassert>
+#include "effect_factory.hpp"
 
-#include "effects/bounce_in_effect.hpp"
-#include "effects/ease_in_effect.hpp"
-#include "effects/back_in_effect.hpp"
-#include "effects/elastic_in_effect.hpp"
-#include "effects/fade_in_effect.hpp"
-#include "effects/pop_in_effect.hpp"
-#include "effects/rotate_in_effect.hpp"
-#include "effects/roll_in_effect.hpp"
-#include "effects/hardroll_in_effect.hpp"
-
-#include "effects/fade_effect.hpp"
+#include "effects/move_in_effect.hpp"
+#include "effects/move_out_effect.hpp"
 #include "effects/ease_effect.hpp"
-
-#include "effects/back_out_effect.hpp"
-
-#include "effects/fade_out_effect.hpp"
 
 namespace bmonkey{
 
@@ -101,14 +89,19 @@ void Director::init(void)
 
 	//-------------------------------------------
 	// Objetos temporales, solo para pruebas
-	back_texture.loadFromFile("h.png");
+	back_texture.loadFromFile("backv00-800.png");
 	sprite_texture.loadFromFile("sprite.png");
 	back.setTexture(back_texture);
 	entity.setTexture(&sprite_texture);
-	entity.setPosition(512.f, 384.f);
+	entity.setPosition(400.f, 300.f);
+
+	//entity.setColor(sf::Color(255,100,100, 150));
+	entity.setRotation(30);
+	//entity.setScale(1.2, 1.2);
+	entity.setFlip(true, true);
 
 	m_mod_text.setFont(*(m_fonts.getSystemFont(FontManager::DEFAULT)));
-	m_mod_text.setPosition(125.f, 200.f);
+	m_mod_text.setPosition(125.f, 150.f);
 	m_mod_text.setCharacterSize(30);
 	m_mod_text.setString("Original");
 
@@ -202,8 +195,8 @@ void Director::processInput(void)
 	float duration = 1.5f;
 
 	Effect* effect;
-	InEffect* in_effect;
-	OutEffect* out_effect;
+	MoveInEffect* in_effect;
+	MoveOutEffect* out_effect;
 	EaseEffect* e_effect;
 
 	while (m_controls.poolEvent(event))
@@ -228,160 +221,144 @@ void Director::processInput(void)
 			switch (choice)
 			{
 			case 0:
-				m_mod_text.setString("Bounce In Left");
-				in_effect = new BounceInEffect();
+				m_mod_text.setString("Left Back In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::LEFT_BACK_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 1:
-				m_mod_text.setString("Bounce In Right");
-				in_effect = new BounceInEffect();
+				m_mod_text.setString("Right Back In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::RIGHT_BACK_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::RIGHT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 2:
-				m_mod_text.setString("Bounce In Top");
-				in_effect = new BounceInEffect();
+				m_mod_text.setString("Top Back In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::TOP_BACK_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::TOP);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 3:
-				m_mod_text.setString("Bounce In Bottom");
-				in_effect = new BounceInEffect();
+				m_mod_text.setString("Bottom Back In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::BOTTOM_BACK_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::BOTTOM);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 4:
-				m_mod_text.setString("Ease In Left");
-				in_effect = new EaseInEffect();
+				m_mod_text.setString("Left Bounce In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::LEFT_BOUNCE_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 5:
-				m_mod_text.setString("Ease In Right");
-				in_effect = new EaseInEffect();
+				m_mod_text.setString("Right Bounce In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::RIGHT_BOUNCE_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::RIGHT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 6:
-				m_mod_text.setString("Ease In Top");
-				in_effect = new EaseInEffect();
+				m_mod_text.setString("Top Bounce In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::TOP_BOUNCE_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::TOP);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 7:
-				m_mod_text.setString("Ease In Bottom");
-				in_effect = new EaseInEffect();
+				m_mod_text.setString("Bottom Bounce In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::BOTTOM_BOUNCE_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::BOTTOM);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 8:
-				m_mod_text.setString("Back In Left");
-				in_effect = new BackInEffect();
+				m_mod_text.setString("Left Ease In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::LEFT_EASE_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 9:
-				m_mod_text.setString("Back In Right");
-				in_effect = new BackInEffect();
+				m_mod_text.setString("Right Ease In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::RIGHT_EASE_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::RIGHT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 10:
-				m_mod_text.setString("Back In Top");
-				in_effect = new BackInEffect();
+				m_mod_text.setString("Top Ease In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::TOP_EASE_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::TOP);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 11:
-				m_mod_text.setString("Back In Bottom");
-				in_effect = new BackInEffect();
+				m_mod_text.setString("Bottom Ease In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::BOTTOM_EASE_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::BOTTOM);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 12:
-				m_mod_text.setString("Elastic In Left");
-				in_effect = new ElasticInEffect();
+				m_mod_text.setString("Left Elastic In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::LEFT_ELASTIC_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::LEFT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 13:
-				m_mod_text.setString("Elastic In Right");
-				in_effect = new ElasticInEffect();
+				m_mod_text.setString("Right Elastic In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::RIGHT_ELASTIC_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::RIGHT);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 14:
-				m_mod_text.setString("Elastic In Top");
-				in_effect = new ElasticInEffect();
+				m_mod_text.setString("Top Elastic In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::TOP_ELASTIC_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::TOP);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
 				++choice;
 				break;
 			case 15:
-				m_mod_text.setString("Elastic In Bottom");
-				in_effect = new ElasticInEffect();
+				m_mod_text.setString("Bottom Elastic In");
+				in_effect = static_cast<MoveInEffect* > (EffectFactory::create(EffectFactory::BOTTOM_ELASTIC_IN));
 				in_effect->setWindowSize(m_graphics.getSize());
-				in_effect->setInFrom(InEffect::BOTTOM);
 				in_effect->init(&entity, delay, duration);
 				entity.setStartEffect(in_effect);
 				entity.run();
@@ -389,7 +366,7 @@ void Director::processInput(void)
 				break;
 			case 16:
 				m_mod_text.setString("Fade In");
-				effect = new FadeInEffect();
+				effect = EffectFactory::create(EffectFactory::FADE_IN);
 				effect->init(&entity, delay, duration);
 				entity.setStartEffect(effect);
 				entity.run();
@@ -397,40 +374,37 @@ void Director::processInput(void)
 				break;
 			case 17:
 				m_mod_text.setString("Pop In");
-				effect = new PopInEffect();
+				effect = EffectFactory::create(EffectFactory::POP_IN);
 				effect->init(&entity, delay, duration);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
 				break;
 			case 18:
-				m_mod_text.setString("Rotate In");
-				effect = new RotateInEffect();
+				m_mod_text.setString("Roll In");
+				effect = EffectFactory::create(EffectFactory::ROLL_IN);
 				effect->init(&entity, delay, duration);
-				//entity.setRotation(30);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
 				break;
 			case 19:
-				m_mod_text.setString("Roll In");
-				effect = new RollInEffect();
+				m_mod_text.setString("Hard Roll In");
+				effect = EffectFactory::create(EffectFactory::HARDROLL_IN);
 				effect->init(&entity, delay, duration);
-				//entity.setRotation(30);
 				entity.setStartEffect(effect);
 				entity.run();
 				++choice;
 				break;
 			case 20:
-				m_mod_text.setString("Hard Roll In");
-				effect = new HardrollInEffect();
-				effect->init(&entity, delay, duration + 1.f);
-				//entity.setRotation(30);
+				m_mod_text.setString("Rotate In");
+				effect = EffectFactory::create(EffectFactory::ROTATE_IN);
+				effect->init(&entity, delay, duration);
 				entity.setStartEffect(effect);
 				entity.run();
-				++choice;
+				//++choice;
 				break;
-				break;
+/*
 			case 21:
 				m_mod_text.setString("Fade");
 				effect = new FadeEffect();
@@ -539,6 +513,7 @@ void Director::processInput(void)
 				entity.run();
 				//++choice;
 				break;
+*/
 			}
 			break;
 
