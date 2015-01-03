@@ -25,6 +25,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "../../defines.hpp"
+#include "effect.hpp"
 
 namespace bmonkey{
 
@@ -42,6 +43,9 @@ typedef sf::Vector2<bool> Vector2b;
  * Tienen un estado que determina en que fase de ejecución se encuentran:
  * - Stopped: Se encuentra en su estado inicial, no ha comenzado su ejecución.
  * - Started: Ha comenzado su ejecución.
+ * También pueden tener una serie de efectos que actuan sobre ellas y que se
+ * ejecutarán secuencialmente uno tras otro. Los efectos pueden ser ciclicos, es
+ * decir, pueden estar ejecutandose secuencialmente indefinidamente.
  */
 class Entity : public sf::Drawable, public sf::Transformable
 {
@@ -154,6 +158,37 @@ public:
 	std::vector<Entity* >& getChildren(void);
 
 	/**
+	 * Agrega un nuevo efecto a la pila de efectos
+	 * @param effect Nuevo efecto a agregar
+	 */
+	void addEffect(Effect* effect);
+
+#ifdef BMONKEY_DESIGNER
+	/**
+	 * Limpia el almacén interno de efectos
+	 */
+	void clearEffects(void);
+
+	/**
+	 * Obtiene una referencia al almacén interno de efectos
+	 * @return Referencia al vector interno de efectos
+	 */
+	std::vector<Effect* >& getEffects(void);
+#endif
+
+	/**
+	 * Indica si los efectos ciclicos están activados
+	 * @return True si están activados, false en otro caso
+	 */
+	bool getCyclicEffects(void);
+
+	/**
+	 * Activa o desactiva los efectos ciclicos
+	 * @param cyclic Nuevo valor para los efectos ciclicos
+	 */
+	void setCyclicEffects(const bool cyclic);
+
+	/**
 	 * Actualiza el estado de la entidad
 	 * @param delta_time Tiempo transcurrido desde la última actualización
 	 */
@@ -230,17 +265,19 @@ protected:
 	sf::RectangleShape m_grid_dot;	/**< Marcador del origen en el grid */
 #endif
 	Status m_status;				/**< Estado en el que se encuentra */
-	sf::Color m_current_color;		/**< Tinte y opacidad actual de la entidad */
 
 private:
 
 #ifdef BMONKEY_DESIGNER
-	bool m_selected;			/**< Indica si la entidad está seleccionada */
+	bool m_selected;				/**< Indica si la entidad está seleccionada */
 #endif
-	Vector2b m_flip;			/**< Valores del espejado */
-	sf::Color m_color;			/**< Tinte y opacidad de la entidad */
-	Entity* m_parent;			/**< Padre de la entidad en una cadena */
+	Vector2b m_flip;				/**< Valores del espejado */
+	sf::Color m_color;				/**< Tinte y opacidad de la entidad */
+	Entity* m_parent;				/**< Padre de la entidad en una cadena */
 	std::vector<Entity* > m_children; /**< Hijos de la entidad */
+	bool m_cyclic_effects;			/**< Indica si los efectos se ejecutan de forma ciclica */
+	int m_current_effect;			/**< Índice del efecto actualmente en ejecución, -1 = ninguno */
+	std::vector<Effect* > m_effects; /**< Efectos que actúan sobre la entidad */
 };
 
 // Inclusión de los métodos inline

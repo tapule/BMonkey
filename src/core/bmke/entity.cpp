@@ -31,10 +31,11 @@ Entity::Entity(void):
 #else
 	m_status(STARTED),
 #endif
-	m_color(sf::Color(255, 255, 255, 255)),
-	m_current_color(m_color),
 	m_flip(Vector2b(false, false)),
-	m_parent(nullptr)
+	m_color(sf::Color(255, 255, 255, 255)),
+	m_parent(nullptr),
+	m_cyclic_effects(false),
+	m_current_effect(-1)
 {
 #ifdef BMONKEY_DESIGNER
 	// Inicialización del grid de selección
@@ -52,11 +53,18 @@ Entity::Entity(void):
 Entity::~Entity(void)
 {
 	std::vector<Entity* >::iterator iter;
+	std::vector<Effect* >::iterator eiter;
 
 	for (iter = m_children.begin(); iter != m_children.end(); ++iter)
 	{
 		delete (*iter);
 	}
+
+	for (eiter = m_effects.begin(); eiter != m_effects.end(); ++eiter)
+	{
+		delete (*eiter);
+	}
+
 }
 
 void Entity::setFlip(const bool x, const bool y)
@@ -96,11 +104,75 @@ void Entity::removeChild(Entity* entity)
 	}
 }
 
+#ifdef BMONKEY_DESIGNER
+void Entity::clearEffects(void)
+{
+	std::vector<Effect* >::iterator iter;
+
+	for (iter = m_effects.begin(); iter != m_effects.end(); ++iter)
+	{
+		delete (*iter);
+	}
+	m_effects.clear();
+	m_current_effect = -1;
+}
+#endif
+
+void Entity::run(void)
+{
+	m_status = STARTED;
+	if (!m_effects.empty())
+	{
+		m_current_effect = 0;
+		m_effects[m_current_effect]->run();
+	}
+}
+
+#ifdef BMONKEY_DESIGNER
+void Entity::stop(void)
+{
+	m_status = STOPPED;
+	if (m_current_effect >= 0)
+	{
+		m_effects[m_current_effect]->stop();
+	}
+	m_current_effect = -1;
+}
+#endif
+
+
 void Entity::update(sf::Time delta_time, const sf::Color& color)
 {
 	// Solo actualizamos si la entidad está en ejecución
 	if (m_status == STARTED)
 	{
+		// Comprobamos si es necesario avanzar al siguiente efecto
+		if ((m_current_effect >= 0) && m_effects[m_current_effect]->isFinished())
+		{
+			++m_current_effect;
+			// Comprobamos si necesitamos reajustar el ciclado de efectos
+			if (m_current_effect == m_effects.size())
+			{
+				if (m_cyclic_effects)
+				{
+					m_current_effect = 0;
+					m_effects[m_current_effect]->run();
+				}
+				else
+				{
+					--m_current_effect;
+				}
+			}
+			else
+			{
+				m_effects[m_current_effect]->run();
+			}
+		}
+		// Si hay efecto lo actualizamos
+		if (m_current_effect >= 0)
+		{
+			m_effects[m_current_effect]->update(delta_time);
+		}
 		updateCurrent(delta_time, color);
 		updateChildren(delta_time, color);
 	}
@@ -127,6 +199,10 @@ void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	std::vector<Entity* >::const_iterator iter;
 
 	states.transform *= getTransform();
+	if (m_current_effect >= 0)
+	{
+		states.shader = m_effects[m_current_effect]->getShader();
+	}
 	drawCurrent(target, states);
 
 	for (iter = m_children.begin(); iter != m_children.end(); ++iter)

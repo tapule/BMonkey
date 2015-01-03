@@ -48,8 +48,10 @@ public:
 
 	/**
 	 * Constructor de la clase
+	 * @param delay Retardo inicial del efecto
+	 * @param duration Duración del efecto
 	 */
-	MoveInEffect(void);
+	MoveInEffect(const float delay, const float duration);
 
 	/**
 	 * Destructor de la clase
@@ -57,12 +59,26 @@ public:
 	virtual ~MoveInEffect(void);
 
 	/**
-	 * Inicializa el efecto asignando sus parámetros de procesado
+	 * Inicializa el efecto para una entidad determinada
 	 * @param entity Entidad sobre la que actuará el efecto
-	 * @param delay Retraso en segundos antes de comenzar el procesado
-	 * @param duration Duración del efecto en segundos
 	 */
-	virtual void init(Entity* entity, const float delay, const float duration);
+	virtual void init(Entity* entity);
+
+	/**
+	 * Comienza el procesado del efecto desde su comienzo
+	 */
+	virtual void run(void) = 0;
+
+	/**
+	 * Detiene el procesado del efecto dejando la entidad en su estado inicial
+	 */
+	virtual void stop(void);
+
+	/**
+	 * Actualiza el estado del efecto
+	 * @param delta_time Tiempo transcurrido desde la última actualización
+	 */
+	virtual void update(sf::Time delta_time) = 0;
 
 	/**
 	 * Establece las dimensiones de la ventana de referencia donde aplicar el efecto
@@ -87,6 +103,10 @@ public:
 	 * @return Posición origen desde donde comenzar el efecto
 	 */
 	Origin getOrigin(void) const;
+
+protected:
+	sf::Vector2f m_entity_pos;	/**< Posición inicial de la entidad */
+	sf::Vector2f m_start_pos;	/**< Posición inicial del efecto */
 
 private:
 	sf::Vector2u m_win_size;/**< Tamaño de la ventana de referencia para los efectos */

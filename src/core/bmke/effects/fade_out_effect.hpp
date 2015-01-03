@@ -38,8 +38,10 @@ class FadeOutEffect : public Effect
 public:
 	/**
 	 * Constructor de la clase
+	 * @param delay Retardo inicial del efecto
+	 * @param duration Duración del efecto
 	 */
-	FadeOutEffect(void);
+	FadeOutEffect(const float delay, const float duration);
 
 	/**
 	 * Destructor de la clase
@@ -47,13 +49,20 @@ public:
 	virtual ~FadeOutEffect(void);
 
 	/**
-	 * Inicializa el efecto asignando sus parámetros de procesado
+	 * Inicializa el efecto para una entidad determinada
 	 * @param entity Entidad sobre la que actuará el efecto
-	 * @param delay Retraso en segundos antes de comenzar el procesado
-	 * @param duration Duración del efecto en segundos
 	 */
-	virtual void init(Entity* entity, const float delay, const float duration);
+	virtual void init(Entity* entity);
 
+	/**
+	 * Comienza el procesado del efecto desde su comienzo
+	 */
+	virtual void run(void);
+
+	/**
+	 * Detiene el procesado del efecto dejando la entidad en su estado inicial
+	 */
+	virtual void stop(void);
 	/**
 	 * Actualiza el estado del efecto
 	 * @param delta_time Tiempo transcurrido desde la última actualización
@@ -63,7 +72,8 @@ public:
 private:
 	sf::Clock m_clock;				/**< Reloj para controlar el tiempo transcurrido */
 	CDBTweener::CTween* m_tween;	/**< Tweener usado para el efecto */
-	float m_pos;					/**< Posición actual del efecto */
+	float m_current_pos;			/**< Posición actual del efecto */
+	sf::Color m_entity_color;		/**< Color original de la entidad */
 };
 
 } // namespace bmonkey

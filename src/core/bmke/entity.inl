@@ -52,7 +52,6 @@ inline const sf::Color& Entity::getColor(void)
 inline void Entity::setColor(const sf::Color& color)
 {
 	m_color = color;
-	m_current_color = color;
 }
 
 inline unsigned char Entity::getOpacity(void) const
@@ -83,21 +82,34 @@ inline std::vector<Entity* >& Entity::getChildren(void)
 	return m_children;
 }
 
-inline void Entity::update(sf::Time delta_time)
+inline void Entity::addEffect(Effect* effect)
 {
-	update(delta_time, m_current_color);
-}
+	assert(effect);
 
-inline void Entity::run(void)
-{
-	m_status = STARTED;
+	effect->init(this);
+	m_effects.push_back(effect);
 }
 
 #ifdef BMONKEY_DESIGNER
-inline void Entity::stop(void)
+inline std::vector<Effect* >& Entity::getEffects(void)
 {
-	m_status = STOPPED;
+	return m_effects;
 }
 #endif
+
+inline bool Entity::getCyclicEffects(void)
+{
+	return m_cyclic_effects;
+}
+
+inline void Entity::setCyclicEffects(const bool cyclic)
+{
+	m_cyclic_effects = cyclic;
+}
+
+inline void Entity::update(sf::Time delta_time)
+{
+	update(delta_time, m_color);
+}
 
 #endif // _ENTITY_INL_

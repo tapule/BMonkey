@@ -26,14 +26,12 @@ namespace bmonkey{
 
 TransitionEntity::TransitionEntity(void):
 	Entity(),
-	m_start_effect(nullptr),
 	m_texture(nullptr)
 {
 }
 
 TransitionEntity::~TransitionEntity(void)
 {
-	delete m_start_effect;
 }
 
 sf::Vector2f TransitionEntity::getSize(void) const
@@ -70,43 +68,20 @@ void TransitionEntity::setColor(const sf::Color& color)
 	m_sprite.setColor(color);
 }
 
-void TransitionEntity::run(void)
-{
-	Entity::run();
-
-	// Reseteamos el efecto de entrada
-	if (m_start_effect)
-	{
-		m_start_effect->reset();
-	}
-}
-
 void TransitionEntity::setTexture(sf::Texture *texture)
 {
 	sf::FloatRect bounds;
 
 	m_texture = texture;
 	m_sprite.setTexture(*m_texture, true);
-	// Movemos el origen al centro del sprite
+	// Movemos el origen al centro de la entidad
 	bounds = m_sprite.getLocalBounds();
-	m_sprite.setOrigin(bounds.width / 2.f, bounds.height / 2.f);
-}
-
-void TransitionEntity::setStartEffect(Effect* effect)
-{
-	delete m_start_effect;
-	m_start_effect = effect;
+	setOrigin(bounds.width / 2.f, bounds.height / 2.f);
 }
 
 void TransitionEntity::updateCurrent(sf::Time delta_time, const sf::Color& color)
 {
-	// Si tenemos algún efecto, lo actualizamos
-	if (m_start_effect)
-	{
-		m_start_effect->update(delta_time);
-		m_current_color = m_start_effect->getColor();
-		m_sprite.setColor(m_current_color);
-	}
+	m_sprite.setColor(getColor());
 }
 
 #ifdef BMONKEY_DESIGNER
@@ -123,12 +98,6 @@ inline void TransitionEntity::updateGrid(void)
 
 void TransitionEntity::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	if (m_start_effect)
-	{
-		//states.transform = m_start_effect->getTransform() * states.transform;
-		states.transform *= m_start_effect->getTransform();
-		states.shader = m_start_effect->getShader();
-	}
 	target.draw(m_sprite, states);
 }
 

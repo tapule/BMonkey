@@ -25,12 +25,11 @@
 
 namespace bmonkey{
 
-Effect::Effect(void):
+Effect::Effect(const float delay, const float duration):
 	m_finished(true),
-	m_color(sf::Color(0, 0, 0, 255)),
 	m_entity(nullptr),
-	m_delay(0.f),
-	m_duration(0.f),
+	m_delay(delay),
+	m_duration(duration),
 	m_shader(nullptr)
 {
 }
@@ -43,15 +42,11 @@ Effect::~Effect(void)
 	}
 }
 
-void Effect::init(Entity* entity, const float delay, const float duration)
+void Effect::init(Entity* entity)
 {
 	assert(entity);
 
-	m_finished = false;
 	m_entity = entity;
-	m_delay = delay;
-	m_duration = duration;
-	m_color = entity->getColor();
 }
 
 } // namespace bmonkey

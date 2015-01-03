@@ -25,8 +25,8 @@
 
 namespace bmonkey{
 
-MoveInEffect::MoveInEffect(void):
-	Effect(),
+MoveInEffect::MoveInEffect(const float delay, const float duration):
+	Effect(delay, duration),
 	m_origin(LEFT)
 {
 }
@@ -35,33 +35,41 @@ MoveInEffect::~MoveInEffect(void)
 {
 }
 
-void MoveInEffect::init(Entity* entity, const float delay, const float duration)
+void MoveInEffect::init(Entity* entity)
 {
-	assert(entity);
-	sf::Vector2f position;
 	sf::Vector2f size;
 
-	Effect::init(entity, delay, duration);
+	Effect::init(entity);
 
+	m_entity_pos = entity->getPosition();
 	size = entity->getSize();
 
 	// Establecemos la posición del efecto dependiendo del origen de entrada
 	switch (m_origin)
 	{
 	case LEFT:
-		position.x = -1.f * ((size.x / 2.f) + entity->getPosition().x);
+		m_start_pos.x = 0.f - size.x;
+		m_start_pos.y = m_entity_pos.y;
 		break;
 	case RIGHT:
-		position.x = m_win_size.x - entity->getPosition().x + (size.x / 2.f);
+		m_start_pos.x = m_entity_pos.x + (m_win_size.x - m_entity_pos.x) + size.x;
+		m_start_pos.y = m_entity_pos.y;
 		break;
 	case TOP:
-		position.y = -1.f * ((size.y / 2.f) + entity->getPosition().y);
+		m_start_pos.x = m_entity_pos.x;
+		m_start_pos.y = 0.f - size.y;
 		break;
 	case BOTTOM:
-		position.y = m_win_size.y - entity->getPosition().y + (size.y / 2.f);
+		m_start_pos.x = m_entity_pos.x;
+		m_start_pos.y = m_entity_pos.y + (m_win_size.y - m_entity_pos.y) + size.y;
 		break;
 	}
-	setPosition(position);
+}
+
+void MoveInEffect::stop(void)
+{
+	m_finished = true;
+	m_entity->setPosition(m_entity_pos);
 }
 
 } // namespace bmonkey

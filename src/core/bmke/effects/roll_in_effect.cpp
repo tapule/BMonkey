@@ -25,11 +25,11 @@
 
 namespace bmonkey{
 
-RollInEffect::RollInEffect(void):
-	Effect(),
+RollInEffect::RollInEffect(const float delay, const float duration):
+	Effect(delay, duration),
 	m_tween(nullptr),
-	m_scale(0),
-	m_rotation(0)
+	m_current_scale(0),
+	m_current_rotation(0)
 {
 }
 
@@ -37,17 +37,33 @@ RollInEffect::~RollInEffect(void)
 {
 }
 
-void RollInEffect::init(Entity* entity, const float delay, const float duration)
+void RollInEffect::init(Entity* entity)
 {
-	Effect::init(entity, delay, duration);
+	Effect::init(entity);
+	m_entity_scale = entity->getScale();
+	m_entity_rotation = entity->getRotation();
+}
 
-	m_scale = 0.f;
-	m_rotation = 360.f;
+void RollInEffect::run(void)
+{
+	// Indicamos que estamos ejecutando
+	m_finished = false;
+	m_current_scale = 0.f;
+	m_current_rotation = 360.f;
+	m_entity->setScale(0, 0);
+	m_entity->setRotation(360.f);
 	// Borramos primero el tween.
 	delete m_tween;
-	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_BACK, CDBTweener::TWEA_OUT, duration, &m_scale, 1.f);
-	m_tween->addValue(&m_rotation, 0.f);
+	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_BACK, CDBTweener::TWEA_OUT, getDuration(), &m_current_scale, 1.f);
+	m_tween->addValue(&m_current_rotation, 0.f);
 	m_clock.restart();
+}
+
+void RollInEffect::stop(void)
+{
+	m_finished = true;
+	m_entity->setScale(m_entity_scale);
+	m_entity->setRotation(m_entity_rotation);
 }
 
 void RollInEffect::update(sf::Time delta_time)
@@ -62,8 +78,8 @@ void RollInEffect::update(sf::Time delta_time)
 			return;
 		}
 		m_tween->step(delta_time.asSeconds());
-		setScale(m_scale, m_scale);
-		setRotation(m_rotation);
+		m_entity->setScale(m_entity_scale.x * m_current_scale, m_entity_scale.y * m_current_scale);
+		m_entity->setRotation(m_entity_rotation + m_current_rotation);
 	}
 }
 

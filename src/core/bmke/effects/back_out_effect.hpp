@@ -40,8 +40,10 @@ class BackOutEffect : public MoveOutEffect
 public:
 	/**
 	 * Constructor de la clase
+	 * @param delay Retardo inicial del efecto
+	 * @param duration Duración del efecto
 	 */
-	BackOutEffect(void);
+	BackOutEffect(const float delay, const float duration);
 
 	/**
 	 * Destructor de la clase
@@ -49,12 +51,9 @@ public:
 	virtual ~BackOutEffect(void);
 
 	/**
-	 * Inicializa el efecto asignando sus parámetros de procesado
-	 * @param entity Entidad sobre la que actuará el efecto
-	 * @param delay Retraso en segundos antes de comenzar el procesado
-	 * @param duration Duración del efecto en segundos
+	 * Comienza el procesado del efecto desde su comienzo
 	 */
-	virtual void init(Entity* entity, const float delay, const float duration);
+	virtual void run(void);
 
 	/**
 	 * Actualiza el estado del efecto
@@ -65,7 +64,7 @@ public:
 private:
 	sf::Clock m_clock;				/**< Reloj para controlar el tiempo transcurrido */
 	CDBTweener::CTween* m_tween;	/**< Tweener usado para el efecto */
-	float m_pos;					/**< Posición actual del efecto */
+	float m_current_pos;			/**< Posición actual del efecto */
 };
 
 } // namespace bmonkey

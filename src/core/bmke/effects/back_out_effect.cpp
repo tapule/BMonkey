@@ -25,10 +25,10 @@
 
 namespace bmonkey{
 
-BackOutEffect::BackOutEffect(void):
-	MoveOutEffect(),
+BackOutEffect::BackOutEffect(const float delay, const float duration):
+	MoveOutEffect(delay, duration),
 	m_tween(nullptr),
-	m_pos(0)
+	m_current_pos(0)
 {
 }
 
@@ -37,15 +37,25 @@ BackOutEffect::~BackOutEffect(void)
 	delete m_tween;
 }
 
-void BackOutEffect::init(Entity* entity, const float delay, const float duration)
+void BackOutEffect::run(void)
 {
-	MoveOutEffect::init(entity, delay, duration);
+	float dest_pos;
 
-	// Iniciamos en la posición actual de la entidad
-	m_pos = 0;
+	// Indicamos que estamos ejecutando
+	m_finished = false;
+	if ((getDestination() == LEFT) || (getDestination() == RIGHT))
+	{
+		m_current_pos = m_entity_pos.x;
+		dest_pos = m_dest_pos.x;
+	}
+	else
+	{
+		m_current_pos = m_entity_pos.y;
+		dest_pos = m_dest_pos.y;
+	}
 	// Borramos primero el tween.
 	delete m_tween;
-	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_BACK, CDBTweener::TWEA_IN, duration, &m_pos, getFinalPosition());
+	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_BACK, CDBTweener::TWEA_IN, getDuration(), &m_current_pos, dest_pos);
 	m_clock.restart();
 }
 
@@ -63,11 +73,11 @@ void BackOutEffect::update(sf::Time delta_time)
 		m_tween->step(delta_time.asSeconds());
 		if ((getDestination() == LEFT) || (getDestination() == RIGHT))
 		{
-			setPosition(m_pos, getPosition().y);
+			m_entity->setPosition(m_current_pos, m_entity_pos.y);
 		}
 		else
 		{
-			setPosition(getPosition().x, m_pos);
+			m_entity->setPosition(m_entity_pos.x, m_current_pos);
 		}
 	}
 }

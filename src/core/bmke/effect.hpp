@@ -32,46 +32,27 @@ class Entity;
 /**
  * Efecto base para aplicar animaciones a las entidades.
  *
- * Los efectos son objetos transformables que aplican una serie de cambios sobre
- * los valores iniciales de las entidades para conseguir una transformación
- * sobre estas.
- * Realmente no transforman la entidad directamente, sino que el propio estado
- * del efecto se debe combinar con el estado de la entidad para obtener la
- * transformación aplicada, de este modo los efectos se pueden combinar.
+ * Los efectos son objetos que aplican una serie de cambios sobre los valores
+ * iniciales de las entidades para conseguir una transformación sobre estas.
  * Los efectos pueden ser finitos o infinitos. Se puede consultar el estado del
  * efecto mediante isFinished(), que indicará si el efecto ha terminado o no.
+ * Cada efecto es responsable de preservar el valor inicial de la entidad sobre
+ * la que actua, de forma que se puede restituir una vez finalizado.
  */
-class Effect : public sf::Transformable
+class Effect
 {
 public:
 	/**
 	 * Constructor de la clase
+	 * @param delay Retardo inicial del efecto
+	 * @param duration Duración del efecto
 	 */
-	Effect(void);
+	Effect(const float delay, const float duration);
 
 	/**
 	 * Destructor de la clase
 	 */
 	virtual ~Effect(void);
-
-	/**
-	 * Inicializa el efecto asignando sus parámetros de procesado
-	 * @param entity Entidad sobre la que actuará el efecto
-	 * @param delay Retardo en segundos antes de comenzar el procesado
-	 * @param duration Duración del efecto en segundos
-	 */
-	virtual void init(Entity* entity, const float delay, const float duration);
-
-	/**
-	 * Actualiza el estado del efecto
-	 * @param delta_time Tiempo transcurrido desde la última actualización
-	 */
-	virtual void update(sf::Time delta_time) = 0;
-
-	/**
-	 * Reinicia el efecto para comenzar de nuevo su procesado
-	 */
-	virtual void reset(void);
 
 	/**
 	 * Indica si el efecto ha terminado su procesamiento
@@ -80,28 +61,16 @@ public:
 	bool isFinished(void) const;
 
 	/**
-	 * Obtiene el color actual procesado por el efecto
-	 * @return Color obtenido en el procesamiento del efecto
-	 */
-	sf::Color getColor(void) const;
-
-	/**
-	 * Obtiene la opacidad procesada por el efecto
-	 * @return Opacidad obtenida en el procesamiento del efecto
-	 */
-	unsigned char getOpacity(void) const;
-
-	/**
-	 * Obtiene la entidad sobre la que actua el efecto
-	 * @return Entidad sobre la que actua el efecto
-	 */
-	Entity* getEntity(void) const;
-
-	/**
 	 * Obtiene el retardo inicial que aplica el efecto
 	 * @return Retardo inicial
 	 */
 	float getDelay(void) const;
+
+	/**
+	 * Establece el retardo inicial que aplica el efecto
+	 * @param delay Nuevo retardo para el efecto
+	 */
+	void setDelay(const float delay);
 
 	/**
 	 * Obtiene la duración del efecto
@@ -110,17 +79,44 @@ public:
 	float getDuration(void) const;
 
 	/**
+	 * Establece la duración del efecto
+	 * @param duration Duración del efecto en segundos
+	 */
+	void setDuration(const float duration);
+
+	/**
 	 * Obtiene el shader, si lo hay, a aplicar por el efecto
 	 * @return Shader preconfigurado por el efecto o nullptr si no hay shader
 	 */
 	sf::Shader* getShader(void) const;
 
+	/**
+	 * Inicializa el efecto para una entidad determinada
+	 * @param entity Entidad sobre la que actuará el efecto
+	 */
+	virtual void init(Entity* entity);
+
+	/**
+	 * Comienza el procesado del efecto desde su comienzo
+	 */
+	virtual void run(void) = 0;
+
+	/**
+	 * Detiene el procesado del efecto dejando la entidad en su estado inicial
+	 */
+	virtual void stop(void) = 0;
+
+	/**
+	 * Actualiza el estado del efecto
+	 * @param delta_time Tiempo transcurrido desde la última actualización
+	 */
+	virtual void update(sf::Time delta_time) = 0;
+
 protected:
 	bool m_finished;		/**< Indica si el efecto ha terminado */
-	sf::Color m_color;		/**< Color procesado por el efecto */
+	Entity* m_entity;		/**< Entidad sobre la que actua el efecto */
 
 private:
-	Entity* m_entity;		/**< Entidad sobre la que actua el efecto */
 	float m_delay;			/**< Delay en segundos antes de comenzar el efecto */
 	float m_duration;		/**< Duración del efecto en segundos */
 	sf::Shader* m_shader;	/**< Shader configurado por el efecto */

@@ -42,9 +42,4 @@ inline MoveOutEffect::Destination MoveOutEffect::getDestination(void) const
 	return m_destination;
 }
 
-inline float MoveOutEffect::getFinalPosition(void) const
-{
-	return m_final_pos;
-}
-
 #endif // _MOVE_OUT_EFFECT_HPP_

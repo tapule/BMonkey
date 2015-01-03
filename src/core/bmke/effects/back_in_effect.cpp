@@ -25,10 +25,10 @@
 
 namespace bmonkey{
 
-BackInEffect::BackInEffect(void):
-	MoveInEffect(),
+BackInEffect::BackInEffect(const float delay, const float duration):
+	MoveInEffect(delay, duration),
 	m_tween(nullptr),
-	m_pos(0)
+	m_current_pos(0)
 {
 }
 
@@ -37,21 +37,27 @@ BackInEffect::~BackInEffect(void)
 	delete m_tween;
 }
 
-void BackInEffect::init(Entity* entity, const float delay, const float duration)
+void BackInEffect::run(void)
 {
-	MoveInEffect::init(entity, delay, duration);
+	float dest_pos;
 
+	// Indicamos que estamos ejecutando
+	m_finished = false;
 	if ((getOrigin() == LEFT) || (getOrigin() == RIGHT))
 	{
-		m_pos = getPosition().x;
+		m_current_pos = m_start_pos.x;
+		dest_pos = m_entity_pos.x;
+		m_entity->setPosition(m_current_pos, m_entity_pos.y);
 	}
 	else
 	{
-		m_pos = getPosition().y;
+		m_current_pos = m_start_pos.y;
+		dest_pos = m_entity_pos.y;
+		m_entity->setPosition(m_entity_pos.x, m_current_pos);
 	}
 	// Borramos primero el tween.
 	delete m_tween;
-	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_BACK, CDBTweener::TWEA_OUT, duration, &m_pos, 0);
+	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_BACK, CDBTweener::TWEA_OUT, getDuration(), &m_current_pos, dest_pos);
 	m_clock.restart();
 }
 
@@ -69,11 +75,11 @@ void BackInEffect::update(sf::Time delta_time)
 		m_tween->step(delta_time.asSeconds());
 		if ((getOrigin() == LEFT) || (getOrigin() == RIGHT))
 		{
-			setPosition(m_pos, getPosition().y);
+			m_entity->setPosition(m_current_pos, m_entity_pos.y);
 		}
 		else
 		{
-			setPosition(getPosition().x, m_pos);
+			m_entity->setPosition(m_entity_pos.x, m_current_pos);
 		}
 	}
 }

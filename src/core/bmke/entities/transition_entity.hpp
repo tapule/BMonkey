@@ -25,7 +25,6 @@
 #include <SFML/Graphics.hpp>
 #include "../../../defines.hpp"
 #include "../entity.hpp"
-#include "../effect.hpp"
 
 namespace bmonkey{
 
@@ -66,26 +65,12 @@ public:
 	virtual void setColor(const sf::Color& color);
 
 	/**
-	 * Comienza la ejecución de la entidad desde su punto inicial
-	 */
-	virtual void run(void);
-
-	/**
 	 * Establece la textura que dibujará la entidad
 	 * @param texture Textura para dibujar
 	 * @note Al cambiar la textura, las dimensiones de la entidad se adaptan
 	 * a ella
 	 */
 	void setTexture(sf::Texture *texture);
-
-	/**
-	 * Establece el efecto de inicio que usará la entidad
-	 * @param effect Nuevo efecto que se usará como inicio
-	 * @note El efecto debe estar inicializado
-	 * @note La entidad se convierte en responsable del efecto y lo liberará
-	 * cuando estime oportuno
-	 */
-	void setStartEffect(Effect* effect);
 
 protected:
 
@@ -112,7 +97,6 @@ protected:
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
-	Effect* m_start_effect;		/**< Efecto de inicio de escena */
 	sf::Texture* m_texture;		/**< Textura mostrada por la entidad */
 	sf::Sprite m_sprite;		/**< Sprite interno para mostrar la textura */
 };

@@ -25,10 +25,10 @@
 
 namespace bmonkey{
 
-FadeEffect::FadeEffect(void):
-	Effect(),
+FadeEffect::FadeEffect(const float delay, const float duration):
+	Effect(delay, duration),
 	m_tween(nullptr),
-	m_pos(0)
+	m_current_pos(0)
 {
 }
 
@@ -36,15 +36,27 @@ FadeEffect::~FadeEffect(void)
 {
 }
 
-void FadeEffect::init(Entity* entity, const float delay, const float duration)
+void FadeEffect::init(Entity* entity)
 {
-	Effect::init(entity, delay, duration);
+	Effect::init(entity);
+	m_entity_color = entity->getColor();
+}
 
-	m_pos = m_color.a;
+void FadeEffect::run(void)
+{
+	// Indicamos que estamos ejecutando
+	m_finished = false;
+	m_current_pos = m_entity_color.a;
 	// Borramos primero el tween.
 	delete m_tween;
-	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_LINEAR, CDBTweener::TWEA_OUT, duration, &m_pos, 0.f);
+	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_LINEAR, CDBTweener::TWEA_OUT, getDuration(), &m_current_pos, 0.f);
 	m_clock.restart();
+}
+
+void FadeEffect::stop(void)
+{
+	m_finished = true;
+	m_entity->setColor(m_entity_color);
 }
 
 void FadeEffect::update(sf::Time delta_time)
@@ -55,9 +67,9 @@ void FadeEffect::update(sf::Time delta_time)
 		// Comprobamos si en el último update se llegó al fin
 		if (m_tween->isFinished())
 		{
-			if (m_color.a == 0.f)
+			if (m_current_pos == 0.f)
 			{
-				(m_tween->getValues())[0]->m_fTarget = getEntity()->getOpacity();
+				(m_tween->getValues())[0]->m_fTarget = m_entity_color.a;
 			}
 			else
 			{
@@ -66,7 +78,7 @@ void FadeEffect::update(sf::Time delta_time)
 			m_tween->setElapsedSec(0.f);
 		}
 		m_tween->step(delta_time.asSeconds());
-		m_color.a = static_cast<unsigned char>(m_pos);
+		m_entity->setOpacity(static_cast<unsigned char>(m_current_pos));
 	}
 }
 

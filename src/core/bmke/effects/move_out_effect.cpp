@@ -25,10 +25,9 @@
 
 namespace bmonkey{
 
-MoveOutEffect::MoveOutEffect(void):
-	Effect(),
-	m_destination(LEFT),
-	m_final_pos(0)
+MoveOutEffect::MoveOutEffect(const float delay, const float duration):
+	Effect(delay, duration),
+	m_destination(LEFT)
 {
 }
 
@@ -36,32 +35,41 @@ MoveOutEffect::~MoveOutEffect(void)
 {
 }
 
-void MoveOutEffect::init(Entity* entity, const float delay, const float duration)
+void MoveOutEffect::init(Entity* entity)
 {
-	assert(entity);
-	sf::Vector2f position;
 	sf::Vector2f size;
 
-	Effect::init(entity, delay, duration);
+	Effect::init(entity);
 
+	m_entity_pos = entity->getPosition();
 	size = entity->getSize();
 
 	// Establecemos la posición final del efecto dependiendo del modo de salida
 	switch (m_destination)
 	{
 	case LEFT:
-		m_final_pos = -1.f * ((size.x / 2.f) + entity->getPosition().x);
+		m_dest_pos.x = 0.f - size.x;
+		m_dest_pos.y = m_entity_pos.y;
 		break;
 	case RIGHT:
-		m_final_pos = m_win_size.x - entity->getPosition().x + (size.x / 2.f);
+		m_dest_pos.x = m_entity_pos.x + (m_win_size.x - m_entity_pos.x) + size.x;
+		m_dest_pos.y = m_entity_pos.y;
 		break;
 	case TOP:
-		m_final_pos = -1.f * ((size.y / 2.f) + entity->getPosition().y);
+		m_dest_pos.x = m_entity_pos.x;
+		m_dest_pos.y = 0.f - size.y;
 		break;
 	case BOTTOM:
-		m_final_pos = m_win_size.y - entity->getPosition().y + (size.y / 2.f);
+		m_dest_pos.x = m_entity_pos.x;
+		m_dest_pos.y = m_entity_pos.y + (m_win_size.y - m_entity_pos.y) + size.y;
 		break;
 	}
+}
+
+void MoveOutEffect::stop(void)
+{
+	m_finished = true;
+	m_entity->setPosition(m_entity_pos);
 }
 
 } // namespace bmonkey

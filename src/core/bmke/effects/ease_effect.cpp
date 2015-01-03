@@ -27,11 +27,13 @@ namespace bmonkey{
 
 #define EASE_OFFSET 25.f
 
-EaseEffect::EaseEffect(void):
-	Effect(),
+EaseEffect::EaseEffect(const float delay, const float duration):
+	Effect(delay, duration),
 	m_tween(nullptr),
-	m_pos(0),
-	m_axis(X)
+	m_axis(X),
+	m_current_pos(0),
+	m_dest_pos_a(0),
+	m_dest_pos_b(0)
 {
 }
 
@@ -39,24 +41,39 @@ EaseEffect::~EaseEffect(void)
 {
 }
 
-void EaseEffect::init(Entity* entity, const float delay, const float duration)
+void EaseEffect::init(Entity* entity)
 {
-	Effect::init(entity, delay, duration);
+	Effect::init(entity);
+	m_entity_pos = entity->getPosition();
+}
 
+void EaseEffect::run(void)
+{
+	// Indicamos que estamos ejecutando
+	m_finished = false;
+	// Ajustamos origen y destinos iniciales
 	if (m_axis == X)
 	{
-		setPosition(-EASE_OFFSET, 0.f);
+		m_dest_pos_a = m_entity_pos.x - EASE_OFFSET;
+		m_dest_pos_b = m_entity_pos.x + EASE_OFFSET;
+		m_current_pos = m_entity_pos.x;
 	}
 	else
 	{
-		setPosition(0.f, -EASE_OFFSET);
+		m_dest_pos_a = m_entity_pos.y - EASE_OFFSET;
+		m_dest_pos_b = m_entity_pos.y + EASE_OFFSET;
+		m_current_pos = m_entity_pos.y;
 	}
-	// Forzamos a que comience desde el centro
-	m_pos = 0;
 	// Borramos primero el tween.
 	delete m_tween;
-	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_QUADRATIC, CDBTweener::TWEA_OUT, duration, &m_pos, EASE_OFFSET);
+	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_QUADRATIC, CDBTweener::TWEA_OUT, getDuration(), &m_current_pos, m_dest_pos_a);
 	m_clock.restart();
+}
+
+void EaseEffect::stop(void)
+{
+	m_finished = true;
+	m_entity->setPosition(m_entity_pos);
 }
 
 void EaseEffect::update(sf::Time delta_time)
@@ -67,24 +84,24 @@ void EaseEffect::update(sf::Time delta_time)
 		// Comprobamos si en el último update se llegó al fin
 		if (m_tween->isFinished())
 		{
-			if (m_pos == EASE_OFFSET)
+			if (m_current_pos == m_dest_pos_a)
 			{
-				(m_tween->getValues())[0]->m_fTarget = -EASE_OFFSET;
+				(m_tween->getValues())[0]->m_fTarget = m_dest_pos_b;
 			}
 			else
 			{
-				(m_tween->getValues())[0]->m_fTarget = EASE_OFFSET;
+				(m_tween->getValues())[0]->m_fTarget = m_dest_pos_a;
 			}
 			m_tween->setElapsedSec(0.f);
 		}
 		m_tween->step(delta_time.asSeconds());
 		if (m_axis == X)
 		{
-			setPosition(m_pos, getPosition().y);
+			m_entity->setPosition(m_current_pos, m_entity_pos.y);
 		}
 		else
 		{
-			setPosition(getPosition().x, m_pos);
+			m_entity->setPosition(m_entity_pos.x, m_current_pos);
 		}
 	}
 }

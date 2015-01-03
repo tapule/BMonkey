@@ -25,10 +25,10 @@
 
 namespace bmonkey{
 
-PopInEffect::PopInEffect(void):
-	Effect(),
+PopInEffect::PopInEffect(const float delay, const float duration):
+	Effect(delay, duration),
 	m_tween(nullptr),
-	m_scale(0)
+	m_current_scale(0)
 {
 }
 
@@ -36,15 +36,28 @@ PopInEffect::~PopInEffect(void)
 {
 }
 
-void PopInEffect::init(Entity* entity, const float delay, const float duration)
+void PopInEffect::init(Entity* entity)
 {
-	Effect::init(entity, delay, duration);
+	Effect::init(entity);
+	m_entity_scale = entity->getScale();
+}
 
-	m_scale = 0.f;
+void PopInEffect::run(void)
+{
+	// Indicamos que estamos ejecutando
+	m_finished = false;
+	m_current_scale = 0.f;
+	m_entity->setScale(0, 0);
 	// Borramos primero el tween.
 	delete m_tween;
-	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_BOUNCE, CDBTweener::TWEA_OUT, duration, &m_scale, 1);
+	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_BOUNCE, CDBTweener::TWEA_OUT, getDuration(), &m_current_scale, 1.f);
 	m_clock.restart();
+}
+
+void PopInEffect::stop(void)
+{
+	m_finished = true;
+	m_entity->setScale(m_entity_scale);
 }
 
 void PopInEffect::update(sf::Time delta_time)
@@ -59,7 +72,7 @@ void PopInEffect::update(sf::Time delta_time)
 			return;
 		}
 		m_tween->step(delta_time.asSeconds());
-		setScale(m_scale, m_scale);
+		m_entity->setScale(m_entity_scale.x * m_current_scale, m_entity_scale.y * m_current_scale);
 	}
 }
 

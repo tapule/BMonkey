@@ -25,10 +25,10 @@
 
 namespace bmonkey{
 
-FadeOutEffect::FadeOutEffect(void):
-	Effect(),
+FadeOutEffect::FadeOutEffect(const float delay, const float duration):
+	Effect(delay, duration),
 	m_tween(nullptr),
-	m_pos(0)
+	m_current_pos(0)
 {
 }
 
@@ -36,15 +36,27 @@ FadeOutEffect::~FadeOutEffect(void)
 {
 }
 
-void FadeOutEffect::init(Entity* entity, const float delay, const float duration)
+void FadeOutEffect::init(Entity* entity)
 {
-	Effect::init(entity, delay, duration);
+	Effect::init(entity);
+	m_entity_color = entity->getColor();
+}
 
-	m_pos = m_color.a;
+void FadeOutEffect::run(void)
+{
+	// Indicamos que estamos ejecutando
+	m_finished = false;
+	m_current_pos = m_entity_color.a;
 	// Borramos primero el tween.
 	delete m_tween;
-	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_QUADRATIC, CDBTweener::TWEA_OUT, duration, &m_pos, 0);
+	m_tween = new CDBTweener::CTween(&CDBTweener::TWEQ_QUADRATIC, CDBTweener::TWEA_OUT, getDuration(), &m_current_pos, 0);
 	m_clock.restart();
+}
+
+void FadeOutEffect::stop(void)
+{
+	m_finished = true;
+	m_entity->setColor(m_entity_color);
 }
 
 void FadeOutEffect::update(sf::Time delta_time)
@@ -59,7 +71,7 @@ void FadeOutEffect::update(sf::Time delta_time)
 			return;
 		}
 		m_tween->step(delta_time.asSeconds());
-		m_color.a = static_cast<unsigned char>(m_pos);
+		m_entity->setOpacity(static_cast<unsigned char>(m_current_pos));
 	}
 }
 

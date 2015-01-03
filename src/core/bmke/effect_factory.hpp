@@ -77,17 +77,21 @@ public:
 
 		// Efectos de posición en escena
 		EASE,				/**< Efecto de posición Ease */
-		FADE,				/**< Efecto de posición Fade */
+		EASE_X,				/**< Efecto de posición Ease sobre el eje X*/
+		EASE_Y,				/**< Efecto de posición Ease sobre el eje Y */
+		FADE				/**< Efecto de posición Fade */
 	};
 
 	/**
-	 * Crea un efecto dado su tipo
+	 * Crea un efecto dado su tipo y parámetros
 	 * @param type Tipo de efecto a crear
+	 * @param delay Retardo inicial del efecto
+	 * @param duration Duración del efecto
 	 * @return Nuevo efecto creado
 	 * @note El usuario debe encargarse de liberar la memoria ocupada por el
 	 * efecto devuelto por el método.
 	 */
-	static Effect* create(const Type type);
+	static Effect* create(const Type type, const float delay, const float duration);
 
 };
 
