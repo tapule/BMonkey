@@ -34,8 +34,8 @@ Entity::Entity(void):
 	m_flip(Vector2b(false, false)),
 	m_color(sf::Color(255, 255, 255, 255)),
 	m_parent(nullptr),
-	m_cyclic_effects(false),
-	m_current_effect(-1)
+	m_cyclic_animations(false),
+	m_current_animation(-1)
 {
 #ifdef BMONKEY_DESIGNER
 	// Inicialización del grid de selección
@@ -53,14 +53,14 @@ Entity::Entity(void):
 Entity::~Entity(void)
 {
 	std::vector<Entity* >::iterator iter;
-	std::vector<Effect* >::iterator eiter;
+	std::vector<Animation* >::iterator eiter;
 
 	for (iter = m_children.begin(); iter != m_children.end(); ++iter)
 	{
 		delete (*iter);
 	}
 
-	for (eiter = m_effects.begin(); eiter != m_effects.end(); ++eiter)
+	for (eiter = m_animations.begin(); eiter != m_animations.end(); ++eiter)
 	{
 		delete (*eiter);
 	}
@@ -105,26 +105,26 @@ void Entity::removeChild(Entity* entity)
 }
 
 #ifdef BMONKEY_DESIGNER
-void Entity::clearEffects(void)
+void Entity::clearAnimations(void)
 {
-	std::vector<Effect* >::iterator iter;
+	std::vector<Animation* >::iterator iter;
 
-	for (iter = m_effects.begin(); iter != m_effects.end(); ++iter)
+	for (iter = m_animations.begin(); iter != m_animations.end(); ++iter)
 	{
 		delete (*iter);
 	}
-	m_effects.clear();
-	m_current_effect = -1;
+	m_animations.clear();
+	m_current_animation = -1;
 }
 #endif
 
 void Entity::run(void)
 {
 	m_status = STARTED;
-	if (!m_effects.empty())
+	if (!m_animations.empty())
 	{
-		m_current_effect = 0;
-		m_effects[m_current_effect]->run();
+		m_current_animation = 0;
+		m_animations[m_current_animation]->run();
 	}
 }
 
@@ -132,11 +132,11 @@ void Entity::run(void)
 void Entity::stop(void)
 {
 	m_status = STOPPED;
-	if (m_current_effect >= 0)
+	if (m_current_animation >= 0)
 	{
-		m_effects[m_current_effect]->stop();
+		m_animations[m_current_animation]->stop();
 	}
-	m_current_effect = -1;
+	m_current_animation = -1;
 }
 #endif
 
@@ -146,32 +146,32 @@ void Entity::update(sf::Time delta_time, const sf::Color& color)
 	// Solo actualizamos si la entidad está en ejecución
 	if (m_status == STARTED)
 	{
-		// Comprobamos si es necesario avanzar al siguiente efecto
-		if ((m_current_effect >= 0) && m_effects[m_current_effect]->isFinished())
+		// Comprobamos si es necesario avanzar a la siguiente animación
+		if ((m_current_animation >= 0) && m_animations[m_current_animation]->isFinished())
 		{
-			++m_current_effect;
-			// Comprobamos si necesitamos reajustar el ciclado de efectos
-			if (m_current_effect == m_effects.size())
+			++m_current_animation;
+			// Comprobamos si necesitamos reajustar el ciclado de animaciones
+			if (m_current_animation == m_animations.size())
 			{
-				if (m_cyclic_effects)
+				if (m_cyclic_animations)
 				{
-					m_current_effect = 0;
-					m_effects[m_current_effect]->run();
+					m_current_animation = 0;
+					m_animations[m_current_animation]->run();
 				}
 				else
 				{
-					--m_current_effect;
+					--m_current_animation;
 				}
 			}
 			else
 			{
-				m_effects[m_current_effect]->run();
+				m_animations[m_current_animation]->run();
 			}
 		}
-		// Si hay efecto lo actualizamos
-		if (m_current_effect >= 0)
+		// Si hay animación la actualizamos
+		if (m_current_animation >= 0)
 		{
-			m_effects[m_current_effect]->update(delta_time);
+			m_animations[m_current_animation]->update(delta_time);
 		}
 		updateCurrent(delta_time, color);
 		updateChildren(delta_time, color);
@@ -199,9 +199,9 @@ void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	std::vector<Entity* >::const_iterator iter;
 
 	states.transform *= getTransform();
-	if (m_current_effect >= 0)
+	if (m_current_animation >= 0)
 	{
-		states.shader = m_effects[m_current_effect]->getShader();
+		states.shader = m_animations[m_current_animation]->getShader();
 	}
 	drawCurrent(target, states);
 

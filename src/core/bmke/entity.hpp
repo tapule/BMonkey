@@ -25,7 +25,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "../../defines.hpp"
-#include "effect.hpp"
+#include "animation.hpp"
 
 namespace bmonkey{
 
@@ -43,9 +43,9 @@ typedef sf::Vector2<bool> Vector2b;
  * Tienen un estado que determina en que fase de ejecución se encuentran:
  * - Stopped: Se encuentra en su estado inicial, no ha comenzado su ejecución.
  * - Started: Ha comenzado su ejecución.
- * También pueden tener una serie de efectos que actuan sobre ellas y que se
- * ejecutarán secuencialmente uno tras otro. Los efectos pueden ser ciclicos, es
- * decir, pueden estar ejecutandose secuencialmente indefinidamente.
+ * También pueden tener una serie de animaciones que actuan sobre ellas y que se
+ * ejecutarán secuencialmente unas tras otras. Las animaciones pueden ser
+ * ciclicas, es decir, pueden estar ejecutandose secuencialmente indefinidamente.
  */
 class Entity : public sf::Drawable, public sf::Transformable
 {
@@ -158,35 +158,35 @@ public:
 	std::vector<Entity* >& getChildren(void);
 
 	/**
-	 * Agrega un nuevo efecto a la pila de efectos
-	 * @param effect Nuevo efecto a agregar
+	 * Agrega una nueva animación a la pila de animaciones
+	 * @param animation Nueva animación a agregar
 	 */
-	void addEffect(Effect* effect);
+	void addAnimation(Animation* animation);
 
 #ifdef BMONKEY_DESIGNER
 	/**
-	 * Limpia el almacén interno de efectos
+	 * Limpia el almacén interno de animaciones
 	 */
-	void clearEffects(void);
+	void clearAnimations(void);
 
 	/**
-	 * Obtiene una referencia al almacén interno de efectos
-	 * @return Referencia al vector interno de efectos
+	 * Obtiene una referencia al almacén interno de animaciones
+	 * @return Referencia al vector interno de animaciones
 	 */
-	std::vector<Effect* >& getEffects(void);
+	std::vector<Animation* >& getAnimations(void);
 #endif
 
 	/**
-	 * Indica si los efectos ciclicos están activados
+	 * Indica si las animaciones ciclicas están activadas
 	 * @return True si están activados, false en otro caso
 	 */
-	bool getCyclicEffects(void);
+	bool getCyclicAnimations(void);
 
 	/**
-	 * Activa o desactiva los efectos ciclicos
-	 * @param cyclic Nuevo valor para los efectos ciclicos
+	 * Activa o desactiva las animaciones ciclicas
+	 * @param cyclic Nuevo valor para las animaciones ciclicas
 	 */
-	void setCyclicEffects(const bool cyclic);
+	void setCyclicAnimations(const bool cyclic);
 
 	/**
 	 * Actualiza el estado de la entidad
@@ -275,9 +275,9 @@ private:
 	sf::Color m_color;				/**< Tinte y opacidad de la entidad */
 	Entity* m_parent;				/**< Padre de la entidad en una cadena */
 	std::vector<Entity* > m_children; /**< Hijos de la entidad */
-	bool m_cyclic_effects;			/**< Indica si los efectos se ejecutan de forma ciclica */
-	int m_current_effect;			/**< Índice del efecto actualmente en ejecución, -1 = ninguno */
-	std::vector<Effect* > m_effects; /**< Efectos que actúan sobre la entidad */
+	bool m_cyclic_animations;			/**< Indica si las animaciones se ejecutan de forma ciclica */
+	int m_current_animation;			/**< Índice de la animación actualmente en ejecución, -1 = ninguno */
+	std::vector<Animation* > m_animations; /**< Animaciones que actúan sobre la entidad */
 };
 
 // Inclusión de los métodos inline

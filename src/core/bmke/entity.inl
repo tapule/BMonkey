@@ -82,29 +82,29 @@ inline std::vector<Entity* >& Entity::getChildren(void)
 	return m_children;
 }
 
-inline void Entity::addEffect(Effect* effect)
+inline void Entity::addAnimation(Animation* animation)
 {
-	assert(effect);
+	assert(animation);
 
-	effect->init(this);
-	m_effects.push_back(effect);
+	animation->init(this);
+	m_animations.push_back(animation);
 }
 
 #ifdef BMONKEY_DESIGNER
-inline std::vector<Effect* >& Entity::getEffects(void)
+inline std::vector<Animation* >& Entity::getAnimations(void)
 {
-	return m_effects;
+	return m_animations;
 }
 #endif
 
-inline bool Entity::getCyclicEffects(void)
+inline bool Entity::getCyclicAnimations(void)
 {
-	return m_cyclic_effects;
+	return m_cyclic_animations;
 }
 
-inline void Entity::setCyclicEffects(const bool cyclic)
+inline void Entity::setCyclicAnimations(const bool cyclic)
 {
-	m_cyclic_effects = cyclic;
+	m_cyclic_animations = cyclic;
 }
 
 inline void Entity::update(sf::Time delta_time)
