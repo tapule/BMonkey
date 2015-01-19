@@ -33,6 +33,8 @@ MoveOutAnimation::MoveOutAnimation(const float delay, const float duration):
 
 MoveOutAnimation::~MoveOutAnimation(void)
 {
+	// Forzamos la parada para que restaure las propiedades de la entidad
+	stop();
 }
 
 void MoveOutAnimation::init(Entity* entity)

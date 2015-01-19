@@ -379,9 +379,9 @@ void BMonkeyApp::showHelp(const Glib::ustring& program) const
 			  << "  -f, --fullscreen         Force full-screen mode" << std::endl
 			  << "  -ld, --log-disable       Disable logging" << std::endl
 			  << "  -le, --log-enable        Enable logging" << std::endl
-			  << "  -pa, --platform-add      Force full-screen mode" << std::endl
-			  << "  -pi, --platform-import   Disable logging" << std::endl
-			  << "  -ga, --gamelist-add      Enable logging" << std::endl;
+			  << "  -pa, --platform-add      Add a new empty platform" << std::endl
+			  << "  -pi, --platform-import   Imports a platform and its games" << std::endl
+			  << "  -ga, --gamelist-add      Add a new empty gamelist to a platform" << std::endl;
 }
 
 void BMonkeyApp::showVersion(void) const

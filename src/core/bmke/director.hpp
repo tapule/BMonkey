@@ -132,6 +132,7 @@ private:
 	// Objetos temporales, solo para pruebas
 	sf::Texture back_texture;
 	sf::Texture sprite_texture;
+	sf::RectangleShape dot;
 	TransitionEntity entity;
 	sf::Sprite back;
 	sf::Text m_mod_text;

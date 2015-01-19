@@ -34,6 +34,8 @@ BackOutAnimation::BackOutAnimation(const float delay, const float duration):
 
 BackOutAnimation::~BackOutAnimation(void)
 {
+	// Forzamos la parada para que restaure las propiedades de la entidad
+	stop();
 	delete m_tween;
 }
 

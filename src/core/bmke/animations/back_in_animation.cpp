@@ -34,6 +34,8 @@ BackInAnimation::BackInAnimation(const float delay, const float duration):
 
 BackInAnimation::~BackInAnimation(void)
 {
+	// Forzamos la parada para que restaure las propiedades de la entidad
+	stop();
 	delete m_tween;
 }
 

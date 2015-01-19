@@ -25,66 +25,61 @@
 namespace bmonkey{
 
 Entity::Entity(void):
-#ifdef BMONKEY_DESIGNER
-	m_status(STOPPED),
-	m_selected(false),
-#else
+	m_enabled(true),
 	m_status(STARTED),
-#endif
-	m_flip(Vector2b(false, false)),
+	m_pivot(CENTER),
 	m_color(sf::Color(255, 255, 255, 255)),
-	m_parent(nullptr),
-	m_cyclic_animations(false),
-	m_current_animation(-1)
+	m_start_animation(nullptr),
+	m_position_animation(nullptr),
+	m_current_animation(nullptr),
+	m_parent(nullptr)
 {
-#ifdef BMONKEY_DESIGNER
-	// Inicialización del grid de selección
-	m_grid_box.setOutlineThickness(2.f);
-	m_grid_box.setOutlineColor(sf::Color::Yellow);
-	m_grid_box.setFillColor(sf::Color::Transparent);
-
-	m_grid_dot.setOutlineThickness(0.f);
-	m_grid_dot.setFillColor(sf::Color::Yellow);
-	m_grid_dot.setSize(sf::Vector2f(10.f, 10.f));
-	m_grid_dot.setOrigin(5.f, 5.f);
-#endif
 }
 
 Entity::~Entity(void)
 {
 	std::vector<Entity* >::iterator iter;
-	std::vector<Animation* >::iterator eiter;
+	std::vector<Animation* >::iterator aiter;
 
 	for (iter = m_children.begin(); iter != m_children.end(); ++iter)
 	{
 		delete (*iter);
 	}
 
-	for (eiter = m_animations.begin(); eiter != m_animations.end(); ++eiter)
-	{
-		delete (*eiter);
-	}
-
+	delete m_start_animation;
+	delete m_position_animation;
 }
 
-void Entity::setFlip(const bool x, const bool y)
+Animation* Entity::getAnimation(Entity::AnimationType type)
 {
-	sf::Vector2f scale;
-
-	scale = getScale();
-
-	if (x == !m_flip.x)
+	if (type == START_ANIMATION)
 	{
-		scale.x *= -1;
+		return m_start_animation;
 	}
-	if (y == !m_flip.y)
+	else
 	{
-		scale.y *= -1;
+		return m_position_animation;
 	}
-	setScale(scale);
+}
 
-	m_flip.x = x;
-	m_flip.y = y;
+void Entity::setAnimation(AnimationType type, Animation* animation)
+{
+	// Si hay animación la inicializamos
+	if (animation)
+	{
+		animation->init(this);
+	}
+
+	if (type == START_ANIMATION)
+	{
+		delete m_start_animation;
+		m_start_animation = animation;
+	}
+	else
+	{
+		delete m_position_animation;
+		m_position_animation = animation;
+	}
 }
 
 void Entity::removeChild(Entity* entity)
@@ -104,84 +99,58 @@ void Entity::removeChild(Entity* entity)
 	}
 }
 
-#ifdef BMONKEY_DESIGNER
-void Entity::clearAnimations(void)
-{
-	std::vector<Animation* >::iterator iter;
-
-	for (iter = m_animations.begin(); iter != m_animations.end(); ++iter)
-	{
-		delete (*iter);
-	}
-	m_animations.clear();
-	m_current_animation = -1;
-}
-#endif
-
 void Entity::run(void)
 {
 	m_status = STARTED;
-	if (!m_animations.empty())
+	// Reseteamos el efecto de entrada y actualizamos el estado de la entidad
+	if (m_start_animation)
 	{
-		m_current_animation = 0;
-		m_animations[m_current_animation]->run();
+		m_current_animation = m_start_animation;
 	}
+	else
+	{
+		m_current_animation = m_position_animation;
+	}
+
+	if (m_current_animation)
+	{
+		m_current_animation->run();
+	}
+
 }
 
-#ifdef BMONKEY_DESIGNER
 void Entity::stop(void)
 {
 	m_status = STOPPED;
-	if (m_current_animation >= 0)
+	if (m_current_animation)
 	{
-		m_animations[m_current_animation]->stop();
+		m_current_animation->stop();
 	}
-	m_current_animation = -1;
+	m_current_animation = nullptr;
 }
-#endif
-
 
 void Entity::update(sf::Time delta_time, const sf::Color& color)
 {
-	// Solo actualizamos si la entidad está en ejecución
-	if (m_status == STARTED)
+	// Solo actualizamos si la entidad está habilitada y en ejecución
+	if (m_enabled && m_status == STARTED)
 	{
 		// Comprobamos si es necesario avanzar a la siguiente animación
-		if ((m_current_animation >= 0) && m_animations[m_current_animation]->isFinished())
+		if (m_current_animation && m_current_animation == m_start_animation && m_current_animation->isFinished())
 		{
-			++m_current_animation;
-			// Comprobamos si necesitamos reajustar el ciclado de animaciones
-			if (m_current_animation == m_animations.size())
+			m_current_animation = m_position_animation;
+			if (m_current_animation)
 			{
-				if (m_cyclic_animations)
-				{
-					m_current_animation = 0;
-					m_animations[m_current_animation]->run();
-				}
-				else
-				{
-					--m_current_animation;
-				}
-			}
-			else
-			{
-				m_animations[m_current_animation]->run();
+				m_current_animation->run();
 			}
 		}
 		// Si hay animación la actualizamos
-		if (m_current_animation >= 0)
+		if (m_current_animation)
 		{
-			m_animations[m_current_animation]->update(delta_time);
+			m_current_animation->update(delta_time);
 		}
 		updateCurrent(delta_time, color);
 		updateChildren(delta_time, color);
 	}
-#ifdef BMONKEY_DESIGNER
-	if (m_selected && (m_status == STOPPED))
-	{
-		updateGrid();
-	}
-#endif
 }
 
 void Entity::updateChildren(sf::Time delta_time, const sf::Color& color)
@@ -198,39 +167,21 @@ void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	std::vector<Entity* >::const_iterator iter;
 
-	states.transform *= getTransform();
-	if (m_current_animation >= 0)
+	// Solo dibujamos si está habilitada
+	if (m_enabled)
 	{
-		states.shader = m_animations[m_current_animation]->getShader();
-	}
-	drawCurrent(target, states);
+		states.transform *= getTransform();
+		if (m_current_animation)
+		{
+			states.shader = m_current_animation->getShader();
+		}
+		drawCurrent(target, states);
 
-	for (iter = m_children.begin(); iter != m_children.end(); ++iter)
-	{
-		(*iter)->draw(target, states);
+		for (iter = m_children.begin(); iter != m_children.end(); ++iter)
+		{
+			(*iter)->draw(target, states);
+		}
 	}
-
-#ifdef BMONKEY_DESIGNER
-	// Solamente dibujamos el grid si está seleccionada y parada
-	if (m_selected && (m_status == STOPPED))
-	{
-		drawGrid(target, states);
-	}
-#endif
 }
-
-#ifdef BMONKEY_DESIGNER
-void Entity::drawGrid(sf::RenderTarget& target, sf::RenderStates states) const
-{
-	sf::Transformable transformable;
-	// Para dibujar el grid, quitamos cualquier shader
-	/* states.shader = nullptr;*/
-	transformable.setPosition(getPosition());
-	transformable.setRotation(getRotation());
-	states.transform = transformable.getTransform();
-	target.draw(m_grid_box, states);
-	target.draw(m_grid_dot, states);
-}
-#endif
 
 } // namespace bmonkey

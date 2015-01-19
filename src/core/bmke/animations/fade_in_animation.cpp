@@ -34,6 +34,9 @@ FadeInAnimation::FadeInAnimation(const float delay, const float duration):
 
 FadeInAnimation::~FadeInAnimation(void)
 {
+	// Forzamos la parada para que restaure las propiedades de la entidad
+	stop();
+	delete m_tween;
 }
 
 void FadeInAnimation::init(Entity* entity)

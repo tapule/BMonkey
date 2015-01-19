@@ -35,6 +35,9 @@ RotateInAnimation::RotateInAnimation(const float delay, const float duration):
 
 RotateInAnimation::~RotateInAnimation(void)
 {
+	// Forzamos la parada para que restaure las propiedades de la entidad
+	stop();
+	delete m_tween;
 }
 
 void RotateInAnimation::init(Entity* entity)

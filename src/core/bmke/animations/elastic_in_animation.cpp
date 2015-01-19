@@ -34,6 +34,9 @@ ElasticInAnimation::ElasticInAnimation(const float delay, const float duration):
 
 ElasticInAnimation::~ElasticInAnimation(void)
 {
+	// Forzamos la parada para que restaure las propiedades de la entidad
+	stop();
+	delete m_tween;
 }
 
 void ElasticInAnimation::run(void)

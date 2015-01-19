@@ -34,6 +34,9 @@ PopInAnimation::PopInAnimation(const float delay, const float duration):
 
 PopInAnimation::~PopInAnimation(void)
 {
+	// Forzamos la parada para que restaure las propiedades de la entidad
+	stop();
+	delete m_tween;
 }
 
 void PopInAnimation::init(Entity* entity)

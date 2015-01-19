@@ -39,6 +39,9 @@ EaseAnimation::EaseAnimation(const float delay, const float duration):
 
 EaseAnimation::~EaseAnimation(void)
 {
+	// Forzamos la parada para que restaure las propiedades de la entidad
+	stop();
+	delete m_tween;
 }
 
 void EaseAnimation::init(Entity* entity)

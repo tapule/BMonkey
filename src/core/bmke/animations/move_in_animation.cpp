@@ -33,6 +33,8 @@ MoveInAnimation::MoveInAnimation(const float delay, const float duration):
 
 MoveInAnimation::~MoveInAnimation(void)
 {
+	// Forzamos la parada para que restaure las propiedades de la entidad
+	stop();
 }
 
 void MoveInAnimation::init(Entity* entity)

@@ -24,6 +24,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <glibmm/ustring.h>
 #include "../../defines.hpp"
 #include "animation.hpp"
 
@@ -43,9 +44,10 @@ typedef sf::Vector2<bool> Vector2b;
  * Tienen un estado que determina en que fase de ejecución se encuentran:
  * - Stopped: Se encuentra en su estado inicial, no ha comenzado su ejecución.
  * - Started: Ha comenzado su ejecución.
- * También pueden tener una serie de animaciones que actuan sobre ellas y que se
- * ejecutarán secuencialmente unas tras otras. Las animaciones pueden ser
- * ciclicas, es decir, pueden estar ejecutandose secuencialmente indefinidamente.
+ * Las entidades pueden tener dos animaciones que actuan sobre ellas y que se
+ * ejecutan secuencialmente en orden:
+ * - Start: Animación que se ejecuta para posicionar la entidad en su lugar
+ * - Position: Animación que se ejecuta mientras que la entidad esté en su lugar
  */
 class Entity : public sf::Drawable, public sf::Transformable
 {
@@ -58,6 +60,27 @@ public:
 		STARTED			/**< Ha comenzado su ejecución */
 	};
 
+	// Posibles posiciones de origen para el pivote de la entidad
+	enum Pivot
+	{
+		CENTER = 0,		/**< El pivote está centrado en la entidad */
+		TOP_LEFT,		/**< El pivote está en la esquina superior izquierda */
+		TOP,			/**< El pivote está centrado arriba */
+		TOP_RIGHT,		/**< El pivote está en la esquina superior derecha */
+		LEFT,			/**< El pivote está centrado a la izquierda */
+		RIGHT,			/**< El pivote está centrado a la derecha */
+		BOTTOM_LEFT,	/**< El pivote está en la esquina inferior izquierda */
+		BOTTOM,			/**< El pivote está centrado abajo */
+		BOTTOM_RIGHT	/**< El pivote está en la esquina inferior derecha */
+	};
+
+	// Posibles tipos de animaciones que tiene la entidad
+	enum AnimationType
+	{
+		START_ANIMATION = 0,
+		POSITION_ANIMATION
+	};
+
 	/**
 	 * Constructor de la clase
 	 */
@@ -68,19 +91,29 @@ public:
 	 */
 	virtual ~Entity(void);
 
-#ifdef BMONKEY_DESIGNER
 	/**
-	 * Indica si la entidad está seleccionada
-	 * @return true si la entidad está seleccionada, false en otro caso
+	 * Obtiene el nombre de la entidad
+	 * @return Nombre de la entidad
 	 */
-	bool isSelected(void) const;
+	Glib::ustring getName(void) const;
 
 	/**
-	 * Selecciona o deselecciona la entidad
-	 * @param selected Nuevo valor para el estado de selección
+	 * Establece el nombre de la entidad
+	 * @param name Nuevo nombre para la entidad
 	 */
-	void setSelected(const bool selected);
-#endif
+	void setName(const Glib::ustring& name);
+
+	/**
+	 * Indica si la entidad está habilitada y por lo tanto visible y funcional
+	 * @return true si la entidad está habilitada, false en otro caso
+	 */
+	bool isEnabled(void) const;
+
+	/**
+	 * Habilita o deshabilita la entidad
+	 * @param enabled Nuevo valor para el estado
+	 */
+	void setEnabled(const bool enabled);
 
 	/**
 	 * Obtiene el estado actual de la entidad
@@ -89,23 +122,16 @@ public:
 	Status getStatus(void) const;
 
 	/**
-	 * Obtiene las dimensiones de la entidad
-	 * @return Dimensiones de la entidad
+	 * Obtiene la posición del pivote de la entidad
+	 * @return Posición del pivote de la entidad
 	 */
-	virtual sf::Vector2f getSize(void) const = 0;
+	Pivot getPivot(void) const;
 
 	/**
-	 * Obtiene el valor del espejado actual de la entidad
-	 * @return Valor actuala del espejado
+	 * Establece la posición del pivote de la entidad
+	 * @param pivot Nueva posición para el pivote de la entidad
 	 */
-	Vector2b getFlip(void) const;
-
-	/**
-	 * Establece el espejado horizontal y vertical de la entidad
-	 * @param x Nuevo espejado horizontal para la entidad
-	 * @param y Nuevo espejado vertical para la entidad
-	 */
-	void setFlip(const bool x, const bool y);
+	virtual void setPivot(Pivot pivot) = 0;
 
 	/**
 	 * Obtiene el color de tinte y opacidad de la entidad
@@ -130,6 +156,32 @@ public:
 	 * @param opacity Nueva opacidad para la entidad
 	 */
 	void setOpacity(const unsigned char opacity);
+
+	/**
+	 * Obtiene la animación que la entidad tiene configurada para un tipo determinado
+	 * @param type Tipo de animación requerido
+	 * @return Animación configurada en la entidad para el tipo dado
+	 */
+	Animation* getAnimation(AnimationType type);
+
+	/**
+	 * Establece una animación de la entidad para un tipo determinado
+	 * @param type Tipo al que asociar la animación
+	 * @param animation Animación a asociar
+	 */
+	void setAnimation(AnimationType type, Animation* animation);
+
+	/**
+	 * Obtiene las dimensiones de la entidad
+	 * @return Dimensiones de la entidad
+	 */
+	virtual sf::Vector2f getSize(void) const = 0;
+
+	/**
+	 * Obtiene la entidad padre
+	 * @return Entidad padre o null si no es una entidad padre
+	 */
+	Entity* getParent(void);
 
 	/**
 	 * Establece la entidad padre
@@ -158,37 +210,6 @@ public:
 	std::vector<Entity* >& getChildren(void);
 
 	/**
-	 * Agrega una nueva animación a la pila de animaciones
-	 * @param animation Nueva animación a agregar
-	 */
-	void addAnimation(Animation* animation);
-
-#ifdef BMONKEY_DESIGNER
-	/**
-	 * Limpia el almacén interno de animaciones
-	 */
-	void clearAnimations(void);
-
-	/**
-	 * Obtiene una referencia al almacén interno de animaciones
-	 * @return Referencia al vector interno de animaciones
-	 */
-	std::vector<Animation* >& getAnimations(void);
-#endif
-
-	/**
-	 * Indica si las animaciones ciclicas están activadas
-	 * @return True si están activados, false en otro caso
-	 */
-	bool getCyclicAnimations(void);
-
-	/**
-	 * Activa o desactiva las animaciones ciclicas
-	 * @param cyclic Nuevo valor para las animaciones ciclicas
-	 */
-	void setCyclicAnimations(const bool cyclic);
-
-	/**
 	 * Actualiza el estado de la entidad
 	 * @param delta_time Tiempo transcurrido desde la última actualización
 	 */
@@ -199,15 +220,12 @@ public:
 	 */
 	virtual void run(void);
 
-#ifdef BMONKEY_DESIGNER
 	/**
-	 * Detiene la ejecución de la entidad, pasando esta a modo edición
+	 * Detiene la ejecución de la entidad
 	 */
 	virtual void stop(void);
-#endif
 
 protected:
-
 	/**
 	 * Actualiza el estado de la entidad incluyendo un color de referencia
 	 * @param delta_time Tiempo transcurrido desde la última actualización
@@ -229,13 +247,6 @@ protected:
 	 */
 	void updateChildren(sf::Time delta_time, const sf::Color& color);
 
-#ifdef BMONKEY_DESIGNER
-	/**
-	 * Actualiza el grid de selección de la entidad
-	 */
-	virtual void updateGrid(void) = 0;
-#endif
-
 	/**
 	 * Implementación de drawable
 	 * @param target Target donde se dibujará la entidad
@@ -251,33 +262,16 @@ protected:
 	 */
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const = 0;
 
-#ifdef BMONKEY_DESIGNER
-	/**
-	 * Dibuja la malla de selección que indica que el elemento está seleccionado
-	 * @param target Target donde se dibujará la entidad
-	 * @param states States para dibujar la entidad
-	 */
-	virtual void drawGrid(sf::RenderTarget& target, sf::RenderStates states) const;
-#endif
-
-#ifdef BMONKEY_DESIGNER
-	sf::RectangleShape m_grid_box;	/**< Rectángulo que hace de grid para selección */
-	sf::RectangleShape m_grid_dot;	/**< Marcador del origen en el grid */
-#endif
+	Glib::ustring m_name;			/**< Nombre de esta entidad */
+	bool m_enabled;					/**< Indica si la entidad está habilitada */
 	Status m_status;				/**< Estado en el que se encuentra */
-
-private:
-
-#ifdef BMONKEY_DESIGNER
-	bool m_selected;				/**< Indica si la entidad está seleccionada */
-#endif
-	Vector2b m_flip;				/**< Valores del espejado */
+	Pivot m_pivot;					/**< Posición del pivote de la entidad */
 	sf::Color m_color;				/**< Tinte y opacidad de la entidad */
+	Animation* m_start_animation;	/**< Animación de entrada a la escena */
+	Animation* m_position_animation;/**< Animación de posición en la escena */
+	Animation* m_current_animation;	/**< Efecto en ejecución */
 	Entity* m_parent;				/**< Padre de la entidad en una cadena */
 	std::vector<Entity* > m_children; /**< Hijos de la entidad */
-	bool m_cyclic_animations;			/**< Indica si las animaciones se ejecutan de forma ciclica */
-	int m_current_animation;			/**< Índice de la animación actualmente en ejecución, -1 = ninguno */
-	std::vector<Animation* > m_animations; /**< Animaciones que actúan sobre la entidad */
 };
 
 // Inclusión de los métodos inline

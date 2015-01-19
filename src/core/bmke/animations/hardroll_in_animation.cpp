@@ -35,6 +35,9 @@ HardrollInAnimation::HardrollInAnimation(const float delay, const float duration
 
 HardrollInAnimation::~HardrollInAnimation(void)
 {
+	// Forzamos la parada para que restaure las propiedades de la entidad
+	stop();
+	delete m_tween;
 }
 
 void HardrollInAnimation::init(Entity* entity)

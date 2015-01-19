@@ -94,6 +94,11 @@ void Director::init(void)
 	back.setTexture(back_texture);
 	entity.setTexture(&sprite_texture);
 	entity.setPosition(400.f, 300.f);
+	dot.setOutlineThickness(0.f);
+	dot.setFillColor(sf::Color::Yellow);
+	dot.setSize(sf::Vector2f(10.f, 10.f));
+	dot.setOrigin(5.f, 5.f);
+	dot.setPosition(400.f, 300.f);
 
 	//entity.setColor(sf::Color(255,100,100, 150));
 	//entity.setRotation(30);
@@ -190,7 +195,7 @@ void Director::processInput(void)
 {
 	ControlManager::Event event;
 
-	static int choice = 29;
+	static int choice = 0;
 	float delay = 0.f;
 	float duration = 1.5f;
 
@@ -222,333 +227,17 @@ void Director::processInput(void)
 			{
 			case 0:
 				m_mod_text.setString("Left Back In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::LEFT_BACK_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
+				//in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::LEFT_BACK_IN, delay, duration));
+				//in_animation->setWindowSize(m_graphics.getSize());
+				//entity.setAnimation(Entity::START_ANIMATION, in_animation);
+				//animation = AnimationFactory::create(AnimationFactory::FADE_OUT, delay, duration);
+				//entity.setAnimation(Entity::POSITION_ANIMATION, animation);
 				entity.run();
 				++choice;
 				break;
 			case 1:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Right Back In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::RIGHT_BACK_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
+				entity.setPivot(static_cast<Entity::Pivot>(entity.getPivot() + 1));
 				break;
-			case 2:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Top Back In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::TOP_BACK_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 3:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Bottom Back In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::BOTTOM_BACK_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 4:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Left Bounce In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::LEFT_BOUNCE_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 5:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Right Bounce In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::RIGHT_BOUNCE_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 6:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Top Bounce In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::TOP_BOUNCE_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 7:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Bottom Bounce In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::BOTTOM_BOUNCE_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 8:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Left Ease In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::LEFT_EASE_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 9:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Right Ease In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::RIGHT_EASE_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 10:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Top Ease In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::TOP_EASE_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 11:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Bottom Ease In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::BOTTOM_EASE_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 12:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Left Elastic In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::LEFT_ELASTIC_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 13:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Right Elastic In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::RIGHT_ELASTIC_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 14:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Top Elastic In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::TOP_ELASTIC_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 15:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Bottom Elastic In");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::BOTTOM_ELASTIC_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				entity.run();
-				++choice;
-				break;
-			case 16:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Fade In");
-				animation = AnimationFactory::create(AnimationFactory::FADE_IN, delay, duration);
-				entity.addAnimation(animation);
-				entity.run();
-				++choice;
-				break;
-			case 17:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Hard Roll In");
-				animation = AnimationFactory::create(AnimationFactory::HARDROLL_IN, delay, duration);
-				entity.addAnimation(animation);
-				entity.run();
-				++choice;
-				break;
-			case 18:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Pop In");
-				animation = AnimationFactory::create(AnimationFactory::POP_IN, delay, duration);
-				entity.addAnimation(animation);
-				entity.run();
-				++choice;
-				break;
-			case 19:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Roll In");
-				animation = AnimationFactory::create(AnimationFactory::ROLL_IN, delay, duration);
-				entity.addAnimation(animation);
-				entity.run();
-				++choice;
-				break;
-			case 20:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Rotate In");
-				animation = AnimationFactory::create(AnimationFactory::ROTATE_IN, delay, duration);
-				entity.addAnimation(animation);
-				entity.run();
-				++choice;
-				break;
-			case 21:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Left Back Out");
-				out_animation = static_cast<MoveOutAnimation* > (AnimationFactory::create(AnimationFactory::LEFT_BACK_OUT, delay, duration));
-				out_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(out_animation);
-				entity.run();
-				++choice;
-				break;
-			case 22:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Right Back Out");
-				out_animation = static_cast<MoveOutAnimation* > (AnimationFactory::create(AnimationFactory::RIGHT_BACK_OUT, delay, duration));
-				out_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(out_animation);
-				entity.run();
-				++choice;
-				break;
-			case 23:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Top Back Out");
-				out_animation = static_cast<MoveOutAnimation* > (AnimationFactory::create(AnimationFactory::TOP_BACK_OUT, delay, duration));
-				out_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(out_animation);
-				entity.run();
-				++choice;
-				break;
-			case 24:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Bottom Back Out");
-				out_animation = static_cast<MoveOutAnimation* > (AnimationFactory::create(AnimationFactory::BOTTOM_BACK_OUT, delay, duration));
-				out_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(out_animation);
-				entity.run();
-				++choice;
-				break;
-			case 25:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Fade Out");
-				animation = AnimationFactory::create(AnimationFactory::FADE_OUT, delay, duration);
-				entity.addAnimation(animation);
-				entity.run();
-				++choice;
-				break;
-
-			case 26:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Ease X");
-				animation = AnimationFactory::create(AnimationFactory::EASE_X, delay, duration);
-				entity.addAnimation(animation);
-				entity.run();
-				++choice;
-				break;
-			case 27:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Ease Y");
-				animation = AnimationFactory::create(AnimationFactory::EASE_Y, delay, duration);
-				entity.addAnimation(animation);
-				entity.run();
-				++choice;
-				break;
-			case 28:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Fade");
-				animation = AnimationFactory::create(AnimationFactory::FADE, delay, duration);
-				entity.addAnimation(animation);
-				entity.run();
-				//++choice;
-				break;
-			case 29:
-				entity.stop();
-				entity.clearAnimations();
-				m_mod_text.setString("Custom");
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::TOP_BACK_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(in_animation);
-				//animation = AnimationFactory::create(AnimationFactory::FADE_OUT, delay, duration);
-				//entity.addAnimation(animation);
-				animation = AnimationFactory::create(AnimationFactory::HARDROLL_IN, delay, duration);
-				entity.addAnimation(animation);
-				out_animation = static_cast<MoveOutAnimation* > (AnimationFactory::create(AnimationFactory::BOTTOM_BACK_OUT, delay, duration));
-				out_animation->setWindowSize(m_graphics.getSize());
-				entity.addAnimation(out_animation);
-				entity.setCyclicAnimations(true);
-				entity.run();
-				//++choice;
-				break;
-
-
-/*
-			case 24:
-				m_mod_text.setString("Elastic In Left + Ease X");
-				in_animation = new ElasticInAnimation();
-				in_animation->setWindowSize(m_graphics.getSize());
-				in_animation->setInFrom(InAnimation::LEFT);
-				in_animation->init(&entity, delay, duration);
-				entity.setStartAnimation(in_animation);
-				e_animation = new EaseAnimation();
-				e_animation->setAxis(EaseAnimation::X);
-				e_animation->init(&entity, delay, 1.f);
-				entity.setPlaceAnimation(e_animation);
-				entity.run();
-				++choice;
-				break;
-			case 25:
-				m_mod_text.setString("Hard Roll In + Fade");
-				animation = new HardrollInAnimation();
-				animation->init(&entity, delay, duration + 1.f);
-				entity.setStartAnimation(animation);
-				animation = new FadeAnimation();
-				animation->init(&entity, delay, 1.f);
-				entity.setPlaceAnimation(animation);
-				entity.run();
-				++choice;
-				break;
-
-
-*/
 			}
 			break;
 
@@ -615,6 +304,7 @@ void Director::draw(void)
 	m_graphics.draw(back);
 
 	m_graphics.draw(entity);
+	m_graphics.draw(dot);
 	m_graphics.draw(m_mod_text);
 /*
 	entity.setSelected(true);

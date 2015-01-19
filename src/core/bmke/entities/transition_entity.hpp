@@ -34,7 +34,6 @@ namespace bmonkey{
  * Se trata de una entidad usada en las transiciones entre escenas.
  * Básicamente se trata de una entidad a la que se puede asignar una textura
  * que será mostrada en pantalla.
- * Permite ejecutar un efecto de inicio sobre la entidad.
  *
  * No se encarga de gestionar la textura, solamente la consume a modo de recurso
  * para presentar una imagen.
@@ -53,16 +52,22 @@ public:
 	virtual ~TransitionEntity(void);
 
 	/**
-	 * Obtiene las dimensiones de la entidad
-	 * @return Dimensiones de la entidad
+	 * Establece la posición del pivote de la entidad
+	 * @param pivot Nueva posición para el pivote de la entidad
 	 */
-	virtual sf::Vector2f getSize(void) const;
+	virtual void setPivot(Pivot pivot);
 
 	/**
 	 * Establece el color (tinte y opacidad) de la entidad
 	 * @param color Nuevos valores para el tiente y la opacidad
 	 */
 	virtual void setColor(const sf::Color& color);
+
+	/**
+	 * Obtiene las dimensiones de la entidad
+	 * @return Dimensiones de la entidad
+	 */
+	virtual sf::Vector2f getSize(void) const;
 
 	/**
 	 * Establece la textura que dibujará la entidad
@@ -80,13 +85,6 @@ protected:
 	 * @param color Color de referencia para actualizar la entidad
 	 */
 	virtual void updateCurrent(sf::Time delta_time, const sf::Color& color);
-
-#ifdef BMONKEY_DESIGNER
-	/**
-	 * Actualiza el grid de selección de la entidad
-	 */
-	virtual void updateGrid(void);
-#endif
 
 	/**
 	 * Realiza el dibujado real de esta entidad

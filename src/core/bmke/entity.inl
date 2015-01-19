@@ -22,26 +22,34 @@
 #ifndef _ENTITY_INL_
 #define _ENTITY_INL_
 
-#ifdef BMONKEY_DESIGNER
-inline bool Entity::isSelected(void) const
+inline Glib::ustring Entity::getName(void) const
 {
-	return m_selected;
+	return m_name;
 }
 
-inline void Entity::setSelected(const bool selected)
+inline void Entity::setName(const Glib::ustring& name)
 {
-	m_selected = selected;
+	m_name = name;
 }
-#endif
+
+inline bool Entity::isEnabled(void) const
+{
+	return m_enabled;
+}
+
+inline void Entity::setEnabled(const bool enabled)
+{
+	m_enabled = enabled;
+}
 
 inline Entity::Status Entity::getStatus(void) const
 {
 	return m_status;
 }
 
-inline Vector2b Entity::getFlip(void) const
+inline Entity::Pivot Entity::getPivot(void) const
 {
-	return m_flip;
+	return m_pivot;
 }
 
 inline const sf::Color& Entity::getColor(void)
@@ -65,6 +73,11 @@ inline void Entity::setOpacity(const unsigned char opacity)
 	setColor(m_color);
 }
 
+inline Entity* Entity::getParent(void)
+{
+	return m_parent;
+}
+
 inline void Entity::setParent(Entity* entity)
 {
 	m_parent = entity;
@@ -80,31 +93,6 @@ inline void Entity::addChild(Entity* entity)
 inline std::vector<Entity* >& Entity::getChildren(void)
 {
 	return m_children;
-}
-
-inline void Entity::addAnimation(Animation* animation)
-{
-	assert(animation);
-
-	animation->init(this);
-	m_animations.push_back(animation);
-}
-
-#ifdef BMONKEY_DESIGNER
-inline std::vector<Animation* >& Entity::getAnimations(void)
-{
-	return m_animations;
-}
-#endif
-
-inline bool Entity::getCyclicAnimations(void)
-{
-	return m_cyclic_animations;
-}
-
-inline void Entity::setCyclicAnimations(const bool cyclic)
-{
-	m_cyclic_animations = cyclic;
 }
 
 inline void Entity::update(sf::Time delta_time)

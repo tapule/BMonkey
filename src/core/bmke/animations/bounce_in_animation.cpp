@@ -34,6 +34,8 @@ BounceInAnimation::BounceInAnimation(const float delay, const float duration):
 
 BounceInAnimation::~BounceInAnimation(void)
 {
+	// Forzamos la parada para que restaure las propiedades de la entidad
+	stop();
 	delete m_tween;
 }
 

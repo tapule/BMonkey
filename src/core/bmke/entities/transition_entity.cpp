@@ -34,6 +34,51 @@ TransitionEntity::~TransitionEntity(void)
 {
 }
 
+void TransitionEntity::setPivot(Pivot pivot)
+{
+	sf::FloatRect bounds;
+	sf::Vector2f origin;
+
+	m_pivot = pivot;
+	bounds = m_sprite.getLocalBounds();
+	switch (m_pivot)
+	{
+	case CENTER:
+		setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+		break;
+	case TOP_LEFT:
+		setOrigin(0.f, 0.f);
+		break;
+	case TOP:
+		setOrigin(bounds.width / 2.f, 0.f);
+		break;
+	case TOP_RIGHT:
+		setOrigin(bounds.width, 0.f);
+		break;
+	case LEFT:
+		setOrigin(0.f, bounds.height / 2.f);
+		break;
+	case RIGHT:
+		setOrigin(bounds.width, bounds.height / 2.f);
+		break;
+	case BOTTOM_LEFT:
+		setOrigin(0.f, bounds.height);
+		break;
+	case BOTTOM:
+		setOrigin(bounds.width / 2.f, bounds.height);
+		break;
+	case BOTTOM_RIGHT:
+		setOrigin(bounds.width, bounds.height);
+		break;
+	}
+}
+
+void TransitionEntity::setColor(const sf::Color& color)
+{
+	Entity::setColor(color);
+	m_sprite.setColor(color);
+}
+
 sf::Vector2f TransitionEntity::getSize(void) const
 {
 /*	sf::Vector2u texture_size;
@@ -52,49 +97,30 @@ sf::Vector2f TransitionEntity::getSize(void) const
 	sf::Vector2f size;
 	sf::FloatRect r;
 
-	texture_size = m_texture->getSize();
-	r = sf::FloatRect(0.f, 0.f, texture_size.x, texture_size.y);
-	r = getTransform().transformRect(r);
+	if (m_texture)
+	{
+		texture_size = m_texture->getSize();
+		r = sf::FloatRect(0.f, 0.f, texture_size.x, texture_size.y);
+		r = getTransform().transformRect(r);
 
-	size.x = r.width;
-	size.y = r.height;
-
+		size.x = r.width;
+		size.y = r.height;
+	}
 	return size;
-}
-
-void TransitionEntity::setColor(const sf::Color& color)
-{
-	Entity::setColor(color);
-	m_sprite.setColor(color);
 }
 
 void TransitionEntity::setTexture(sf::Texture *texture)
 {
-	sf::FloatRect bounds;
-
 	m_texture = texture;
 	m_sprite.setTexture(*m_texture, true);
-	// Movemos el origen al centro de la entidad
-	bounds = m_sprite.getLocalBounds();
-	setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+	// Movemos el origen dependiendo del pivote de la entidad
+	setPivot(m_pivot);
 }
 
 void TransitionEntity::updateCurrent(sf::Time delta_time, const sf::Color& color)
 {
 	m_sprite.setColor(getColor());
 }
-
-#ifdef BMONKEY_DESIGNER
-inline void TransitionEntity::updateGrid(void)
-{
-	sf::Vector2f size;
-
-	size = getSize();
-	m_grid_box.setSize(size);
-	m_grid_box.setOrigin(size.x / 2.f, size.y / 2.f);
-	//m_grid_dot.setPosition(width / 2.f, height / 2.f);
-}
-#endif
 
 void TransitionEntity::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {

@@ -35,6 +35,9 @@ RollInAnimation::RollInAnimation(const float delay, const float duration):
 
 RollInAnimation::~RollInAnimation(void)
 {
+	// Forzamos la parada para que restaure las propiedades de la entidad
+	stop();
+	delete m_tween;
 }
 
 void RollInAnimation::init(Entity* entity)
