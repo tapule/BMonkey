@@ -19,28 +19,31 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "transition_entity.hpp"
+#include "box_entity.hpp"
 #include <cassert>
 
 namespace bmonkey{
 
-TransitionEntity::TransitionEntity(void):
+BoxEntity::BoxEntity(void):
 	Entity(),
-	m_texture(nullptr)
+	m_size(sf::Vector2f(0.f, 0.f))
+{
+	m_box.setOutlineThickness(0.f);
+	m_box.setFillColor(getColor());
+	m_box.setSize(m_size);
+}
+
+BoxEntity::~BoxEntity(void)
 {
 }
 
-TransitionEntity::~TransitionEntity(void)
-{
-}
-
-void TransitionEntity::setPivot(Pivot pivot)
+void BoxEntity::setPivot(Pivot pivot)
 {
 	sf::FloatRect bounds;
 	sf::Vector2f origin;
 
 	m_pivot = pivot;
-	bounds = m_sprite.getLocalBounds();
+	bounds = m_box.getLocalBounds();
 	switch (m_pivot)
 	{
 	case CENTER:
@@ -73,40 +76,39 @@ void TransitionEntity::setPivot(Pivot pivot)
 	}
 }
 
-void TransitionEntity::setColor(const sf::Color& color)
+void BoxEntity::setColor(const sf::Color& color)
 {
 	Entity::setColor(color);
-	m_sprite.setColor(color);
+	m_box.setFillColor(color);
 }
 
-sf::Vector2f TransitionEntity::getSize(void) const
+sf::Vector2f BoxEntity::getSize(void) const
 {
-	sf::FloatRect bounds;
-	sf::Vector2f size;
-
-	bounds = m_sprite.getLocalBounds();
-	size.x = bounds.width;
-	size.y = bounds.height;
-
-	return size;
+	return m_size;
 }
 
-void TransitionEntity::setTexture(sf::Texture *texture)
+void BoxEntity::setSize(const float width, const float height)
 {
-	m_texture = texture;
-	m_sprite.setTexture(*m_texture, true);
+	m_size.x = width < 0.f ? 0.f : width;
+	m_size.y = height < 0.f ? 0.f : height;
+	m_box.setSize(m_size);
 	// Forzamos el cálculo del pivote
 	setPivot(m_pivot);
 }
 
-void TransitionEntity::updateCurrent(sf::Time delta_time, const sf::Color& color)
+void BoxEntity::setSize(const sf::Vector2f& size)
 {
-	m_sprite.setColor(getColor());
+	setSize(size.x, size.y);
 }
 
-void TransitionEntity::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
+void BoxEntity::updateCurrent(sf::Time delta_time, const sf::Color& color)
 {
-	target.draw(m_sprite, states);
+	m_box.setFillColor(getColor());
+}
+
+void BoxEntity::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	target.draw(m_box, states);
 }
 
 } // namespace bmonkey

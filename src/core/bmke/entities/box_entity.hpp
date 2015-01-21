@@ -19,8 +19,8 @@
  * along with bmonkey.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef _TRANSITION_ENTITY_HPP_
-#define _TRANSITION_ENTITY_HPP_
+#ifndef _BOX_ENTITY_HPP_
+#define _BOX_ENTITY_HPP_
 
 #include <SFML/Graphics.hpp>
 #include "../../../defines.hpp"
@@ -29,27 +29,23 @@
 namespace bmonkey{
 
 /**
- * Entidad para transiciones
+ * Entidad para dibujar rectángulos
  *
- * Se trata de una entidad usada en las transiciones entre escenas.
- * Básicamente se trata de una entidad a la que se puede asignar una textura
- * que será mostrada en pantalla.
- *
- * No se encarga de gestionar la textura, solamente la consume a modo de recurso
- * para presentar una imagen.
+ * Se trata de una entidad que se puede usar para disponer de rectángulos con
+ * color que puedan ser animados igual que el resto de entidades.
  */
-class TransitionEntity : public Entity
+class BoxEntity : public Entity
 {
 public:
 	/**
 	 * Constructor de la clase
 	 */
-	TransitionEntity(void);
+	BoxEntity(void);
 
 	/**
 	 * Destructor de la clase
 	 */
-	virtual ~TransitionEntity(void);
+	virtual ~BoxEntity(void);
 
 	/**
 	 * Establece la posición del pivote de la entidad
@@ -70,12 +66,17 @@ public:
 	virtual sf::Vector2f getSize(void) const;
 
 	/**
-	 * Establece la textura que dibujará la entidad
-	 * @param texture Textura para dibujar
-	 * @note Al cambiar la textura, las dimensiones de la entidad se adaptan
-	 * a ella
+	 * Establece las dimensiones de la entidad
+	 * @param width Nuevo ancho para la entidad
+	 * @param height Nuevo alto para la entidad
 	 */
-	void setTexture(sf::Texture *texture);
+	virtual void setSize(const float width, const float height);
+
+	/**
+	 * Establece las dimensiones de la entidad
+	 * @param size Nuevas dimensiones para la entidad
+	 */
+	void setSize(const sf::Vector2f& size);
 
 protected:
 	/**
@@ -94,10 +95,10 @@ protected:
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
-	sf::Texture* m_texture;		/**< Textura mostrada por la entidad */
-	sf::Sprite m_sprite;		/**< Sprite interno para mostrar la textura */
+	sf::Vector2f m_size;		/**< Dimensiones de la entidad */
+	sf::RectangleShape m_box;	/**< Primitiva rectángulo para la entidad */
 };
 
 } // namespace bmonkey
 
-#endif // _TRANSITION_ENTITY_HPP_
+#endif // _BOX_ENTITY_HPP_

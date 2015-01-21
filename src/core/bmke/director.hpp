@@ -36,6 +36,7 @@
 #include "shader_manager.hpp"
 
 #include "entities/transition_entity.hpp"
+#include "entities/box_entity.hpp"
 
 namespace bmonkey{
 
@@ -132,8 +133,10 @@ private:
 	// Objetos temporales, solo para pruebas
 	sf::Texture back_texture;
 	sf::Texture sprite_texture;
+	sf::RectangleShape grid;
 	sf::RectangleShape dot;
 	TransitionEntity entity;
+	BoxEntity box;
 	sf::Sprite back;
 	sf::Text m_mod_text;
 };

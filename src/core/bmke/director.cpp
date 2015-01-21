@@ -94,11 +94,26 @@ void Director::init(void)
 	back.setTexture(back_texture);
 	entity.setTexture(&sprite_texture);
 	entity.setPosition(400.f, 300.f);
+	//box.setName("NombreBox0");
+	//box.setPosition(400.f, 300.f);
+	//box.setSize(400.f, 300.f);
+	//box.setColor(sf::Color::Green);
+	//box.setOpacity(150);
+
+
+
+	grid.setOutlineThickness(2.f);
+	grid.setOutlineColor(sf::Color::Yellow);
+	grid.setFillColor(sf::Color::Transparent);
+	grid.setSize(entity.getSize());
+	grid.setOrigin(entity.getOrigin());
+
+	dot.setFillColor(sf::Color::Yellow);
 	dot.setOutlineThickness(0.f);
 	dot.setFillColor(sf::Color::Yellow);
 	dot.setSize(sf::Vector2f(10.f, 10.f));
 	dot.setOrigin(5.f, 5.f);
-	dot.setPosition(400.f, 300.f);
+
 
 	//entity.setColor(sf::Color(255,100,100, 150));
 	//entity.setRotation(30);
@@ -106,9 +121,9 @@ void Director::init(void)
 	//entity.setFlip(true, true);
 
 	m_mod_text.setFont(*(m_fonts.getSystemFont(FontManager::DEFAULT)));
-	m_mod_text.setPosition(125.f, 150.f);
+	m_mod_text.setPosition(125.f, 100.f);
 	m_mod_text.setCharacterSize(30);
-	m_mod_text.setString("Original");
+	m_mod_text.setString("Box Entity:" + box.getName().raw());
 
 
     m_controls.enableEvent(ControlManager::SWITCH_ROTATION);
@@ -226,16 +241,18 @@ void Director::processInput(void)
 			switch (choice)
 			{
 			case 0:
-				m_mod_text.setString("Left Back In");
-				//in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::LEFT_BACK_IN, delay, duration));
-				//in_animation->setWindowSize(m_graphics.getSize());
-				//entity.setAnimation(Entity::START_ANIMATION, in_animation);
-				//animation = AnimationFactory::create(AnimationFactory::FADE_OUT, delay, duration);
-				//entity.setAnimation(Entity::POSITION_ANIMATION, animation);
+				box.setRotation(45.f);
+				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::LEFT_BACK_IN, delay, duration));
+				in_animation->setWindowSize(m_graphics.getSize());
+				//animation = AnimationFactory::create(AnimationFactory::POP_IN, delay, duration);
+				entity.setAnimation(Entity::START_ANIMATION, in_animation);
+				animation = AnimationFactory::create(AnimationFactory::EASE_Y, delay, duration);
+				entity.setAnimation(Entity::POSITION_ANIMATION, animation);
 				entity.run();
 				++choice;
 				break;
 			case 1:
+				//m_mod_text.setString("Box: " + utils::toStr(.getSize().x).raw() + ", " + utils::toStr(box.getSize().y).raw());
 				entity.setPivot(static_cast<Entity::Pivot>(entity.getPivot() + 1));
 				break;
 			}
@@ -271,8 +288,10 @@ void Director::processInput(void)
 
 void Director::update(sf::Time delta_time)
 {
-	//original.update(delta_time);
+	//entity.update(delta_time);
 	entity.update(delta_time);
+	grid.setSize(entity.getSize());
+	grid.setOrigin(entity.getOrigin());
 }
 
 void Director::updateFps(sf::Time delta_time)
@@ -299,12 +318,22 @@ void Director::updateFps(sf::Time delta_time)
 void Director::draw(void)
 {
 	float scale;
+	sf::Transformable transformable;
+	sf::RenderStates states;
+	// Para dibujar el grid, quitamos cualquier shader
+	/* states.shader = nullptr;*/
+	transformable.setPosition(entity.getPosition());
+	transformable.setRotation(entity.getRotation());
+	states.transform = transformable.getTransform();
 
 	m_graphics.clear();
 	m_graphics.draw(back);
 
 	m_graphics.draw(entity);
-	m_graphics.draw(dot);
+	//m_graphics.draw(box);
+	m_graphics.draw(dot, states);
+	m_graphics.draw(grid, states);
+
 	m_graphics.draw(m_mod_text);
 /*
 	entity.setSelected(true);

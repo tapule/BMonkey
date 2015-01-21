@@ -172,7 +172,7 @@ public:
 	void setAnimation(AnimationType type, Animation* animation);
 
 	/**
-	 * Obtiene las dimensiones de la entidad
+	 * Obtiene las dimensiones originales de la entidad
 	 * @return Dimensiones de la entidad
 	 */
 	virtual sf::Vector2f getSize(void) const = 0;
