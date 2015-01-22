@@ -37,6 +37,7 @@ Director::Director(Config* config):
 	m_collection(nullptr),
 	m_graphics(config),
 	m_controls(m_graphics.getRenderWindow()),
+	m_font_library(),
 	m_volumes(&m_sounds, &m_movies),
 	m_show_fps(false),
 	m_fps_update_time(sf::Time::Zero),
@@ -82,7 +83,7 @@ void Director::init(void)
 
 	if (m_show_fps)
 	{
-		m_fps_text.setFont(*(m_fonts.getSystemFont(FontManager::DEFAULT)));
+		m_fps_text.setFont(*(m_font_library.getSystemFont()));
 		m_fps_text.setPosition(5.f, 15.f);
 		m_fps_text.setCharacterSize(15);
 	}
@@ -120,7 +121,7 @@ void Director::init(void)
 	//entity.setScale(0.5, 1.2);
 	//entity.setFlip(true, true);
 
-	m_mod_text.setFont(*(m_fonts.getSystemFont(FontManager::DEFAULT)));
+	m_mod_text.setFont(*(m_font_library.getSystemFont()));
 	m_mod_text.setPosition(125.f, 100.f);
 	m_mod_text.setCharacterSize(30);
 	m_mod_text.setString("Box Entity:" + box.getName().raw());

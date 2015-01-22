@@ -28,7 +28,7 @@
 #include "../collection/collection.hpp"
 #include "graphics.hpp"
 #include "control_manager.hpp"
-#include "font_manager.hpp"
+#include "font_library.hpp"
 #include "texture_manager.hpp"
 #include "sound_manager.hpp"
 #include "movie_manager.hpp"
@@ -119,7 +119,7 @@ private:
 	Collection* m_collection;
 	Graphics m_graphics;
 	ControlManager m_controls;
-	FontManager m_fonts;
+	FontLibrary m_font_library;		/**< Librería de fuentes para el fe */
 	SoundManager m_sounds;
 	MovieManager m_movies;
 	VolumeManager m_volumes;
