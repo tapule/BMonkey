@@ -88,6 +88,11 @@ void FontLibrary::deleteFont(sf::Font* font)
 {
 	std::vector<Resource >::iterator iter;
 
+	if (!font)
+	{
+		return;
+	}
+
 	// Buscamos la fuente
 	for (iter = m_fonts.begin(); iter != m_fonts.end(); ++iter)
 	{

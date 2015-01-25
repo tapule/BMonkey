@@ -37,6 +37,7 @@
 
 #include "entities/transition_entity.hpp"
 #include "entities/box_entity.hpp"
+#include "entities/text_entity.hpp"
 
 namespace bmonkey{
 
@@ -137,6 +138,7 @@ private:
 	sf::RectangleShape dot;
 	TransitionEntity entity;
 	BoxEntity box;
+	TextEntity text;
 	sf::Sprite back;
 	sf::Text m_mod_text;
 };

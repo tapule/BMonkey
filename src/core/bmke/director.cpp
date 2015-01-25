@@ -41,7 +41,8 @@ Director::Director(Config* config):
 	m_volumes(&m_sounds, &m_movies),
 	m_show_fps(false),
 	m_fps_update_time(sf::Time::Zero),
-	m_fps_num_frames(0)
+	m_fps_num_frames(0),
+	text(&m_font_library)
 {
 	assert(config);
 
@@ -93,25 +94,37 @@ void Director::init(void)
 	back_texture.loadFromFile("backv00-800.png");
 	sprite_texture.loadFromFile("sprite.png");
 	back.setTexture(back_texture);
-	entity.setTexture(&sprite_texture);
-	entity.setPosition(400.f, 300.f);
+
+	//entity.setTexture(&sprite_texture);
+	//entity.setPosition(400.f, 300.f);
+
 	//box.setName("NombreBox0");
 	//box.setPosition(400.f, 300.f);
 	//box.setSize(400.f, 300.f);
 	//box.setColor(sf::Color::Green);
 	//box.setOpacity(150);
 
+	//text.setFont(m_font_library.getSystemFont());
+	//text.setFont(m_font_library.loadFont("yukarimobil.ttf"));
+	text.setFont(m_font_library.loadFont("Millennia.otf"));
+	//text.setFont(m_font_library.loadFont("RoosterSerif.ttf"));
+	text.setString("Text Sample");
+	text.setCharacterSize(60);
+	text.setStyle(TextEntity::REGULAR);
+	text.setTextColor(sf::Color(247, 247, 148));
+	text.setForceUppercase(false);
+	text.setOutlineEnabled(false);
+	text.setOutlineColor(sf::Color::Black);
+	//text.setOutlineColor(sf::Color(255, 153, 51));
+	text.setShadowEnabled(false);
+	text.setShadowColor(sf::Color(189, 0, 0));
+	text.setShadowOffset(3, 3);
+	text.setPosition(400.f, 300.f);
+	//text.setRotation(45);
+	//text.setOpacity(100);
 
-
-	grid.setOutlineThickness(2.f);
-	grid.setOutlineColor(sf::Color::Yellow);
-	grid.setFillColor(sf::Color::Transparent);
-	grid.setSize(entity.getSize());
-	grid.setOrigin(entity.getOrigin());
-
-	dot.setFillColor(sf::Color::Yellow);
 	dot.setOutlineThickness(0.f);
-	dot.setFillColor(sf::Color::Yellow);
+	dot.setFillColor(sf::Color::Transparent);
 	dot.setSize(sf::Vector2f(10.f, 10.f));
 	dot.setOrigin(5.f, 5.f);
 
@@ -123,9 +136,14 @@ void Director::init(void)
 
 	m_mod_text.setFont(*(m_font_library.getSystemFont()));
 	m_mod_text.setPosition(125.f, 100.f);
-	m_mod_text.setCharacterSize(30);
-	m_mod_text.setString("Box Entity:" + box.getName().raw());
+	m_mod_text.setCharacterSize(60);
+	m_mod_text.setString("Testing Text");
 
+	grid.setOutlineThickness(2.f);
+	grid.setOutlineColor(sf::Color::Transparent);
+	grid.setFillColor(sf::Color::Transparent);
+	grid.setSize(text.getSize());
+	grid.setOrigin(text.getOrigin());
 
     m_controls.enableEvent(ControlManager::SWITCH_ROTATION);
     m_controls.enableEvent(ControlManager::TAKE_SCREENSHOT);
@@ -242,19 +260,75 @@ void Director::processInput(void)
 			switch (choice)
 			{
 			case 0:
-				box.setRotation(45.f);
-				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::LEFT_BACK_IN, delay, duration));
-				in_animation->setWindowSize(m_graphics.getSize());
-				//animation = AnimationFactory::create(AnimationFactory::POP_IN, delay, duration);
-				entity.setAnimation(Entity::START_ANIMATION, in_animation);
-				animation = AnimationFactory::create(AnimationFactory::EASE_Y, delay, duration);
-				entity.setAnimation(Entity::POSITION_ANIMATION, animation);
-				entity.run();
+				text.setOutlineEnabled(true);
+				text.setString("Text + outline");
 				++choice;
 				break;
 			case 1:
+				text.setShadowEnabled(true);
+				text.setOutlineEnabled(false);
+				text.setString("Text + shadow");
+				++choice;
+				break;
+			case 2:
+				text.setOutlineEnabled(true);
+				text.setString("Text + shadow + outline");
+				++choice;
+				break;
+			case 3:
+				text.setShadowOffset(-6, 6);
+				text.setString("Text + shadow offset");
+				++choice;
+				break;
+			case 4:
+				text.setShadowOffset(-6, -6);
+				text.setString("Text + shadow offset");
+				++choice;
+				break;
+			case 5:
+				text.setShadowOffset(6, -6);
+				text.setString("Text + shadow offset");
+				++choice;
+				break;
+			case 6:
+				text.setShadowOffset(6, 6);
+				text.setString("Text + shadow offset");
+				++choice;
+				break;
+			case 7:
+				text.setFont(m_font_library.loadFont("RoosterSerif.ttf"));
+				text.setString("Text font");
+				++choice;
+				break;
+			case 8:
+				text.setFont(m_font_library.loadFont("yukarimobil.ttf"));
+				text.setString("Text font");
+				++choice;
+				break;
+			case 9:
+				text.setFont(m_font_library.loadFont("Millennia.otf"));
+				text.setForceUppercase(true);
+				text.setString("Force Uppercase");
+				++choice;
+				break;
+			case 10:
+				text.setString("Text Animations");
+				text.setForceUppercase(false);
+				dot.setFillColor(sf::Color::Yellow);
+				grid.setOutlineColor(sf::Color::Yellow);
+				in_animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::LEFT_BACK_IN, delay, duration));
+				in_animation->setWindowSize(m_graphics.getSize());
+				//animation = AnimationFactory::create(AnimationFactory::POP_IN, delay, duration);
+				text.setAnimation(Entity::START_ANIMATION, in_animation);
+				animation = AnimationFactory::create(AnimationFactory::FADE, delay, duration);
+				text.setAnimation(Entity::POSITION_ANIMATION, animation);
+				text.run();
+				++choice;
+				break;
+			case 11:
+				text.setString("Text Pivot");
 				//m_mod_text.setString("Box: " + utils::toStr(.getSize().x).raw() + ", " + utils::toStr(box.getSize().y).raw());
-				entity.setPivot(static_cast<Entity::Pivot>(entity.getPivot() + 1));
+				text.setPivot(static_cast<Entity::Pivot>(text.getPivot() + 1));
 				break;
 			}
 			break;
@@ -290,9 +364,9 @@ void Director::processInput(void)
 void Director::update(sf::Time delta_time)
 {
 	//entity.update(delta_time);
-	entity.update(delta_time);
-	grid.setSize(entity.getSize());
-	grid.setOrigin(entity.getOrigin());
+	text.update(delta_time);
+	grid.setSize(text.getSize());
+	grid.setOrigin(text.getOrigin());
 }
 
 void Director::updateFps(sf::Time delta_time)
@@ -323,14 +397,14 @@ void Director::draw(void)
 	sf::RenderStates states;
 	// Para dibujar el grid, quitamos cualquier shader
 	/* states.shader = nullptr;*/
-	transformable.setPosition(entity.getPosition());
-	transformable.setRotation(entity.getRotation());
+	transformable.setPosition(text.getPosition());
+	transformable.setRotation(text.getRotation());
 	states.transform = transformable.getTransform();
 
-	m_graphics.clear();
+	m_graphics.clear(sf::Color::Black);
 	m_graphics.draw(back);
 
-	m_graphics.draw(entity);
+	m_graphics.draw(text);
 	//m_graphics.draw(box);
 	m_graphics.draw(dot, states);
 	m_graphics.draw(grid, states);
