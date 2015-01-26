@@ -32,8 +32,9 @@ namespace bmonkey{
 /**
  * Entidad para dibujar texto estático
  *
- * Se trata de una entidad base para dibujar textos estáticos.
- * El texto está compuesto de un texto frontal, un borde y sombra.
+ * Se trata de una entidad base para dibujar textos estáticos, es decir, textos
+ * que no variarán durante la ejecución.
+ * El texto está compuesto de texto frontal, borde y sombra.
  * Tanto el borde como la sombra se pueden desactivar para reducir la carga
  * de dibujado de la entidad.
  */
@@ -235,6 +236,13 @@ protected:
 	 * @param color Color a aplicar en el proceso de dibujado
 	 */
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+
+	/**
+	 * Convierte una cadena Glib::ustring a sf::String
+	 * @param ustring Cadena a convertir
+	 * @return Nueva cadena convertida
+	 */
+	sf::String fromUstring(const Glib::ustring& ustring);
 
 private:
 	FontLibrary* m_font_library;		/**< Librería de fuentes a usar por la entidad */

@@ -22,9 +22,14 @@
 #include "text_entity.hpp"
 #include <cassert>
 #include <cmath>
+#include <SFML/System.hpp>
+#include <string>
+#include <algorithm>
+
 
 namespace bmonkey{
 
+// El borde tiene un grosor predeterminado de 2 pixeles
 #define OUTLINE_THICKNESS 2.f
 
 TextEntity::TextEntity(FontLibrary* font_library):
@@ -45,6 +50,7 @@ TextEntity::TextEntity(FontLibrary* font_library):
 {
 	assert(m_font_library);
 
+	// Por defecto fijamos la fuente del sistema
 	m_text.setFont(*m_font);
 }
 
@@ -61,6 +67,8 @@ void TextEntity::setPivot(Pivot pivot)
 
 	m_pivot = pivot;
 	bounds = m_text.getLocalBounds();
+	// En los textos tenemos que tener en cuenta left y top
+	// y no tenemos en cuenta para el cálculo la sombra
 	size.x = (bounds.left * 2) + bounds.width;
 	size.y = (bounds.top * 2) + bounds.height;
 	switch (m_pivot)
@@ -125,7 +133,8 @@ void TextEntity::setString(const Glib::ustring& string)
 	sf::String new_string;
 
 	m_string = string;
-	new_string = m_force_uppercase ? getString().uppercase().raw() : getString().raw();
+
+	new_string = fromUstring(m_force_uppercase ? string.uppercase() : string);
 	m_text.setString(new_string);
 	setPivot(m_pivot);
 }
@@ -146,12 +155,12 @@ void TextEntity::setStyle(const TextEntity::Style& style)
 
 void TextEntity::setForceUppercase(const bool uppercase)
 {
-	sf::String new_text;
+	sf::String new_string;
 
 	m_force_uppercase = uppercase;
 
-	new_text = m_force_uppercase ? getString().uppercase().raw() : getString().raw();
-	m_text.setString(new_text);
+	new_string = fromUstring(m_force_uppercase ? getString().uppercase() : getString());
+	m_text.setString(new_string);
 	setPivot(m_pivot);
 }
 
@@ -223,6 +232,22 @@ void TextEntity::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) 
 	text.setColor(m_text_color * m_color);
 	text.setPosition(0.f, 0.f);
 	target.draw(text, states);
+}
+
+sf::String TextEntity::fromUstring(const Glib::ustring& ustring)
+{
+	sf::String string;
+	std::basic_string<unsigned int> buffer;
+	Glib::ustring::const_iterator iter;
+
+	// Pequeño truco para convertir de Glib::ustring a sf::String
+	for (iter = ustring.begin(); iter!= ustring.end(); ++iter)
+	{
+		buffer.push_back(*iter);
+	}
+
+	string = buffer;
+	return string;
 }
 
 } // namespace bmonkey

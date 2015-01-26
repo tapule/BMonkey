@@ -104,11 +104,12 @@ void Director::init(void)
 	//box.setColor(sf::Color::Green);
 	//box.setOpacity(150);
 
-	//text.setFont(m_font_library.getSystemFont());
+	text.setFont(m_font_library.getSystemFont());
 	//text.setFont(m_font_library.loadFont("yukarimobil.ttf"));
-	text.setFont(m_font_library.loadFont("Millennia.otf"));
+	//text.setFont(m_font_library.loadFont("Millennia.otf"));
 	//text.setFont(m_font_library.loadFont("RoosterSerif.ttf"));
-	text.setString("Text Sample");
+	//text.setFont(m_font_library.loadFont("FreeMonoBold.ttf"));
+	text.setString("Text: ñáéíóúö ΔδΠπ");
 	text.setCharacterSize(60);
 	text.setStyle(TextEntity::REGULAR);
 	text.setTextColor(sf::Color(247, 247, 148));
