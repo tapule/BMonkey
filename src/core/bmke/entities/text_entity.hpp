@@ -143,6 +143,19 @@ public:
 	void setTextColor(const sf::Color& color);
 
 	/**
+	 * Obtiene la longitud máxima permitida para el texto
+	 * @return Máxima longitud permitida para el texto
+	 */
+	unsigned int getMaxLength(void);
+
+	/**
+	 * Establece la longitud máxima del texto
+	 * @param length Nueva longitud máxima para el texto
+	 * @note 0 indicará que no hay longitud máxima.
+	 */
+	void setMaxLength(const unsigned int length);
+
+	/**
 	 * Indica si se activo el forzado de mayúsculas
 	 * @return Estado del forzado de mayúsculas
 	 */
@@ -251,6 +264,7 @@ private:
 	unsigned int m_character_size;		/**< Tamaño base de los caracteres en pixeles */
 	Style m_style;						/**< Estilo aplicado al texto */
 	sf::Color m_text_color;				/**< Color del texto */
+	unsigned int m_max_length;			/**< Longitud máxima permitida para el texto */
 	bool m_force_uppercase;				/**< Indica si hay que forzar mayúsculas */
 	bool m_outline_enabled;				/**< Indica si el renderizado del outline está habilitado */
 	sf::Color m_outline_color;			/**< Color del outline, ignora alpha */

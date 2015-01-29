@@ -21,11 +21,6 @@
 
 #include "tokenizer.hpp"
 #include <fstream>
-/*#include <stdlib.h>
-#include <string.h>
-#include <algorithm>
-*/
-
 
 Tokenizer::Tokenizer(void):
 	m_delimiters(DEFAULT_DELIMITERS),
@@ -39,10 +34,27 @@ Tokenizer::~Tokenizer()
 {
 }
 
-bool Tokenizer::initFromFile(const std::string& file)
+bool Tokenizer::initFromMemory(const char *buffer, const unsigned int size)
+{
+	// Usamos ustring.assign(InputIterator begin, InputIterator end) en vez de
+	// ustring.assign(const char*, size_type) porque esta segunda versión espera
+	// la longitud del buffer en "caracteres" no en bytes y por lo tanto puede
+	// producir errores/excepciones
+	m_buff.assign(buffer, buffer + size);
+	m_buff_pos = m_buff.begin();
+	m_token.clear();
+	m_last_delimiter = '\0';
+
+	return true;
+}
+
+bool Tokenizer::initFromFile(const Glib::ustring& file)
 {
 	std::ifstream file_stream;
 	unsigned int size;
+	char* buff = nullptr;
+
+	assert(!file.empty());
 
 	file_stream.open(file.data());
 	if (!file_stream.good())
@@ -54,19 +66,27 @@ bool Tokenizer::initFromFile(const std::string& file)
 	file_stream.seekg (0, std::ios::end);
 	size = file_stream.tellg();
 	file_stream.seekg (0, std::ios::beg);
-	m_buff.resize(size);
-	// Cargamos el contenido completo del fichero en la cadena
-	file_stream.read(&m_buff[0], size);
+
+	// Reservamos la memoria necesaria
+	buff = new char[size];
+	if (!buff)
+	{
+		file_stream.close();
+		return false;
+	}
+
+	// Cargamos el contenido completo del fichero en el buffer
+	file_stream.read(buff, size);
 	file_stream.close();
-	// Reiniciamos el puntero de lectura y los datos internos
-	m_buff_pos = m_buff.begin();
-	m_token.clear();
-	m_last_delimiter = '\0';
+	// Inicializamos el string interno
+	initFromMemory(buff, size);
+
+	delete[] buff;
 
 	return true;
 }
 
-bool Tokenizer::initFromString(const std::string& str)
+bool Tokenizer::initFromString(const Glib::ustring& str)
 {
 	m_buff = str;
 	m_buff_pos = m_buff.begin();
@@ -76,28 +96,7 @@ bool Tokenizer::initFromString(const std::string& str)
 	return true;
 }
 
-bool Tokenizer::initFromMemory(const char *buffer, const unsigned int size)
-{
-	m_buff.resize(size);
-	m_buff.assign(buffer, size);
-	m_buff_pos = m_buff.begin();
-	m_token.clear();
-	m_last_delimiter = '\0';
-
-	return true;
-}
-
-void Tokenizer::setDelimiters(const std::string& delimiters)
-{
-	m_delimiters = delimiters;
-}
-
-void Tokenizer::setStringDetection(const bool detect)
-{
-	m_detect_strings = detect;
-}
-
-std::string Tokenizer::nextToken(void)
+Glib::ustring Tokenizer::nextToken(void)
 {
 	m_token.clear();
 
@@ -136,21 +135,9 @@ bool Tokenizer::hasMoreTokens(void)
 	}
 }
 
-char Tokenizer::lastDelimiter(void)
+std::vector<Glib::ustring> Tokenizer::split(void)
 {
-	return m_last_delimiter;
-}
-
-void Tokenizer::reset(void)
-{
-	m_buff_pos = m_buff.begin();
-	m_token.clear();
-	m_last_delimiter = '\0';
-}
-
-std::vector<std::string> Tokenizer::split(void)
-{
-	std::vector<std::string> tokens;
+	std::vector<Glib::ustring> tokens;
 
 	while (hasMoreTokens())
 	{
@@ -160,15 +147,9 @@ std::vector<std::string> Tokenizer::split(void)
 	return tokens;
 }
 
-bool Tokenizer::isDelimiter(void)
+Glib::ustring Tokenizer::getString(void)
 {
-	return(m_delimiters.find(*m_buff_pos) != std::string::npos);
-}
-
-std::string Tokenizer::getString(void)
-{
-
-	std::string str;
+	Glib::ustring str;
 
 	// Saltamos las comillas iniciales donde hemos sido llamados
 	++m_buff_pos;
@@ -177,8 +158,9 @@ std::string Tokenizer::getString(void)
 	while (*m_buff_pos == '\\')
 	{
 		str += *m_buff_pos;
-		str += *(m_buff_pos + 1);
-		m_buff_pos += 2;
+		++m_buff_pos;
+		str += *m_buff_pos;
+		++m_buff_pos;
 	}
 
 	// Consideramos que la cadena finaliza en " o al final del buffer
@@ -190,8 +172,9 @@ std::string Tokenizer::getString(void)
 		while (*m_buff_pos == '\\')
 		{
 			str += *m_buff_pos;
-			str += *(m_buff_pos + 1);
-			m_buff_pos += 2;
+			++m_buff_pos;
+			str += *m_buff_pos;
+			++m_buff_pos;
 		}
 	}
 

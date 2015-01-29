@@ -39,6 +39,7 @@ TextEntity::TextEntity(FontLibrary* font_library):
 	m_character_size(30),
 	m_style(REGULAR),
 	m_text_color(sf::Color::White),
+	m_max_length(0),
 	m_force_uppercase(false),
 	m_outline_enabled(true),
 	m_outline_color(sf::Color::Black),
@@ -130,12 +131,22 @@ void TextEntity::setFont(sf::Font* font)
 
 void TextEntity::setString(const Glib::ustring& string)
 {
-	sf::String new_string;
+	Glib::ustring new_string;
 
+	// Copiamos la original, sin recorte ni mayúsculas
 	m_string = string;
 
-	new_string = fromUstring(m_force_uppercase ? string.uppercase() : string);
-	m_text.setString(new_string);
+	// Comprobamos si hay que aplicar recorte
+	if (m_max_length > 0 && string.length() > m_max_length)
+	{
+		new_string.assign(string, 0, m_max_length - 3);
+		new_string += "...";
+	}
+	else
+	{
+		new_string = string;
+	}
+	m_text.setString(fromUstring(m_force_uppercase ? new_string.uppercase() : new_string));
 	setPivot(m_pivot);
 }
 
@@ -157,11 +168,11 @@ void TextEntity::setForceUppercase(const bool uppercase)
 {
 	sf::String new_string;
 
-	m_force_uppercase = uppercase;
-
-	new_string = fromUstring(m_force_uppercase ? getString().uppercase() : getString());
-	m_text.setString(new_string);
-	setPivot(m_pivot);
+	if (m_force_uppercase != uppercase)
+	{
+		m_force_uppercase = uppercase;
+		setString(m_string);
+	}
 }
 
 void TextEntity::setOutlineEnabled(const bool enabled)
@@ -238,14 +249,10 @@ sf::String TextEntity::fromUstring(const Glib::ustring& ustring)
 {
 	sf::String string;
 	std::basic_string<unsigned int> buffer;
-	Glib::ustring::const_iterator iter;
 
 	// Pequeño truco para convertir de Glib::ustring a sf::String
-	for (iter = ustring.begin(); iter!= ustring.end(); ++iter)
-	{
-		buffer.push_back(*iter);
-	}
-
+	// En SFML 2.2, se puede hacer con sf::String::fromUtf32
+	buffer.assign(ustring.begin(), ustring.end());
 	string = buffer;
 	return string;
 }

@@ -104,22 +104,23 @@ void Director::init(void)
 	//box.setColor(sf::Color::Green);
 	//box.setOpacity(150);
 
-	text.setFont(m_font_library.getSystemFont());
-	//text.setFont(m_font_library.loadFont("yukarimobil.ttf"));
+	//text.setFont(m_font_library.getSystemFont());
+	text.setFont(m_font_library.loadFont("yukarimobil.ttf"));
 	//text.setFont(m_font_library.loadFont("Millennia.otf"));
 	//text.setFont(m_font_library.loadFont("RoosterSerif.ttf"));
 	//text.setFont(m_font_library.loadFont("FreeMonoBold.ttf"));
-	text.setString("Text: ñáéíóúö ΔδΠπ");
+	text.setString("Prueba de texto largo que debe cortarse");
 	text.setCharacterSize(60);
 	text.setStyle(TextEntity::REGULAR);
 	text.setTextColor(sf::Color(247, 247, 148));
+	text.setMaxLength(0);
 	text.setForceUppercase(false);
-	text.setOutlineEnabled(false);
+	text.setOutlineEnabled(true);
 	text.setOutlineColor(sf::Color::Black);
 	//text.setOutlineColor(sf::Color(255, 153, 51));
-	text.setShadowEnabled(false);
+	text.setShadowEnabled(true);
 	text.setShadowColor(sf::Color(189, 0, 0));
-	text.setShadowOffset(3, 3);
+	text.setShadowOffset(2, 2);
 	text.setPosition(400.f, 300.f);
 	//text.setRotation(45);
 	//text.setOpacity(100);
@@ -136,9 +137,9 @@ void Director::init(void)
 	//entity.setFlip(true, true);
 
 	m_mod_text.setFont(*(m_font_library.getSystemFont()));
-	m_mod_text.setPosition(125.f, 100.f);
-	m_mod_text.setCharacterSize(60);
-	m_mod_text.setString("Testing Text");
+	m_mod_text.setPosition(25.f, 100.f);
+	m_mod_text.setCharacterSize(30);
+	m_mod_text.setString("Original: Prueba de texto largo que debe cortarse");
 
 	grid.setOutlineThickness(2.f);
 	grid.setOutlineColor(sf::Color::Transparent);
@@ -261,8 +262,16 @@ void Director::processInput(void)
 			switch (choice)
 			{
 			case 0:
-				text.setOutlineEnabled(true);
-				text.setString("Text + outline");
+				//text.setOutlineEnabled(true);
+				//text.setString("Text + outline");
+				text.setMaxLength(23);
+				animation = static_cast<MoveInAnimation* > (AnimationFactory::create(AnimationFactory::HARDROLL_IN, delay, duration));
+				//animation->setWindowSize(m_graphics.getSize());
+				//animation = AnimationFactory::create(AnimationFactory::POP_IN, delay, duration);
+				text.setAnimation(Entity::START_ANIMATION, animation);
+				animation = AnimationFactory::create(AnimationFactory::EASE_X, delay, duration);
+				text.setAnimation(Entity::POSITION_ANIMATION, animation);
+				text.run();
 				++choice;
 				break;
 			case 1:

@@ -58,6 +58,17 @@ inline void TextEntity::setTextColor(const sf::Color& color)
 	m_outline_color.a = color.a;
 }
 
+inline unsigned int TextEntity::getMaxLength(void)
+{
+	return m_max_length;
+}
+
+inline void TextEntity::setMaxLength(const unsigned int length)
+{
+	m_max_length = length;
+	setString(m_string);
+}
+
 inline bool TextEntity::getForceUppercase(void)
 {
 	return m_force_uppercase;

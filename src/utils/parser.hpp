@@ -22,8 +22,9 @@
 #ifndef _PARSER_HPP_
 #define _PARSER_HPP_
 
-#include <string>
+#include <glibmm/ustring.h>
 #include <vector>
+#include <algorithm>
 #include "tokenizer.hpp"
 
 
@@ -31,7 +32,8 @@
  * Tokens genericos devueltos por el parser. Se definen negativos, para utilizar
  * los positivos con las palabras reservadas del usuario.
  */
-enum TokenTypes{
+enum TokenTypes
+{
 	TK_NOTK	= -1,		/**< Token Notoken */
 	TK_EOF = -2,		/**< Token final de fichero */
 	TK_UNK = -3,		/**< Token desconocido */
@@ -43,11 +45,11 @@ enum TokenTypes{
 struct ReservedWord
 {
 	int type;			/**< Tipo de token */
-	std::string name;	/**< Identificador de la palabra */
+	Glib::ustring name;	/**< Identificador de la palabra */
 };
 
 /**
- * Bloque unitario parseado de la fuente.
+ * Un Token es un bloque unitario parseado de la fuente.
  */
 struct Token
 {
@@ -66,7 +68,7 @@ struct Token
 	 * @param value Valor numérico del token
 	 * @param string Cadena de texto token
 	 */
-	Token(const int p_type, const unsigned int p_value, const std::string& p_string):
+	Token(const int p_type, const unsigned int p_value, const Glib::ustring& p_string):
 		type(p_type),
 		value(p_value),
 		string(p_string)
@@ -75,7 +77,7 @@ struct Token
 
 	int type;				/**< Identificador del tipo de token */
 	unsigned int value;		/**< Valor numérico del token */
-	std::string string;		/**< Valor textual del token */
+	Glib::ustring string;	/**< Valor textual del token */
 };
 
 /**
@@ -84,34 +86,20 @@ struct Token
  *
  * El parser devolverá Tokens con el contenido que se va leyendo de la fuente.
  * Los Tokens detectables, se puden ampliar agregando palabras reservadas.
+ * Soporta textos UTF-8
  */
 class Parser
 {
 public:
 	/**
-	 * Constructor básico de la clase. Se encarga de establecer los valores
-	 * por defecto que utilizará el parser.
+	 * Constructor básico de la clase
 	 */
 	Parser(void);
 
 	/**
-	 * Destructor, se encarga de limpiar la memoria interna del parser
+	 * Destructor
 	 */
 	~Parser();
-
-	/**
-	 * Inicializa el parser sobre un fichero determinado
-	 * @param file nombre del fichero con el contenido
-	 * @return true si se realizó la carga correctamente
-	 */
-	bool initFromFile(const std::string& file);
-
-	/**
-	 * Inicializa el parser sobre una cadena de texto
-	 * @param str Cadena de texto fuente
-	 * @return true si se realizó la carga correctamente
-	 */
-	bool initFromString(const std::string& str);
 
 	/**
 	 * Inicializa el parser a partir de un buffer de memoria
@@ -122,6 +110,20 @@ public:
 	bool initFromMemory(const char *buffer, const unsigned int size);
 
 	/**
+	 * Inicializa el parser sobre un fichero determinado
+	 * @param file nombre del fichero con el contenido
+	 * @return true si se realizó la carga correctamente
+	 */
+	bool initFromFile(const Glib::ustring& file);
+
+	/**
+	 * Inicializa el parser sobre una cadena de texto
+	 * @param str Cadena de texto fuente
+	 * @return true si se realizó la carga correctamente
+	 */
+	bool initFromString(const Glib::ustring& str);
+
+	/**
 	 * Establece los delimitadores que debe reconocer el parser para
 	 * separar tokens. Los delimitadores por defecto son ' ', '\n', '\r', '\t',
 	 * '\v', \f'
@@ -129,7 +131,7 @@ public:
 	 * @note El parser continuará por donde estaba, para comenzar de nuevo
 	 * con los nuevos delimitadores, usar reset()
 	 */
-	void setDelimiters(const std::string& delimiters);
+	void setDelimiters(const Glib::ustring& delimiters);
 
 	/**
 	 * Establece las palabras reservadas que identificará el parser
@@ -198,18 +200,21 @@ private:
 	 * @note: Este método se utiliza internamente para realizar una ordenación
 	 * de las palabras reservadas.
 	 */
-	static inline bool compareWords(const ReservedWord& word0, const ReservedWord& word1);
+	static bool compareWords(const ReservedWord& word0, const ReservedWord& word1);
 
 	/**
 	 * Realiza una busqueda binaria en la lista de palabras reservadas
 	 * @param key Cadena de texto a buscar en las palabras reservadas
 	 * @return Posición de la palabra reservada o -1 si no se encuentra
 	 */
-	inline int binarySearchWord(const std::string& key);
+	int binarySearchWord(const Glib::ustring& key);
 
 	bool m_detect_numbers;				/**< Estado de la detección de números */
 	std::vector<ReservedWord> m_words;	/**< Lista de palabras reservadas */
 	Tokenizer m_tokenizer;				/**< Tokenizador de palabras */
 };
+
+// Inclusión de los métodos inline
+#include "parser.inl"
 
 #endif // #define _PARSER_HPP_

@@ -23,8 +23,6 @@
 #include <fstream>
 #include <cstdlib>
 #include <string>
-#include <algorithm>
-
 
 Parser::Parser(void):
 	m_detect_numbers(true)
@@ -36,42 +34,6 @@ Parser::Parser(void):
 Parser::~Parser()
 {
 	m_words.clear();
-}
-
-bool Parser::initFromFile(const std::string& file)
-{
-	return m_tokenizer.initFromFile(file);
-}
-
-bool Parser::initFromString(const std::string& str)
-{
-	return m_tokenizer.initFromString(str);
-}
-
-bool Parser::initFromMemory(const char *buffer, const unsigned int size)
-{
-	return m_tokenizer.initFromMemory(buffer, size);
-}
-
-void Parser::setDelimiters(const std::string& delimiters)
-{
-	m_tokenizer.setDelimiters(delimiters);
-}
-
-void Parser::setReservedWords(const std::vector<ReservedWord>& words)
-{
-	m_words = words;
-	std::sort(m_words.begin(), m_words.end(), Parser::compareWords);
-}
-
-void Parser::setStringDetection(const bool detect)
-{
-	m_tokenizer.setStringDetection(detect);
-}
-
-void Parser::setNumberDetection(const bool detect)
-{
-	m_detect_numbers = detect;
 }
 
 Token Parser::nextToken(void)
@@ -103,21 +65,6 @@ Token Parser::nextToken(void)
 	return token;
 }
 
-bool Parser::hasMoreTokens(void)
-{
-	return m_tokenizer.hasMoreTokens();
-}
-
-char Parser::lastDelimiter(void)
-{
-	return m_tokenizer.lastDelimiter();
-}
-
-void Parser::reset()
-{
-	m_tokenizer.reset();
-}
-
 bool Parser::checkReservedWords(Token& token)
 {
 	int pos;
@@ -134,7 +81,7 @@ bool Parser::checkReservedWords(Token& token)
 
 bool Parser::checkNum(Token& token)
 {
-	std::string::const_iterator iter;
+	Glib::ustring::const_iterator iter;
 
 	if (token.string.empty())
 	{
@@ -155,39 +102,4 @@ bool Parser::checkNum(Token& token)
 	}
 
 	return false;
-}
-
-bool Parser::compareWords(const ReservedWord& word0, const ReservedWord& word1)
-{
-	return (word0.name.compare(word1.name) < 0);
-}
-
-int Parser::binarySearchWord(const std::string& key)
-{
-	int top = m_words.size() - 1;
-	int bottom = 0;
-	int center;
-	int str_cmp;
-
-	while (bottom <= top)
-	{
-		center = (top + bottom)/2;
-		str_cmp = m_words[center].name.compare(key);
-		if (str_cmp == 0)
-		{
-			return center;
-		}
-		else
-		{
-			if (str_cmp > 0)
-			{
-				top = center - 1;
-			}
-			else
-			{
-				bottom = center + 1;
-			}
-		}
-	}
-	return -1;
 }

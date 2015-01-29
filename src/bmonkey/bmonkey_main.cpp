@@ -64,6 +64,18 @@ int main (int argc, char *argv[])
 	BMonkeyApp* bmonkey;
 	Glib::ustring working_dir;
 
+	// Asignamos el locale actual del usuario como locale para los streams ya
+	// que en otro caso, operaciones de entrada/salida con UTF-8 usando
+	// Glib::ustring, pueden causar excepciones.
+	try
+	{
+		std::locale::global(std::locale(""));
+	}
+	catch (const std::runtime_error& exception)
+	{
+		std::cout << _("Error**\t Can't set locale for streams properly, this can cause problems with UTF-8 streams") << std::endl;
+	}
+
 #ifdef ENABLE_NLS
 	bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");

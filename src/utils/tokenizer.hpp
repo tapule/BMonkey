@@ -22,21 +22,31 @@
 #ifndef _TOKENIZER_HPP_
 #define _TOKENIZER_HPP_
 
-#include <string>
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif /* HAVE_CONFIG_H */
+
+// Si no está definido el modo debug, desactivamos los asserts
+#ifndef ENABLE_DEBUG_MODE
+	#define NDEBUG
+#endif
+
+#include <cassert>
 #include <vector>
+#include <glibmm/ustring.h>
 
 
 // Delimitadores por defecto: Espacio, Salto de línea, Retorno de carro,
 // Tabulador horizontal, Tabulador vertical y Avance de página
-static const std::string DEFAULT_DELIMITERS = " \n\r\t\v\f";
+static const Glib::ustring DEFAULT_DELIMITERS = " \n\r\t\v\f";
 
 /**
- * Tokenizador de cadenas simple.
+ * Tokenizador de cadenas simple con soporte para UTF-8.
  *
  * Permite trocear cadenas de texto o el contenido de un fichero en sus
  * sub-bloques.
  * Permite establecer los caracteres que se detectarán como delimitadores. Por
- * defecto detecta como delimitadores los caracteres de Espacio, Salto de línea,
+ * defecto detecta como delimitadores los caracteres Espacio, Salto de línea,
  * Retorno de carro, Tabulador horizontal, Tabulador vertical y Avance de
  * página.
  * Incluye soporte para detectar cadenas de texto entrecomilladas activado por
@@ -46,8 +56,7 @@ class Tokenizer
 {
 public:
 	/**
-	 * Constructor básico de la clase. Se encarga de establecer los valores
-	 * por defecto que utilizará el tokenizador.
+	 * Constructor básico de la clase.
 	 */
 	Tokenizer(void);
 
@@ -56,26 +65,12 @@ public:
 	 * @param delimiters Delimitadores a usar por defecto
 	 * @param detect_str Indica si se deben detectar las cadenas de texto
 	 */
-	Tokenizer(const std::string& delimiters, const bool detect_str = true);
+	Tokenizer(const Glib::ustring& delimiters, const bool detect_str = true);
 
 	/**
 	 * Destructor
 	 */
 	~Tokenizer();
-
-	/**
-	 * Inicializa el tokenizador sobre un fichero determinado
-	 * @param file nombre del fichero con el contenido a tokenizar
-	 * @return true si se realizó la carga correctamente
-	 */
-	bool initFromFile(const std::string& file);
-
-	/**
-	 * Inicializa el tokenizador sobre una cadena de texto
-	 * @param str Cadena de texto a tokenizar
-	 * @return true si se realizó la carga correctamente
-	 */
-	bool initFromString(const std::string& str);
 
 	/**
 	 * Inicializa el tokenizador a partir de un buffer de memoria
@@ -86,6 +81,20 @@ public:
 	bool initFromMemory(const char *buffer, const unsigned int size);
 
 	/**
+	 * Inicializa el tokenizador sobre un fichero determinado
+	 * @param file nombre del fichero con el contenido a tokenizar
+	 * @return true si se realizó la carga correctamente
+	 */
+	bool initFromFile(const Glib::ustring& file);
+
+	/**
+	 * Inicializa el tokenizador sobre una cadena de texto
+	 * @param str Cadena de texto a tokenizar
+	 * @return true si se realizó la carga correctamente
+	 */
+	bool initFromString(const Glib::ustring& str);
+
+	/**
 	 * Establece los delimitadores que debe reconocer el tokenizador para
 	 * separar tokens. Los delimitadores por defecto son ' ', '\n', '\r', '\t',
 	 * '\v', \f'
@@ -93,7 +102,7 @@ public:
 	 * @note El tokenizador continuará por donde estaba, para comenzar de nuevo
 	 * con los nuevos delimitadores, usar reset()
 	 */
-	void setDelimiters(const std::string& delimiters);
+	void setDelimiters(const Glib::ustring& delimiters);
 
 	/**
 	 * Activa o desactiva la detección de cadenas en el tokenizador.
@@ -106,7 +115,7 @@ public:
 	 * Obtiene el siguiente token
 	 * @return Token leído o "" si no quedan más tokens
 	 */
-	std::string nextToken(void);
+	Glib::ustring nextToken(void);
 
 	/**
 	 * Indica si quedan tokens por leer en el tokenizador
@@ -130,7 +139,7 @@ public:
 	 * Obtiene todos los tokens restantes de golpe
 	 * @return Vector con los tokens restantes
 	 */
-	std::vector<std::string> split(void);
+	std::vector<Glib::ustring> split(void);
 
 private:
 
@@ -146,14 +155,17 @@ private:
 	 * @note Se consideran cadenas las siguientes: "..." ó "...\0
 	 * @note trata entidades como un solo caracter (\t, \n, etc)
 	 */
-	std::string getString(void);
+	Glib::ustring getString(void);
 
-	std::string m_buff;						/**< Buffer del tokenizador */
-	std::string::const_iterator m_buff_pos;	/**< Posición de lectura del buffer */
-	std::string m_delimiters;				/**< Lista de delimitadores */
-	std::string m_token;					/**< Token leído */
-	char m_last_delimiter;					/**< Ultimo delimitador encontrado */
-	bool m_detect_strings;					/**< Estado de la detección de cadenas */
+	Glib::ustring m_buff;						/**< Buffer del tokenizador */
+	Glib::ustring::const_iterator m_buff_pos;	/**< Posición de lectura del buffer */
+	Glib::ustring m_delimiters;					/**< Lista de delimitadores */
+	Glib::ustring m_token;						/**< Token leído */
+	char m_last_delimiter;						/**< Ultimo delimitador encontrado */
+	bool m_detect_strings;						/**< Estado de la detección de cadenas */
 };
+
+// Inclusión de los métodos inline
+#include "tokenizer.inl"
 
 #endif // _TOKENIZER_HPP_
