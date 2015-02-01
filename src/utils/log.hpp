@@ -169,8 +169,7 @@ public:
 		{
 			time(&raw_time);
 			time_info = localtime(&raw_time);
-			// HH:MM:SS
-			strftime(buff, 10, "%T", time_info);
+			strftime(buff, 10, "%H:%M:%S", time_info);
 			m_file << "[" << buff << "] ";
 		}
 	}

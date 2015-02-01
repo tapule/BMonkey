@@ -66,7 +66,8 @@ inline unsigned int TextEntity::getMaxLength(void)
 inline void TextEntity::setMaxLength(const unsigned int length)
 {
 	m_max_length = length;
-	setString(m_string);
+	// Forzamos a que se llame a la versión de esta entidad, no enlace dinámico
+	TextEntity::setString(m_string);
 }
 
 inline bool TextEntity::getForceUppercase(void)
@@ -77,6 +78,16 @@ inline bool TextEntity::getForceUppercase(void)
 inline bool TextEntity::getOutlineEnabled(void) const
 {
 	return m_outline_enabled;
+}
+
+inline TextEntity::OutlineQuality TextEntity::getOutlineQuality(void) const
+{
+	return m_outline_quality;
+}
+
+inline void TextEntity::setOutlineQuality(const TextEntity::OutlineQuality quality)
+{
+	m_outline_quality = quality;
 }
 
 inline const sf::Color& TextEntity::getOutlineColor(void)

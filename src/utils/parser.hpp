@@ -170,7 +170,13 @@ public:
 	 * Obtiene el último delimitador encontrado durante el proceso
 	 * @return Carácter delimitador detectado
 	 */
-	char lastDelimiter(void);
+	Glib::ustring::value_type lastDelimiter(void);
+
+	/**
+	 * Obtiene la ultima cadena de delimitadores encontrada durante el proceso
+	 * @return Cadena de delimitadores contiguos detectada
+	 */
+	Glib::ustring lastDelimiterString(void);
 
 	/**
 	 * Resetea el parser para comenzar el proceso de nuevo

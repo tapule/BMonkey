@@ -63,20 +63,20 @@ public:
 	 * Obtiene las dimensiones originales de la entidad
 	 * @return Dimensiones de la entidad
 	 */
-	virtual sf::Vector2f getSize(void) const;
+	virtual sf::Vector2i getSize(void) const;
 
 	/**
 	 * Establece las dimensiones de la entidad
 	 * @param width Nuevo ancho para la entidad
 	 * @param height Nuevo alto para la entidad
 	 */
-	virtual void setSize(const float width, const float height);
+	virtual void setSize(const int width, const int height);
 
 	/**
 	 * Establece las dimensiones de la entidad
 	 * @param size Nuevas dimensiones para la entidad
 	 */
-	void setSize(const sf::Vector2f& size);
+	void setSize(const sf::Vector2i& size);
 
 protected:
 	/**
@@ -95,7 +95,7 @@ protected:
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
-	sf::Vector2f m_size;		/**< Dimensiones de la entidad */
+	sf::Vector2i m_size;		/**< Dimensiones de la entidad */
 	sf::RectangleShape m_box;	/**< Primitiva rectángulo para la entidad */
 };
 

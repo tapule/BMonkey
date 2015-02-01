@@ -37,40 +37,50 @@ TransitionEntity::~TransitionEntity(void)
 void TransitionEntity::setPivot(Pivot pivot)
 {
 	sf::FloatRect bounds;
-	sf::Vector2f origin;
+	sf::Vector2i origin;
 
 	m_pivot = pivot;
 	bounds = m_sprite.getLocalBounds();
 	switch (m_pivot)
 	{
 	case CENTER:
-		setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+		origin.x = bounds.width / 2;
+		origin.y = bounds.height / 2;
 		break;
 	case TOP_LEFT:
-		setOrigin(0.f, 0.f);
+		origin.x = 0;
+		origin.y = 0;
 		break;
 	case TOP:
-		setOrigin(bounds.width / 2.f, 0.f);
+		origin.x = bounds.width / 2;
+		origin.y = 0;
 		break;
 	case TOP_RIGHT:
-		setOrigin(bounds.width, 0.f);
+		origin.x = bounds.width;
+		origin.y = 0;
 		break;
 	case LEFT:
-		setOrigin(0.f, bounds.height / 2.f);
+		origin.x = 0;
+		origin.y = bounds.height / 2;
 		break;
 	case RIGHT:
-		setOrigin(bounds.width, bounds.height / 2.f);
+		origin.x = bounds.width;
+		origin.y = bounds.height / 2;
 		break;
 	case BOTTOM_LEFT:
-		setOrigin(0.f, bounds.height);
+		origin.x = 0;
+		origin.y = bounds.height;
 		break;
 	case BOTTOM:
-		setOrigin(bounds.width / 2.f, bounds.height);
+		origin.x = bounds.width / 2;
+		origin.y = bounds.height;
 		break;
 	case BOTTOM_RIGHT:
-		setOrigin(bounds.width, bounds.height);
+		origin.x = bounds.width;
+		origin.y = bounds.height;
 		break;
 	}
+	setOrigin(origin.x, origin.y);
 }
 
 void TransitionEntity::setColor(const sf::Color& color)
@@ -79,10 +89,10 @@ void TransitionEntity::setColor(const sf::Color& color)
 	m_sprite.setColor(color);
 }
 
-sf::Vector2f TransitionEntity::getSize(void) const
+sf::Vector2i TransitionEntity::getSize(void) const
 {
 	sf::FloatRect bounds;
-	sf::Vector2f size;
+	sf::Vector2i size;
 
 	bounds = m_sprite.getLocalBounds();
 	size.x = bounds.width;

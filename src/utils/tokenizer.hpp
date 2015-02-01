@@ -126,9 +126,17 @@ public:
 
 	/**
 	 * Obtiene el último delimitador encontrado durante el proceso
-	 * @return Carácter delimitador detectado
+	 * @return Carácter delimitador detectado en formato UTF-8
 	 */
-	char lastDelimiter(void);
+	Glib::ustring::value_type lastDelimiter(void);
+
+	/**
+	 * Obtiene la ultima cadena de delimitador encontrada durante el proceso
+	 * @return Cadena de delimitadores contiguos detectada
+	 * @note Este método es útil para hacer reconstrucciones del texto original
+	 * pero con procesado de los tokens.
+	 */
+	Glib::ustring lastDelimiterString(void);
 
 	/**
 	 * Resetea el tokenizador para comenzar el proceso de nuevo
@@ -161,7 +169,8 @@ private:
 	Glib::ustring::const_iterator m_buff_pos;	/**< Posición de lectura del buffer */
 	Glib::ustring m_delimiters;					/**< Lista de delimitadores */
 	Glib::ustring m_token;						/**< Token leído */
-	char m_last_delimiter;						/**< Ultimo delimitador encontrado */
+	Glib::ustring::value_type m_last_delimiter;	/**< Ultimo delimitador encontrado */
+	Glib::ustring m_last_delimiter_string;		/**< Ultima cadena de delimitadores encontrada */
 	bool m_detect_strings;						/**< Estado de la detección de cadenas */
 };
 

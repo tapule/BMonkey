@@ -32,9 +32,14 @@ inline void Tokenizer::setStringDetection(const bool detect)
 	m_detect_strings = detect;
 }
 
-inline char Tokenizer::lastDelimiter(void)
+inline Glib::ustring::value_type Tokenizer::lastDelimiter(void)
 {
 	return m_last_delimiter;
+}
+
+inline Glib::ustring Tokenizer::lastDelimiterString(void)
+{
+	return m_last_delimiter_string;
 }
 
 inline void Tokenizer::reset(void)

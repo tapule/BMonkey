@@ -38,6 +38,9 @@
 #include "entities/transition_entity.hpp"
 #include "entities/box_entity.hpp"
 #include "entities/text_entity.hpp"
+#include "entities/text_pattern_entity.hpp"
+
+#include "../collection/collection.hpp"
 
 namespace bmonkey{
 
@@ -133,14 +136,26 @@ private:
 
 	// Objetos temporales, solo para pruebas
 	sf::Texture back_texture;
-	sf::Texture sprite_texture;
+	sf::Sprite back;
 	sf::RectangleShape grid;
 	sf::RectangleShape dot;
-	TransitionEntity entity;
-	BoxEntity box;
-	TextEntity text;
-	sf::Sprite back;
-	sf::Text m_mod_text;
+
+	TextEntity m_text;
+	TextPatternEntity mm_text;
+	TextEntity p_text;
+	TextPatternEntity pp_text;
+	TextEntity l_text;
+	TextPatternEntity ll_text;
+	TextEntity g_text;
+	TextPatternEntity gg_text;
+	TextEntity message;
+
+	Collection* collection;
+	Platform* platform;
+	Gamelist* gamelist;
+	Item* item;
+	Game* game;
+
 };
 
 } // namespace bmonkey

@@ -36,7 +36,8 @@ namespace bmonkey{
  * que no variarán durante la ejecución.
  * El texto está compuesto de texto frontal, borde y sombra.
  * Tanto el borde como la sombra se pueden desactivar para reducir la carga
- * de dibujado de la entidad.
+ * de dibujado de la entidad y se puede configurar la calidad de renderizado
+ * para el borde.
  */
 class TextEntity : public Entity
 {
@@ -49,6 +50,13 @@ public:
         ITALIC = 2,
         UNDERLINED = 4,
         STRIKETHROUGH = 8
+	};
+
+	// Posibles calidades para el outline de los textos
+	enum OutlineQuality
+	{
+		LOW = 0,
+		HIGH
 	};
 
 	/**
@@ -78,7 +86,7 @@ public:
 	 * Obtiene las dimensiones originales de la entidad
 	 * @return Dimensiones de la entidad
 	 */
-	virtual sf::Vector2f getSize(void) const;
+	virtual sf::Vector2i getSize(void) const;
 
 	/**
 	 * Obtiene la fuente usada por la entidad
@@ -98,7 +106,7 @@ public:
 	 * Obtiene el texto a renderizar por la instancia
 	 * @return Texto a renderizar
 	 */
-	Glib::ustring getString(void) const;
+	virtual Glib::ustring getString(void) const;
 
 	/**
 	 * Establece el texto que renderizará la instancia
@@ -178,6 +186,18 @@ public:
 	 * @param enabled Nuevo valor para el flag de renderizaod del outline
 	 */
 	void setOutlineEnabled(const bool enabled);
+
+	/**
+	 * Obtiene la calidad del renderizado del outline del texto
+	 * @return Calidad del outline
+	 */
+	OutlineQuality getOutlineQuality(void) const;
+
+	/**
+	 * Establece la calidad del renderizado del outline del texto
+	 * @param quality Nueva calidad para el renderizado del texto
+	 */
+	void setOutlineQuality(const OutlineQuality quality);
 
 	/**
 	 * Obtiene el color para el outline del texto
@@ -267,11 +287,12 @@ private:
 	unsigned int m_max_length;			/**< Longitud máxima permitida para el texto */
 	bool m_force_uppercase;				/**< Indica si hay que forzar mayúsculas */
 	bool m_outline_enabled;				/**< Indica si el renderizado del outline está habilitado */
+	OutlineQuality m_outline_quality;	/**< Calidad del renderizado del texto */
 	sf::Color m_outline_color;			/**< Color del outline, ignora alpha */
 	bool m_shadow_enabled;				/**< Indica si el renderizado de la sombra está habilitado */
 	sf::Color m_shadow_color;			/**< Color de la sombra del texto */
 	sf::Vector2i m_shadow_offset;		/**< Offsets de la sombra en pixeles */
-	sf::Vector2f m_shadow_position;		/**< Posición de la sombra */
+	sf::Vector2i m_shadow_position;		/**< Posición de la sombra */
 	sf::Text m_text;					/**< Texto para cálculos internos */
 };
 

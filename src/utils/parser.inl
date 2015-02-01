@@ -63,9 +63,14 @@ inline bool Parser::hasMoreTokens(void)
 	return m_tokenizer.hasMoreTokens();
 }
 
-inline char Parser::lastDelimiter(void)
+inline Glib::ustring::value_type Parser::lastDelimiter(void)
 {
 	return m_tokenizer.lastDelimiter();
+}
+
+inline Glib::ustring Parser::lastDelimiterString(void)
+{
+	return m_tokenizer.lastDelimiterString();
 }
 
 inline void Parser::reset()

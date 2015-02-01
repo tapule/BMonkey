@@ -30,7 +30,7 @@
 namespace bmonkey{
 
 // El borde tiene un grosor predeterminado de 2 pixeles
-#define OUTLINE_THICKNESS 2.f
+#define OUTLINE_THICKNESS 2
 
 TextEntity::TextEntity(FontLibrary* font_library):
 	Entity(),
@@ -42,11 +42,12 @@ TextEntity::TextEntity(FontLibrary* font_library):
 	m_max_length(0),
 	m_force_uppercase(false),
 	m_outline_enabled(true),
+	m_outline_quality(HIGH),
 	m_outline_color(sf::Color::Black),
 	m_shadow_enabled(true),
 	m_shadow_color(sf::Color::Transparent),
 	m_shadow_offset(sf::Vector2i(0, 0)),
-	m_shadow_position(sf::Vector2f(0.f, 0.f))
+	m_shadow_position(sf::Vector2i(0, 0))
 
 {
 	assert(m_font_library);
@@ -64,7 +65,8 @@ TextEntity::~TextEntity(void)
 void TextEntity::setPivot(Pivot pivot)
 {
 	sf::FloatRect bounds;
-	sf::Vector2f size;
+	sf::Vector2i size;
+	sf::Vector2i origin;
 
 	m_pivot = pivot;
 	bounds = m_text.getLocalBounds();
@@ -75,39 +77,49 @@ void TextEntity::setPivot(Pivot pivot)
 	switch (m_pivot)
 	{
 	case CENTER:
-		setOrigin(size.x / 2.f, size.y / 2.f);
+		origin.x = size.x / 2;
+		origin.y = size.y / 2;
 		break;
 	case TOP_LEFT:
-		setOrigin(0.f, 0.f);
+		origin.x = 0;
+		origin.y = 0;
 		break;
 	case TOP:
-		setOrigin(size.x / 2.f, 0.f);
+		origin.x = size.x / 2;
+		origin.y = 0;
 		break;
 	case TOP_RIGHT:
-		setOrigin(size.x, 0.f);
+		origin.x = size.x;
+		origin.y = 0;
 		break;
 	case LEFT:
-		setOrigin(0.f, size.y / 2.f);
+		origin.x = 0;
+		origin.y = size.y / 2;
 		break;
 	case RIGHT:
-		setOrigin(size.x, size.y / 2.f);
+		origin.x = size.x;
+		origin.y = size.y / 2;
 		break;
 	case BOTTOM_LEFT:
-		setOrigin(0.f, size.y);
+		origin.x = 0;
+		origin.y = size.y;
 		break;
 	case BOTTOM:
-		setOrigin(size.x / 2.f, size.y);
+		origin.x = size.x / 2;
+		origin.y = size.y;
 		break;
 	case BOTTOM_RIGHT:
-		setOrigin(size.x, size.y);
+		origin.x = size.x;
+		origin.y = size.y;
 		break;
 	}
+	setOrigin(origin.x, origin.y);
 }
 
-sf::Vector2f TextEntity::getSize(void) const
+sf::Vector2i TextEntity::getSize(void) const
 {
 	sf::FloatRect bounds;
-	sf::Vector2f size;
+	sf::Vector2i size;
 
 	bounds = m_text.getLocalBounds();
 	size.x = (bounds.left * 2) + bounds.width;
@@ -171,7 +183,8 @@ void TextEntity::setForceUppercase(const bool uppercase)
 	if (m_force_uppercase != uppercase)
 	{
 		m_force_uppercase = uppercase;
-		setString(m_string);
+		// Forzamos a que se llame a la versión de esta entidad, no enlace dinámico
+		TextEntity::setString(m_string);
 	}
 }
 
@@ -222,14 +235,21 @@ void TextEntity::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) 
 	if (m_shadow_enabled && (m_shadow_offset.x != 0 || m_shadow_offset.y != 0))
 	{
 		text.setColor(m_shadow_color * m_color);
-		text.setPosition(m_shadow_position);
+		text.setPosition(m_shadow_position.x, m_shadow_position.y);
 		target.draw(text, states);
 	}
 
 	// Comprobamos si hay que sibujar el outline
 	if (m_outline_enabled)
 	{
+
 		text.setColor(m_outline_color * m_color);
+
+		// Para que el outline quede con buena calidad, se necesita renderizar
+		// el texto en 8 direcciones, pero esto hace que la carga de renderizado
+		// sea mucho mayor, por lo que dividimos en dos bloques de cuatro
+		// dependiendo de la calidad solicitada
+		// Calidad LOW
 		text.setPosition(-OUTLINE_THICKNESS, -OUTLINE_THICKNESS);
 		target.draw(text, states);
 		text.setPosition(OUTLINE_THICKNESS, -OUTLINE_THICKNESS);
@@ -238,10 +258,22 @@ void TextEntity::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) 
 		target.draw(text, states);
 		text.setPosition(-OUTLINE_THICKNESS, OUTLINE_THICKNESS);
 		target.draw(text, states);
+		// Calidad HIGH
+		if (m_outline_quality == HIGH)
+		{
+			text.setPosition(-OUTLINE_THICKNESS, 0);
+			target.draw(text, states);
+			text.setPosition(0, -OUTLINE_THICKNESS);
+			target.draw(text, states);
+			text.setPosition(OUTLINE_THICKNESS, 0);
+			target.draw(text, states);
+			text.setPosition(0, OUTLINE_THICKNESS);
+			target.draw(text, states);
+		}
 	}
 
 	text.setColor(m_text_color * m_color);
-	text.setPosition(0.f, 0.f);
+	text.setPosition(0, 0);
 	target.draw(text, states);
 }
 

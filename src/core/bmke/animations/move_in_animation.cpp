@@ -39,7 +39,7 @@ MoveInAnimation::~MoveInAnimation(void)
 
 void MoveInAnimation::init(Entity* entity)
 {
-	sf::Vector2f size;
+	sf::Vector2i size;
 
 	Animation::init(entity);
 

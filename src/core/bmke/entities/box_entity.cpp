@@ -26,11 +26,11 @@ namespace bmonkey{
 
 BoxEntity::BoxEntity(void):
 	Entity(),
-	m_size(sf::Vector2f(0.f, 0.f))
+	m_size(sf::Vector2i(0, 0))
 {
-	m_box.setOutlineThickness(0.f);
+	m_box.setOutlineThickness(0);
 	m_box.setFillColor(getColor());
-	m_box.setSize(m_size);
+	m_box.setSize(sf::Vector2f(m_size));
 }
 
 BoxEntity::~BoxEntity(void)
@@ -40,40 +40,50 @@ BoxEntity::~BoxEntity(void)
 void BoxEntity::setPivot(Pivot pivot)
 {
 	sf::FloatRect bounds;
-	sf::Vector2f origin;
+	sf::Vector2i origin;
 
 	m_pivot = pivot;
 	bounds = m_box.getLocalBounds();
 	switch (m_pivot)
 	{
 	case CENTER:
-		setOrigin(bounds.width / 2.f, bounds.height / 2.f);
+		origin.x = bounds.width / 2;
+		origin.y = bounds.height / 2;
 		break;
 	case TOP_LEFT:
-		setOrigin(0.f, 0.f);
+		origin.x = 0;
+		origin.y = 0;
 		break;
 	case TOP:
-		setOrigin(bounds.width / 2.f, 0.f);
+		origin.x = bounds.width / 2;
+		origin.y = 0;
 		break;
 	case TOP_RIGHT:
-		setOrigin(bounds.width, 0.f);
+		origin.x = bounds.width;
+		origin.y =  0;
 		break;
 	case LEFT:
-		setOrigin(0.f, bounds.height / 2.f);
+		origin.x = 0;
+		origin.y = bounds.height / 2;
 		break;
 	case RIGHT:
-		setOrigin(bounds.width, bounds.height / 2.f);
+		origin.x = bounds.width;
+		origin.y = bounds.height / 2;
 		break;
 	case BOTTOM_LEFT:
-		setOrigin(0.f, bounds.height);
+		origin.x = 0;
+		origin.y = bounds.height;
 		break;
 	case BOTTOM:
-		setOrigin(bounds.width / 2.f, bounds.height);
+		origin.x = bounds.width / 2;
+		origin.y = bounds.height;
 		break;
 	case BOTTOM_RIGHT:
-		setOrigin(bounds.width, bounds.height);
+		origin.x = bounds.width;
+		origin.y = bounds.height;
 		break;
 	}
+	setOrigin(origin.x, origin.y);
 }
 
 void BoxEntity::setColor(const sf::Color& color)
@@ -82,21 +92,21 @@ void BoxEntity::setColor(const sf::Color& color)
 	m_box.setFillColor(color);
 }
 
-sf::Vector2f BoxEntity::getSize(void) const
+sf::Vector2i BoxEntity::getSize(void) const
 {
 	return m_size;
 }
 
-void BoxEntity::setSize(const float width, const float height)
+void BoxEntity::setSize(const int width, const int height)
 {
-	m_size.x = width < 0.f ? 0.f : width;
-	m_size.y = height < 0.f ? 0.f : height;
-	m_box.setSize(m_size);
+	m_size.x = width < 0 ? 0 : width;
+	m_size.y = height < 0 ? 0 : height;
+	m_box.setSize(sf::Vector2f(m_size));
 	// Forzamos el cálculo del pivote
 	setPivot(m_pivot);
 }
 
-void BoxEntity::setSize(const sf::Vector2f& size)
+void BoxEntity::setSize(const sf::Vector2i& size)
 {
 	setSize(size.x, size.y);
 }

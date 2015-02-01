@@ -175,7 +175,7 @@ public:
 	 * Obtiene las dimensiones originales de la entidad
 	 * @return Dimensiones de la entidad
 	 */
-	virtual sf::Vector2f getSize(void) const = 0;
+	virtual sf::Vector2i getSize(void) const = 0;
 
 	/**
 	 * Obtiene la entidad padre

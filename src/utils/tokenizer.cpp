@@ -119,10 +119,12 @@ Glib::ustring Tokenizer::nextToken(void)
 
 bool Tokenizer::hasMoreTokens(void)
 {
-	// Saltamos delimitadores iniciales y guardamos el último delimitador
+	m_last_delimiter_string.clear();
+	// Saltamos delimitadores iniciales y guardamos el último y la cadena
 	while ((m_buff_pos != m_buff.end()) && isDelimiter())
 	{
 		m_last_delimiter = *m_buff_pos;
+		m_last_delimiter_string.push_back(m_last_delimiter);
 		++m_buff_pos;
 	}
 	if (m_buff_pos != m_buff.end())

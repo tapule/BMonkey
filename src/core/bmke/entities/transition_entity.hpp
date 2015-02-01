@@ -67,7 +67,7 @@ public:
 	 * Obtiene las dimensiones originales de la entidad
 	 * @return Dimensiones de la entidad
 	 */
-	virtual sf::Vector2f getSize(void) const;
+	virtual sf::Vector2i getSize(void) const;
 
 	/**
 	 * Establece la textura que dibujará la entidad
