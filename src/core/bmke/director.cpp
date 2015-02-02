@@ -71,6 +71,7 @@ Director::~Director(void)
 	// Si se destruye la instancia, permitimos que se cree de nuevo
 	m_instantiated = false;
 
+	collection->savePlatforms();
 	delete collection;
 }
 
